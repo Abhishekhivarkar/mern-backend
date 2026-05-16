@@ -7,3 +7,7 @@ export const register = async(data) =>{
 export const findUserByEmail = async({email}) =>{
  return await UserModel.findOne({email})
 }
+
+export const findUserByEmailForLogin = async({email}) =>{
+ return await UserModel.findOne({email}).select("+password")
+}
