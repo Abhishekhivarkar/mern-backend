@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import type {Model} from "mongoose"
-import {IUser} from "../types/interfaces/user.interface.js"
-
+import type {IUser} from "../types/interfaces/auth.interface.js"
+import bcryptjs from "bcryptjs"
 
 const userSchema = new mongoose.Schema<IUser>({
  email:{
@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema<IUser>({
   trim:true,
   lowercase:true,
   unique:true
- }
+ },
  password:{
   type:String,
   required:true,
@@ -23,14 +23,16 @@ userSchema.pre<IUser>("save",function(){
   return 
  }
  
- const hash = bcryptjs.hash(password,10)
- password = hash
+ const hash = bcryptjs.hash(this.password,10)
+this.password = hash
 })
 
-userSchema.methods.comparePassword(async function(enteredPassword:string):Promise<boolean>{
+userSchema.methods.comparePassword= async function(enteredPassword:string):Promise<boolean>{
  
  return await bcryptjs.compare(enteredPassword,this.password)
  
-})
+}
 
 const UserModel:Model<IUser> = mongoose.model<IUser>("User",userSchema)
+
+export default UserModel
