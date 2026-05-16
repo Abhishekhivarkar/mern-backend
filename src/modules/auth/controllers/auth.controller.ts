@@ -76,7 +76,7 @@ export const login = asyncHandler(async(req:Request<{},userLoginResBodyType,user
   const accessToken = jwt.sign(
     {id:user._id.toString()},
     config.JWT_SECRET,
-    {expiresIn:"15m"}
+    {expiresIn:"600m"}
   )
   return res.status(200).json({
     success:true,
