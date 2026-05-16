@@ -8,6 +8,29 @@ export const createNotes = async(title:string,content:string,userId:string) =>{
  })
 }
 
-export const getAllNotes = async() =>{
- return await NotesModel.find().select("-__v")
+export const getAllNotes = async(page:number,limit:number,search:string) =>{
+ let skip = (page - 1) * 10
+ 
+ return await NotesModel.find({
+  title:{
+   $regex:search,
+   $options:"i"
+  },
+ }).select("-__v").sort({createdAt:-1}).skip(skip).limit(limit)
+}
+
+export const patchUpdateNoteRepository = async(noteId:string,newTitle:string | undefined,newContent:string | undefined,userId:string) =>{
+ return await NotesModel.findOneAndUpdate(
+  {
+  _id:noteId,
+  user:userId
+ },
+ {
+  $set:{
+   ...(newTitle && {title : newTitle}),
+   ...(newContent && {content:newContent}),
+  },
+ },
+ {returnDocument:"after"}
+ )
 }

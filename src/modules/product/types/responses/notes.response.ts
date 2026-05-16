@@ -7,3 +7,8 @@ export interface getAllNotesResBodyType{
  success:boolean,
  data:string
 }
+
+export interface patchUpdateNotesResBodyType{
+ success:boolean,
+ message:string
+}

@@ -3,10 +3,9 @@ export interface notesReqBodyType{
  content:string
 }
 
-export interface getAllNotesReqBodyType{
- title:string,
- content:string,
- user:string,
- isPinned:boolean
+export interface patchUpdateNotesReqBodyType{
+ newTitle?:string,
+ newContent?:string,
+ userId:string
 }
 
