@@ -7,3 +7,7 @@ export const createNotes = async(title:string,content:string,userId:string) =>{
   user:userId
  })
 }
+
+export const getAllNotes = async() =>{
+ return await NotesModel.find().select("-__v")
+}
