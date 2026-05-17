@@ -1,4 +1,4 @@
-import {createNotes,getAllNotes,patchUpdateNoteRepository,deleteNotesRepository} from "../repositories/notes.repository.js"
+import {createNotes,getAllNotes,patchUpdateNoteRepository,deleteNotesRepository,pinNotesRepository,getPinnedNotesRepository} from "../repositories/notes.repository.js"
 import {AppError} from "../../../utils/appError.util.js"
 declare global{
  namespace Express{
@@ -49,6 +49,28 @@ export const deleteNotesService =async (noteId:string,userId:string) =>{
  
  if(!note){
   throw new AppError("Note not found",404)
+ }
+ 
+ return note
+}
+
+export const pinNotesService= async(noteId:string,userId:string) =>{
+ 
+ const note = await pinNotesRepository(noteId,userId)
+ 
+ if(!note){
+  throw new AppError("Note not found",404)
+ }
+ 
+ return note
+}
+
+export const getPinnedNotesService = async (userId:string) =>{
+ 
+ const note = await getPinnedNotesRepository(userId)
+ 
+ if(note.length === 0){
+  throw new AppError("0 notes found")
  }
  
  return note

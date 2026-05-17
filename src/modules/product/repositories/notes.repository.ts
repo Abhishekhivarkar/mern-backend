@@ -51,3 +51,29 @@ export const deleteNotesRepository = async (noteId:string,userId:string) =>{
 
  )
 }
+
+export const pinNotesRepository = async(noteId:string,userId:string) =>{
+  const note = await NotesModel.findOne(
+  {
+  _id:noteId,
+  user:userId,
+  isDeleted:false
+ })
+ if(!note){
+  return
+ }
+ 
+ note.isPinned = !note.isPinned
+ await note.save()
+ 
+ return note
+}
+
+
+export const getPinnedNotesRepository = async(userId:string) =>{
+ return await NotesModel.find({
+  user:userId,
+  isDeleted:false,
+  isPinned:true
+ })
+}

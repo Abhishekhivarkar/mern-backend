@@ -18,3 +18,9 @@ export interface deleteNotesResBodyType{
  success:boolean,
  message:string
 }
+
+
+export interface getPinnedNotesResBodyType{
+ success:boolean,
+ data:string
+}

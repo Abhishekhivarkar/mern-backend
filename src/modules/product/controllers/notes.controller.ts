@@ -2,13 +2,13 @@ import type {Request,Response} from "express"
 // request body type
 import type {notesReqBodyType,patchUpdateNotesReqBodyType} from "../types/requests/notes.request.js"
 // response body type 
-import type {notesResBodyType,getAllNotesResBodyType,patchUpdateNotesResBodyType,deleteNotesResBodyType} from "../types/responses/notes.response.js"
+import type {notesResBodyType,getAllNotesResBodyType,patchUpdateNotesResBodyType,deleteNotesResBodyType,getPinnedNotesResBodyType} from "../types/responses/notes.response.js"
 //params type 
 import type {patchUpdateNotesParamsType,deleteNotesParamType} from "../types/params/notes.param.js"
 // query type
 import type {getAllNotesQueryType} from "../types/queries/notes.query.js"
 //services
-import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService} from "../services/notes.service.js"
+import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,getPinnedNotesService} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../utils/asyncHandler.util.js"
 
@@ -64,4 +64,38 @@ export const deleteNotes = asyncHandler(async(req:Request<deleteNotesParamType,d
    success:true,
    message:"Note deleted successfully"
   })
+})
+
+
+export interface pinNotesResBodyType{
+ success:boolean,
+ message:string
+}
+
+export interface pinNotesParamType{
+ noteId:string
+}
+export const pinNotes = asyncHandler(async(req:Request<pinNotesParamType,pinNotesResBodyType,{},{}>,res:Response<pinNotesResBodyType>)=>{
+ const {noteId} = req.params
+ const userId = req.userId
+ 
+ const note = await pinNotesService(noteId,userId)
+ 
+ return res.status(200).json({
+  success:true,
+  message:note.isPinned ? "Note pinned successfully" : "Note unpinned successfully"
+ })
+})
+
+
+
+export const getPinnedNotes =asyncHandler(async(req:Request<{},getPinnedNotesResBodyType,{},{}>,res:Response<getPinnedNotesResBodyType>)=>{
+ const userId = req.userId
+ 
+ const note = await getPinnedNotesService(userId)
+ 
+ return res.status(200).json({
+  success:true,
+  data:note
+ })
 })
