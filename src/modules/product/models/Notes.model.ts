@@ -21,6 +21,10 @@ const notesSchema = new mongoose.Schema<INotes>({
   type:Boolean,
   default:false
  },
+ isDeleted:{
+  type:Boolean,
+  default:false
+ }
 },{timestamps:true})
 
 const NotesModel:Model<INotes> = mongoose.model("Note",notesSchema)

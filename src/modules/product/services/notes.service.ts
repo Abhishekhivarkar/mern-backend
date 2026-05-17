@@ -1,9 +1,9 @@
-import {createNotes,getAllNotes,patchUpdateNoteRepository} from "../repositories/notes.repository.js"
+import {createNotes,getAllNotes,patchUpdateNoteRepository,deleteNotesRepository} from "../repositories/notes.repository.js"
 import {AppError} from "../../../utils/appError.util.js"
 declare global{
  namespace Express{
   interface Request{ 
-   userId:string
+   userId?:string
   }
  }
 }
@@ -40,4 +40,16 @@ export const patchUpdateNotesService = async(noteId:string,newTitle:string | und
  
  return note
  
+}
+
+
+export const deleteNotesService =async (noteId:string,userId:string) =>{
+ 
+ const note = await deleteNotesRepository(noteId,userId)
+ 
+ if(!note){
+  throw new AppError("Note not found",404)
+ }
+ 
+ return note
 }

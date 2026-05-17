@@ -12,3 +12,9 @@ export interface patchUpdateNotesResBodyType{
  success:boolean,
  message:string
 }
+
+
+export interface deleteNotesResBodyType{ 
+ success:boolean,
+ message:string
+}

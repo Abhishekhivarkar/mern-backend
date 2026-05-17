@@ -2,13 +2,13 @@ import type {Request,Response} from "express"
 // request body type
 import type {notesReqBodyType,patchUpdateNotesReqBodyType} from "../types/requests/notes.request.js"
 // response body type 
-import type {notesResBodyType,getAllNotesResBodyType,patchUpdateNotesResBodyType} from "../types/responses/notes.response.js"
+import type {notesResBodyType,getAllNotesResBodyType,patchUpdateNotesResBodyType,deleteNotesResBodyType} from "../types/responses/notes.response.js"
 //params type 
-import type {patchUpdateNotesParamsType} from "../types/params/notes.param.js"
+import type {patchUpdateNotesParamsType,deleteNotesParamType} from "../types/params/notes.param.js"
 // query type
 import type {getAllNotesQueryType} from "../types/queries/notes.query.js"
 //services
-import {createNotesService,getAllNotesService,patchUpdateNotesService} from "../services/notes.service.js"
+import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../utils/asyncHandler.util.js"
 
@@ -50,4 +50,18 @@ export const patchUpdateNotes = asyncHandler(async(req:Request<patchUpdateNotesP
   success:true,
   message:"Note updated successfully"
  })
+})
+
+
+
+export const deleteNotes = asyncHandler(async(req:Request<deleteNotesParamType,deleteNotesResBodyType,{},{}>,res:Response<deleteNotesResBodyType>)=>{
+  const {noteId} = req.params
+  const userId = req.userId
+  
+  const note = await deleteNotesService(noteId,userId)
+  
+  return res.status(200).json({
+   success:true,
+   message:"Note deleted successfully"
+  })
 })

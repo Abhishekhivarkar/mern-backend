@@ -5,7 +5,6 @@ export interface notesReqBodyType{
 
 export interface patchUpdateNotesReqBodyType{
  newTitle?:string,
- newContent?:string,
- userId:string
+ newContent?:string
 }
 

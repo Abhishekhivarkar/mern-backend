@@ -12,6 +12,7 @@ export const getAllNotes = async(page:number,limit:number,search:string) =>{
  let skip = (page - 1) * 10
  
  return await NotesModel.find({
+  isDeleted:false,
   title:{
    $regex:search,
    $options:"i"
@@ -32,5 +33,21 @@ export const patchUpdateNoteRepository = async(noteId:string,newTitle:string | u
   },
  },
  {returnDocument:"after"}
+ )
+}
+
+export const deleteNotesRepository = async (noteId:string,userId:string) =>{
+ return await NotesModel.findOneAndUpdate(
+  {
+  _id:noteId,
+  user:userId
+ },
+ {
+ $set:{
+  isDeleted:true
+ }
+ },
+ {returnDocument:"after"},
+
  )
 }
