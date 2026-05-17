@@ -1,20 +1,29 @@
 import type {Request,Response} from "express"
-// request body type
-import type {notesReqBodyType,patchUpdateNotesReqBodyType} from "../types/requests/notes.request.js"
-// response body type 
-import type {notesResBodyType,getAllNotesResBodyType,patchUpdateNotesResBodyType,deleteNotesResBodyType,getPinnedNotesResBodyType} from "../types/responses/notes.response.js"
-//params type 
-import type {patchUpdateNotesParamsType,deleteNotesParamType} from "../types/params/notes.param.js"
-// query type
-import type {getAllNotesQueryType} from "../types/queries/notes.query.js"
+ 
 //services
 import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,getPinnedNotesService} from "../services/notes.service.js"
 // async handler
-import {asyncHandler} from "../../../utils/asyncHandler.util.js"
+import {asyncHandler} from "../../../common/utils/asyncHandler.util.js"
+import { AppError } from "../../../common/utils/appError.util.js"
+import type { CreateNoteDto } from "../types/dtos/createNote.dto.js"
+import type { UpdateNoteDto } from "../types/dtos/updateNote.dto.js"
+import type { NoteResponseDto } from "../types/dtos/notes.response.dto.js"
+import type { GetAllNotesResponseDto } from "../types/dtos/getAllNotes.response.dto.js"
+import type { GetPinnedNotesResponseDto } from "../types/dtos/getPinnedNotes.response.dto.js"
+import type { NoteParamDto } from "../types/dtos/note.params.dto.js"
+import type { GetAllNotesQueryDto } from "../types/dtos/getAllNotes.query.dto.js"
 
-export const createNotes = asyncHandler(async(req:Request<{},notesResBodyType,notesReqBodyType>,res:Response<notesResBodyType>) =>{
+
+
+
+export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,CreateNoteDto>,res:Response<NoteResponseDto>) =>{
  const {title,content} = req.body 
  const userId = req.userId
+
+  if(!userId){
+    throw new AppError("Unauthorized",401)
+  }
+
  const notes = await createNotesService(title,content,userId)
  
  return res.status(200).json({
@@ -24,7 +33,7 @@ export const createNotes = asyncHandler(async(req:Request<{},notesResBodyType,no
 })
 
 
-export const getAllNotes = asyncHandler(async(req:Request<{},getAllNotesResBodyType,{},getAllNotesQueryType>,res:Response<getAllNotesResBodyType>) =>{
+export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponseDto,{},GetAllNotesQueryDto>,res:Response<GetAllNotesResponseDto>) =>{
  
  const page = Number(req.query.page) || 1
  const limit = Number(req.query.limit) || 10
@@ -39,11 +48,14 @@ export const getAllNotes = asyncHandler(async(req:Request<{},getAllNotesResBodyT
 })
 
 
-export const patchUpdateNotes = asyncHandler(async(req:Request<patchUpdateNotesParamsType,patchUpdateNotesResBodyType,patchUpdateNotesReqBodyType>,res:Response<patchUpdateNotesResBodyType>)=>{
+export const patchUpdateNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,UpdateNoteDto,{}>,res:Response<NoteResponseDto>)=>{
  const {noteId}= req.params
  const userId = req.userId
  const {newTitle,newContent} = req.body
  
+ if(!userId){
+  throw new AppError("Unauthorized",401)
+ }
  const notes = await patchUpdateNotesService(noteId,newTitle,newContent,userId)
  
  return res.status(200).json({
@@ -54,10 +66,13 @@ export const patchUpdateNotes = asyncHandler(async(req:Request<patchUpdateNotesP
 
 
 
-export const deleteNotes = asyncHandler(async(req:Request<deleteNotesParamType,deleteNotesResBodyType,{},{}>,res:Response<deleteNotesResBodyType>)=>{
+export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
   const {noteId} = req.params
   const userId = req.userId
   
+  if(!userId){
+    throw new AppError("Unauthorized",401)
+  }
   const note = await deleteNotesService(noteId,userId)
   
   return res.status(200).json({
@@ -67,18 +82,13 @@ export const deleteNotes = asyncHandler(async(req:Request<deleteNotesParamType,d
 })
 
 
-export interface pinNotesResBodyType{
- success:boolean,
- message:string
-}
 
-export interface pinNotesParamType{
- noteId:string
-}
-export const pinNotes = asyncHandler(async(req:Request<pinNotesParamType,pinNotesResBodyType,{},{}>,res:Response<pinNotesResBodyType>)=>{
+export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
  const {noteId} = req.params
  const userId = req.userId
- 
+  if(!userId){
+    throw new AppError("Unauthorized",401)
+  }
  const note = await pinNotesService(noteId,userId)
  
  return res.status(200).json({
@@ -89,9 +99,11 @@ export const pinNotes = asyncHandler(async(req:Request<pinNotesParamType,pinNote
 
 
 
-export const getPinnedNotes =asyncHandler(async(req:Request<{},getPinnedNotesResBodyType,{},{}>,res:Response<getPinnedNotesResBodyType>)=>{
+export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesResponseDto,{},{}>,res:Response<GetPinnedNotesResponseDto>)=>{
  const userId = req.userId
- 
+  if(!userId){
+    throw new AppError("Unauthorized",401)
+  }
  const note = await getPinnedNotesService(userId)
  
  return res.status(200).json({
@@ -99,3 +111,5 @@ export const getPinnedNotes =asyncHandler(async(req:Request<{},getPinnedNotesRes
   data:note
  })
 })
+
+

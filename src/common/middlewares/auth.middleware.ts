@@ -1,6 +1,6 @@
 import type {Request,Response,NextFuntion} from "express"
-import {config} from "../configs/env.config.js"
-import UserModel from "../modules/auth/models/User.model.js"
+import {config} from "../../configs/env.config.js"
+import UserModel from "../../modules/auth/models/User.model.js"
 import jwt from "jsonwebtoken"
 
 

@@ -1,6 +1,6 @@
 import {createNotes,getAllNotes,patchUpdateNotes,deleteNotes,pinNotes,getPinnedNotes} from "../controllers/notes.controller.js"
 import express from "express"
-import {authMiddleware} from "../../../middlewares/auth.middleware.js"
+import {authMiddleware} from "../../../common/middlewares/auth.middleware.js"
 
 const router = express.Router()
 

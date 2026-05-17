@@ -1,5 +1,5 @@
 import {register,findUserByEmail,findUserByEmailForLogin} from "../repositories/auth.repository.js"
-import {AppError} from "../../../utils/appError.util.js"
+import {AppError} from "../../../common/utils/appError.util.js"
 
 
 export const registerService = async(body:{

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 
 // async handler import 
-import { asyncHandler } from "../../../utils/asyncHandler.util.js"
+import { asyncHandler } from "../../../common/utils/asyncHandler.util.js"
 
 // service imports
 import { registerService,loginService } from "../services/auth.service.js"
@@ -20,6 +20,7 @@ import SessionModel from "../models/Session.model.js"
 import jwt from "jsonwebtoken"
 import { config } from "../../../configs/env.config.js"
 import crypto from "crypto"
+import { redisClient } from "../../../configs/redis.config.js"
 // register
 export const register = asyncHandler(
   async (
@@ -66,6 +67,13 @@ export const login = asyncHandler(async(req:Request<{},userLoginResBodyType,user
 
   await session.save()
 
+  await redisClient.set(
+    `refreshToken:${user._id.toString()}`,
+    hashRefreshToken,
+    {
+      EX: 60 * 60 * 24 * 7
+    }
+  )
   res.cookie("refreshToken",refreshToken,{
     httpOnly:true,
     secure:false,
