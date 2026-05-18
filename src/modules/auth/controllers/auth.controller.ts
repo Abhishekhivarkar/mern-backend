@@ -21,6 +21,12 @@ import jwt from "jsonwebtoken"
 import { config } from "../../../configs/env.config.js"
 import crypto from "crypto"
 import { redisClient } from "../../../configs/redis.config.js"
+import {REFRESH_COOKIE_NAME,REFRESH_COOKIE_OPTIONS} from "../../../common/constants/cookie.constant.js"
+
+import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
+import {MESSAGES} from "../../../common/constants/messages.constant.js"
+import {setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
+import {generateRefreshToken,generateAccessToken} from "../../../common/helpers/token.helper.js"
 // register
 export const register = asyncHandler(
   async (
@@ -35,9 +41,9 @@ export const register = asyncHandler(
 
     const user = await registerService(req.body)
 
-    return res.status(201).json({
+    return res.status(HTTP_STATUS.CREATED).json({
       success: true,
-      message: "User registered successfully",
+      message: MESSAGES.AUTH.REGISTER_SUCCESS,
       data: user._id.toString(),
     })
   }
@@ -56,11 +62,9 @@ export const login = asyncHandler(async(req:Request<{},userLoginResBodyType,user
     userAgent:req.headers["user-agent"] || ""
   })
 
-  const refreshToken = jwt.sign(
-    {id:user._id.toString()},
-    config.REFRESH_TOKEN_SECRET,
-    {expiresIn:"7d"}
-  )
+
+  const refreshToken = generateRefreshToken({id:user._id.toString()})
+  
   const hashRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex")
 
   session.refreshTokenHash = hashRefreshToken
@@ -74,21 +78,15 @@ export const login = asyncHandler(async(req:Request<{},userLoginResBodyType,user
       EX: 60 * 60 * 24 * 7
     }
   )
-  res.cookie("refreshToken",refreshToken,{
-    httpOnly:true,
-    secure:false,
-    sameSite:"strict",
-    maxAge:7 * 24 * 60 * 60 * 1000
-  })
+  
+  setRefreshTokenCookie(res,refreshToken)
 
-  const accessToken = jwt.sign(
-    {id:user._id.toString()},
-    config.JWT_SECRET,
-    {expiresIn:"600m"}
-  )
-  return res.status(200).json({
+  const accessToken = generateAccessToken({
+   id:user._id.toString()
+  })
+  return res.status(HTTP_STATUS.OK).json({
     success:true,
-    message:"user login successfully",
+    message:MESSAGES.AUTH.LOGIN_SUCCESS,
     data:user._id.toString(),
     accessToken
   })

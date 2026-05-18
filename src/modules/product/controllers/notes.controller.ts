@@ -12,7 +12,8 @@ import type { GetAllNotesResponseDto } from "../types/dtos/getAllNotes.response.
 import type { GetPinnedNotesResponseDto } from "../types/dtos/getPinnedNotes.response.dto.js"
 import type { NoteParamDto } from "../types/dtos/note.params.dto.js"
 import type { GetAllNotesQueryDto } from "../types/dtos/getAllNotes.query.dto.js"
-
+import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
+import {MESSAGES} from "../../../common/constants/messages.constant.js"
 
 
 
@@ -20,15 +21,13 @@ export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,Cre
  const {title,content} = req.body 
  const userId = req.userId
 
-  if(!userId){
-    throw new AppError("Unauthorized",401)
-  }
+ 
 
  const notes = await createNotesService(title,content,userId)
  
- return res.status(200).json({
+ return res.status(HTTP_STATUS.CREATED).json({
   success:true,
-  message:"Notes created successfully"
+  message:MESSAGES.PRODUCT.CREATED_SUCCESS
  })
 })
 
@@ -41,7 +40,7 @@ export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponse
  
  const notes = await getAllNotesService(page,limit,search)
  
- return res.status(200).json({
+ return res.status(HTTP_STATUS.OK).json({
   success:true,
   data:notes
  })
@@ -53,14 +52,12 @@ export const patchUpdateNotes = asyncHandler(async(req:Request<NoteParamDto,Note
  const userId = req.userId
  const {newTitle,newContent} = req.body
  
- if(!userId){
-  throw new AppError("Unauthorized",401)
- }
+
  const notes = await patchUpdateNotesService(noteId,newTitle,newContent,userId)
  
- return res.status(200).json({
+ return res.status(HTTP_STATUS.OK).json({
   success:true,
-  message:"Note updated successfully"
+  message:MESSAGES.PRODUCT.UPDATED_SUCCESS
  })
 })
 
@@ -70,14 +67,12 @@ export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteRespo
   const {noteId} = req.params
   const userId = req.userId
   
-  if(!userId){
-    throw new AppError("Unauthorized",401)
-  }
+  
   const note = await deleteNotesService(noteId,userId)
   
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
    success:true,
-   message:"Note deleted successfully"
+   message:MESSAGES.PRODUCT.DELETE_SUCCESS
   })
 })
 
@@ -86,14 +81,12 @@ export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteRespo
 export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
  const {noteId} = req.params
  const userId = req.userId
-  if(!userId){
-    throw new AppError("Unauthorized",401)
-  }
+  
  const note = await pinNotesService(noteId,userId)
  
- return res.status(200).json({
+ return res.status(HTTP_STATUS.OK).json({
   success:true,
-  message:note.isPinned ? "Note pinned successfully" : "Note unpinned successfully"
+  message:note.isPinned ? MESSAGES.PRODUCT.PINNED : MESSAGES.PRODUT.UNPINNED
  })
 })
 
@@ -101,12 +94,10 @@ export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponse
 
 export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesResponseDto,{},{}>,res:Response<GetPinnedNotesResponseDto>)=>{
  const userId = req.userId
-  if(!userId){
-    throw new AppError("Unauthorized",401)
-  }
+  
  const note = await getPinnedNotesService(userId)
  
- return res.status(200).json({
+ return res.status(HTTP_STATUS.OK).json({
   success:true,
   data:note
  })

@@ -8,15 +8,9 @@ import {
 } from "../repositories/notes.repository.js";
 import { AppError } from "../../../common/utils/appError.util.js";
 import { redisClient } from "../../../configs/redis.config.js";
+import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
+import {MESSAGES} from "../../../common/constants/messages.constant.js"
 
-
-declare global {
-  namespace Express {
-    interface Request {
-      userId?: string;
-    }
-  }
-}
 
 const clearNotesCache = async () =>{
     const keys = await redisClient.keys("notes:*")
@@ -27,7 +21,7 @@ const clearNotesCache = async () =>{
         await redisClient.del(allKeys)
     }
 }
-export {};
+
 export const createNotesService = async (
   title: string,
   content: string,
@@ -54,7 +48,7 @@ export const getAllNotesService = async (
   const notes = await getAllNotes(page, limit, search);
 
   if (notes.length === 0 || !notes) {
-    throw new AppError("0 notes available", 401);
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
   }
 
   await redisClient.set(
@@ -74,9 +68,9 @@ export const patchUpdateNotesService = async (
   newContent: string | undefined,
   userId: string,
 ) => {
-  if (!userId) {
-    throw new AppError("Unauthorized", 401);
-  }
+  /*if (!userId) {
+    throw new AppError(MESSAGES., 401);
+  }*/
   const note = await patchUpdateNoteRepository(
     noteId,
     newTitle,
@@ -85,7 +79,7 @@ export const patchUpdateNotesService = async (
   );
 
   if (!note) {
-    throw new AppError("Note not found", 404);
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND);
   }
   await clearNotesCache()
   return note;
@@ -95,7 +89,7 @@ export const deleteNotesService = async (noteId: string, userId: string) => {
   const note = await deleteNotesRepository(noteId, userId);
 
   if (!note) {
-    throw new AppError("Note not found", 404);
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND);
   }
 
   await clearNotesCache()
@@ -106,7 +100,7 @@ export const pinNotesService = async (noteId: string, userId: string) => {
   const note = await pinNotesRepository(noteId, userId);
 
   if (!note) {
-    throw new AppError("Note not found", 404);
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND);
   }
   await clearNotesCache()
   return note;
@@ -125,7 +119,7 @@ export const getPinnedNotesService = async (userId: string) => {
   const note = await getPinnedNotesRepository(userId);
 
   if (note.length === 0) {
-    throw new AppError("0 notes found", 404);
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND);
   }
 
   await redisClient.set(
