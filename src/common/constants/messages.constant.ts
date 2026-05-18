@@ -13,8 +13,12 @@ export const MESSAGES = {
   UPDATED_SUCCESS:"Product updated successfully!",
   DELETE_SUCCESS:"Product deleted successfully!",
   PINNED:"Note pinned successfully!",
-  UNPINNED:"Note unpinned successfully!"
+  UNPINNED:"Note unpinned successfully!",
   NOT_FOUND:"Notes not found!"
+ },
+
+ LIMITER:{
+    TO_MANY_REQUESTS:"To many requests! please try after some time"
  }
  
  

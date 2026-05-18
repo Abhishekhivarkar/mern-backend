@@ -4,7 +4,6 @@ import type {Request,Response} from "express"
 import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,getPinnedNotesService} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../common/utils/asyncHandler.util.js"
-import { AppError } from "../../../common/utils/appError.util.js"
 import type { CreateNoteDto } from "../types/dtos/createNote.dto.js"
 import type { UpdateNoteDto } from "../types/dtos/updateNote.dto.js"
 import type { NoteResponseDto } from "../types/dtos/notes.response.dto.js"
@@ -19,7 +18,7 @@ import {MESSAGES} from "../../../common/constants/messages.constant.js"
 
 export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,CreateNoteDto>,res:Response<NoteResponseDto>) =>{
  const {title,content} = req.body 
- const userId = req.userId
+ const userId = req.userId!
 
  
 
@@ -49,7 +48,7 @@ export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponse
 
 export const patchUpdateNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,UpdateNoteDto,{}>,res:Response<NoteResponseDto>)=>{
  const {noteId}= req.params
- const userId = req.userId
+ const userId = req.userId!
  const {newTitle,newContent} = req.body
  
 
@@ -65,7 +64,7 @@ export const patchUpdateNotes = asyncHandler(async(req:Request<NoteParamDto,Note
 
 export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
   const {noteId} = req.params
-  const userId = req.userId
+  const userId = req.userId!
   
   
   const note = await deleteNotesService(noteId,userId)
@@ -80,20 +79,20 @@ export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteRespo
 
 export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
  const {noteId} = req.params
- const userId = req.userId
+ const userId = req.userId!
   
  const note = await pinNotesService(noteId,userId)
  
  return res.status(HTTP_STATUS.OK).json({
   success:true,
-  message:note.isPinned ? MESSAGES.PRODUCT.PINNED : MESSAGES.PRODUT.UNPINNED
+  message:note.isPinned ? MESSAGES.PRODUCT.PINNED : MESSAGES.PRODUCT.UNPINNED
  })
 })
 
 
 
 export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesResponseDto,{},{}>,res:Response<GetPinnedNotesResponseDto>)=>{
- const userId = req.userId
+ const userId = req.userId!
   
  const note = await getPinnedNotesService(userId)
  
