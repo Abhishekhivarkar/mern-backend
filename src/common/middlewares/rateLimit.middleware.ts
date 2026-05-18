@@ -12,6 +12,6 @@ export const rateLimitMiddleware = rateLimit({
 
     message:{
         success:false,
-        MESSAGE.LIMITER.TO_MANY_REQUESTS
+        messsage:MESSAGES.LIMITER.TO_MANY_REQUESTS
     }
 })
