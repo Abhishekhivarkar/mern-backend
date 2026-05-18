@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken"
 import {config} from "../../configs/env.config.js"
 
 export interface JwtPayloadType{
- id:string
+ id:string,
+ sessionId:string
 }
 
 export const generateAccessToken =(

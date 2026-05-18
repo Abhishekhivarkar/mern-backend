@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import type {ISession} from "../types/interfaces/auth.interface.js"
+import type {ISession} from "../types/auth.interface.js"
 import type { Model } from "mongoose"
 
 

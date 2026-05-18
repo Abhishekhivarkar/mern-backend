@@ -5,7 +5,9 @@ export const MESSAGES = {
   ALREADY_REGISTERED:"User already registered!",
   USER_NOT_FOUND:"User not found!",
   WRONG_CREDENTIALS:"Incorrect credentials!",
-  FORBIDDEN:"Invalid or expired token!"
+  FORBIDDEN:"Invalid or expired token!",
+  TOKEN_NOT_FOUND:"Token not found!",
+  SESSION_NOT_FOUND:"Session not dound!"
  },
  
  PRODUCT:{
