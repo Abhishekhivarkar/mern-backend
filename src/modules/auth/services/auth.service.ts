@@ -25,7 +25,7 @@ export const loginService = async(email:string,password:string) =>{
         throw new AppError(MESSAGES.AUTH.USER_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
     }
 
-    const isCorrect = user.comparePassword(password)
+    const isCorrect =await user.comparePassword(password)
 
     if(!isCorrect){
         throw new AppError(MESSAGES.AUTH.WRONG_CREDENTIALS,HTTP_STATUS.BAD_REQUEST)

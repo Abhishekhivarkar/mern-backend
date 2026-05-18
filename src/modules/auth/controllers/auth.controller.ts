@@ -79,7 +79,7 @@ export const login = asyncHandler(async(req:Request<{},userLoginResBodyType,user
     }
   )
   
-  setRefreshTokenCookie(res,refreshToken)
+  setRefreshTokenCookie(refreshToken,res)
 
   const accessToken = generateAccessToken({
    id:user._id.toString()

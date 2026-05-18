@@ -18,7 +18,7 @@ export const MESSAGES = {
  },
 
  LIMITER:{
-    TO_MANY_REQUESTS:"To many requests! please try after some time"
+    TOO_MANY_REQUESTS:"To many requests! please try after some time"
  }
  
  
