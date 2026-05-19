@@ -1,18 +1,17 @@
-import {createClient} from "redis"
-import {config} from "./env.config.js"
+import Redis from "ioredis"
+import { config } from "./env.config.js"
 
-export const redisClient = createClient({
-    url: config.REDIS_URL
+export const redisClient = new Redis(
+  config.REDIS_URL,
+  {
+    maxRetriesPerRequest:null
+  }
+)
+
+redisClient.on("connect",()=>{
+   console.log("Redis connected")
 })
 
-redisClient.on("connect", ()=>{
-    console.log("Redis connected")
+redisClient.on("error",(err:any)=>{
+   console.log("Redis error",err)
 })
-
-redisClient.on("error",(err)=>{
-    console.log("Redis connection error", err)
-})
-
-export const connectRedis= async ():Promise<void>=>{
-    await redisClient.connect()
-}

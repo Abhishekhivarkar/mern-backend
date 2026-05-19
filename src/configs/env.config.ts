@@ -16,7 +16,9 @@ export const config = cleanEnv(process.env, {
   CLOUDINARY_API_KEY: str(),
   CLOUDINARY_API_SECRET: str(),
   REDIS_URL: url(),
-  NODE_ENV: str()
+  NODE_ENV: str(),
+  REDIS_HOST: str(),
+  REDIS_PORT: port()
 })
 
 
