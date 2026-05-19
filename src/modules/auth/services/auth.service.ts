@@ -1,9 +1,10 @@
-import {register,findUserByEmail,findUserByEmailForLogin,findSessionByIdRepository,createBlackListTokenRepository} from "../repositories/auth.repository.js"
+import {register,findUserByEmail,findUserByEmailForLogin,findSessionByIdRepository,createBlackListTokenRepository,findSessionByRefreshTokenHash} from "../repositories/auth.repository.js"
 import {AppError} from "../../../common/utils/appError.util.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
-import { verifyAccessToken } from "../../../common/helpers/token.helper.js"
-
+import { verifyAccessToken, verifyRefreshToken } from "../../../common/helpers/token.helper.js"
+import crypto from "crypto"
+import SessionModel from "../models/Session.model.js"
 export const registerService = async(body:{
  email:string,
  password:string
@@ -55,7 +56,53 @@ export const BlackListTokenService = async (refreshToken:string, accessToken:str
     session.isRevoked = true
     await session.save()
 
-    const blackListToken = await createBlackListTokenRepository(accessToken)
+    await createBlackListTokenRepository(accessToken)
+    return true
 
+}
 
+export const refreshTokenService = async(token:string)=>{
+    if(!token){
+        throw new AppError(MESSAGES.AUTH.TOKEN_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+    }
+
+    const decoded = verifyRefreshToken(token)
+
+    const refreshTokenHash = crypto.createHash("sha256").update(token).digest("hex")
+
+    const session = await findSessionByIdRepository(decoded.sessionId)
+
+    
+    if(!session){
+        throw new AppError(MESSAGES.AUTH.SESSION_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+    }
+
+    if(session.isRevoked){
+        throw new AppError(
+            MESSAGES.AUTH.SESSION_REVOKED,HTTP_STATUS.UNAUTHORIZED
+        )
+    }
+
+    if(session.expiresAt < new Date()){
+        throw new AppError(
+            MESSAGES.AUTH.SESSION_EXPIRED,HTTP_STATUS.UNAUTHORIZED
+        )
+    }
+    if(session.refreshTokenHash !== refreshTokenHash){
+
+        await SessionModel.updateMany({
+            user:decoded.id
+        },
+        {
+            isRevoked:true
+        }
+    )
+        throw new AppError(MESSAGES.AUTH.REFRESH_TOKEN_REUSE,HTTP_STATUS.UNAUTHORIZED)
+    }
+
+    return {
+        userId:decoded.id,
+        session
+        
+    }
 }

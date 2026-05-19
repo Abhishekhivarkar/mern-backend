@@ -21,3 +21,10 @@ export const findSessionByIdRepository = async(sessionId:string) =>{
 export const createBlackListTokenRepository = async(accessToken:string) =>{
     return await BlackListLokenModel.create({token:accessToken})
 }
+
+export const findSessionByRefreshTokenHash = async(refreshTokenHash:string) =>{
+    return await SessionModel.findOne({
+        refreshTokenHash:refreshTokenHash
+    })
+}
+

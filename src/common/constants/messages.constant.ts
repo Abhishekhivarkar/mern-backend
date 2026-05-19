@@ -7,7 +7,10 @@ export const MESSAGES = {
   WRONG_CREDENTIALS:"Incorrect credentials!",
   FORBIDDEN:"Invalid or expired token!",
   TOKEN_NOT_FOUND:"Token not found!",
-  SESSION_NOT_FOUND:"Session not dound!"
+  SESSION_NOT_FOUND:"Session not found!",
+  REFRESH_TOKEN_REUSE:"Refresh token reusee detected!",
+  SESSION_REVOKED: "Session revoked! please login again.",
+  SESSION_EXPIRED: "Session expired! please login again."
  },
  
  PRODUCT:{

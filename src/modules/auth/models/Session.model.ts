@@ -25,6 +25,10 @@ const sessionSchema = new mongoose.Schema<ISession>({
     isRevoked:{
         type:Boolean,
         default:false
+    },
+    expiresAt:{
+        type:Date,
+        expires:0
     }
 })
 

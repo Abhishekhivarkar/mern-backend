@@ -18,7 +18,8 @@ export interface ISession extends Document{
     isRevoked:boolean,
     
     createdAt:Date,
-    updatedAt:Date
+    updatedAt:Date,
+    expiresAt:Date,
 }
 
 export interface IBlackListToken extends Document{

@@ -23,7 +23,7 @@ export const generateRefreshToken = (
  )=>{
   return jwt.sign(
    payload,
-   config.JWT_SECRET,
+   config.REFRESH_TOKEN_SECRET,
    {expiresIn:"7d"}
    )
  }

@@ -1,10 +1,12 @@
-import type {Request,Response,NextFuntion} from "express"
+import type {Request,Response,NextFunction} from "express"
 import {config} from "../../configs/env.config.js"
 import UserModel from "../../modules/auth/models/User.model.js"
 import jwt from "jsonwebtoken"
 import {verifyAccessToken} from "../helpers/token.helper.js"
 import {HTTP_STATUS} from "../constants/httpStatus.constant.js"
 import {MESSAGES} from "../constants/messages.constant.js"
+import BlackListLokenModel from "../../modules/auth/models/BlackListToken.model.js"
+
 export const authMiddleware =async (req:Request,res:Response,next:NextFunction) =>{
  try{
  const token = req.headers.authorization?.split(" ")[1]
@@ -14,6 +16,17 @@ export const authMiddleware =async (req:Request,res:Response,next:NextFunction) 
    success:false,
    message:MESSAGES.AUTH.FORBIDDEN
   })
+ }
+
+ const blackListToken = await BlackListLokenModel.findOne({
+    token:token
+ })
+
+ if(blackListToken){
+    return res.status(401).json({
+        success:false,
+        message:"Invliad or expired token"
+    })
  }
  
  const decoded = verifyAccessToken(token)
