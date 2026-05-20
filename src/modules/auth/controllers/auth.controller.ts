@@ -76,9 +76,9 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,AuthDto>
   await redisClient.set(
     `refreshToken:${user._id.toString()}`,
     hashRefreshToken,
-    {
-      EX: 60 * 60 * 24 * 7
-    }
+  
+      "EX", 60 * 60 * 24 * 7
+    
   )
   
   setRefreshTokenCookie(refreshToken,res)

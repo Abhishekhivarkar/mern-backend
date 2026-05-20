@@ -1,9 +1,10 @@
-import {register,findUserByEmail,findUserByEmailForLogin,findSessionByIdRepository,createBlackListTokenRepository,findSessionByRefreshTokenHash} from "../repositories/auth.repository.js"
+import {register,findUserByEmail,findUserByEmailForLogin,findSessionByIdRepository,createBlackListTokenRepository} from "../repositories/auth.repository.js"
 import {AppError} from "../../../common/utils/appError.util.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
 import { verifyAccessToken, verifyRefreshToken } from "../../../common/helpers/token.helper.js"
 import crypto from "crypto"
+import { sendRegisterMail } from "../../../common/services/mail.service.js"
 import SessionModel from "../models/Session.model.js"
 export const registerService = async(body:{
  email:string,
@@ -15,7 +16,10 @@ export const registerService = async(body:{
  if(isExists){
   throw new AppError(MESSAGES.AUTH.ALREADY_REGISTERED,HTTP_STATUS.CONFLICT)
  }
- const user = await register(body)
+ const user = await register(body.email,body.password)
+
+ await sendRegisterMail(user.email)
+
  return user
 }
 

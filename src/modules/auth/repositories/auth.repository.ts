@@ -1,9 +1,11 @@
 import BlackListLokenModel from "../models/BlackListToken.model.js"
 import SessionModel from "../models/Session.model.js"
 import UserModel from "../models/User.model.js"
-import type {IUser} from "../types/auth.interface.js"
-export const register = async(data:IUser) =>{
-    return await UserModel.create(data)
+
+export const register = async(email:string,password:string) =>{
+    return await UserModel.create({
+        email,password
+    })
 }
 
 export const findUserByEmail = async({email}:{email:string}) =>{

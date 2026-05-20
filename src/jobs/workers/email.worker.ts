@@ -8,7 +8,7 @@ import {
 import type {
     EmailJobData,
 } from "../queues/email.queue.js"
-import { email } from "envalid"
+
 
 export const emailWorker = new Worker<EmailJobData>("emailQueue",
     async (job:Job<EmailJobData>) =>{

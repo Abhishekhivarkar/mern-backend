@@ -1,6 +1,6 @@
-import { Queue } from "bullmq"
-import { redisClient } from "../../configs/redis.config.js"
 
+import {Queue} from "bullmq"
+import { redisClient } from "../../configs/redis.config.js"
 
 export interface EmailJobData{
     to:string,
@@ -8,17 +8,18 @@ export interface EmailJobData{
     htmlContent:string
 }
 
-
-export const emailQueue = new Queue<EmailJobData>("emailQueue",{
+export const emailQueue = new Queue<EmailJobData>("emailQueue",
+    {
     connection:redisClient,
+    
     defaultJobOptions:{
         attempts:3,
         backoff:{
             type:"exponential",
             delay:5000
         },
-        removeOnComplete:100,
-        removeOnFail:50
-    }
-})
-
+            removeOnComplete:100,
+            removeOnFail:50
+    },
+ }
+)
