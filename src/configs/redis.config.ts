@@ -1,5 +1,5 @@
-import Redis from "ioredis"
-import { config } from "./env.config.js"
+import {Redis} from "ioredis"
+import  { config } from "./env.config.js"
 
 export const redisClient = new Redis(
   config.REDIS_URL,
