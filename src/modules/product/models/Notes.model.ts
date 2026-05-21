@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import type {Model} from "mongoose"
-import type {INotes} from "../types/interface/notes.interface.js"
+import type {INotes} from "../types/notes.interface.js"
 
 const notesSchema = new mongoose.Schema<INotes>({
  title:{
@@ -17,14 +17,11 @@ const notesSchema = new mongoose.Schema<INotes>({
   ref:"User",
   required:true
  },
- isPinned:{
-  type:Boolean,
-  default:false
- },
  isDeleted:{
   type:Boolean,
   default:false
- }
+ },
+
 },{timestamps:true})
 
 const NotesModel:Model<INotes> = mongoose.model("Note",notesSchema)

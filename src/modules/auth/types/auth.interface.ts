@@ -3,7 +3,7 @@ import type {Document} from "mongoose"
 export interface IUser extends Document{
  email:string;
  password:string;
-
+ pinnedNotes:mongoose.Types.ObjectId[],
  createdAt:Date;
  updatedAt:Date;
 

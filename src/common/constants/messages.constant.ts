@@ -19,7 +19,9 @@ export const MESSAGES = {
   DELETE_SUCCESS:"Product deleted successfully!",
   PINNED:"Note pinned successfully!",
   UNPINNED:"Note unpinned successfully!",
-  NOT_FOUND:"Notes not found!"
+  NOT_FOUND:"Notes not found!",
+  PIN_LIMIT_EXCEEDED: "You can pin up to 5 notes only!",
+  ALREADY_PINNED: "Note already pinned!"
  },
 
  LIMITER:{

@@ -15,7 +15,11 @@ const userSchema = new mongoose.Schema<IUser>({
   type:String,
   required:true,
   select:false
- }
+ },
+ pinnedNotes:[{
+    type:mongoose.Types.ObjectId,
+    ref:"Note"
+ }]
 },{timestamps:true})
 
 userSchema.pre("save",async function(){
