@@ -9,4 +9,5 @@ router.post("/register",register)
 router.post("/login",authLimitMiddleware,login)
 router.post("/logout",logout)
 router.post("/refresh-token",refreshToken)
+
 export default router

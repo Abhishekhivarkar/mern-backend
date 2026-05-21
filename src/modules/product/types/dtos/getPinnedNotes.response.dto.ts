@@ -1,4 +1,5 @@
 export interface GetPinnedNotesResponseDto{
   success:boolean,
-  data:string[]
+  data:string[],
+  count:number
 }

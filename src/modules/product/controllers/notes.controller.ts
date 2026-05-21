@@ -1,7 +1,7 @@
 import type {Request,Response} from "express"
  
 //services
-import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,getPinnedNotesService} from "../services/notes.service.js"
+import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,unPinNotesService,getPinnedNotesService} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../common/utils/asyncHandler.util.js"
 import type { CreateNoteDto } from "../types/dtos/createNote.dto.js"
@@ -13,6 +13,7 @@ import type { NoteParamDto } from "../types/dtos/note.params.dto.js"
 import type { GetAllNotesQueryDto } from "../types/dtos/getAllNotes.query.dto.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
+
 
 
 
@@ -110,19 +111,27 @@ export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponse
 })
 
 export const unPinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,NoteResponseDto>,res:Response<NoteResponseDto>)=>{
-  const userId = req.userId
+  const userId = req.userId!
   const {noteId} = req.params
+   
+  await unPinNotesService(userId,noteId)
+
+  return res.status(HTTP_STATUS.OK).json({
+    success:true,
+    message:MESSAGES.PRODUCT.UNPINNED
+  })
 })
 
 
 export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesResponseDto,{},{}>,res:Response<GetPinnedNotesResponseDto>)=>{
  const userId = req.userId!
   
- const note = await getPinnedNotesService(userId)
+ const user = await getPinnedNotesService(userId)
  
  return res.status(HTTP_STATUS.OK).json({
   success:true,
-  data:note
+  data:user,
+  count:user.length
  })
 })
 

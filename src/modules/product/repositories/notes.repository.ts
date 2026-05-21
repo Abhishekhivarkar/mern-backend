@@ -1,3 +1,5 @@
+import type { ClientSession } from "mongoose";
+
 import UserModel from "../../auth/models/User.model.js";
 import NotesModel from "../models/Notes.model.js";
 
@@ -5,103 +7,194 @@ export const createNotes = async (
   title: string,
   content: string,
   userId: string,
+  session?: ClientSession,
 ) => {
-  return await NotesModel.create({
-    title,
-    content,
-    user: userId,
-  });
+  const [note] = await NotesModel.create(
+    [
+      {
+        title,
+        content,
+        user: userId,
+      },
+    ],
+    {
+      session,
+    },
+  );
+
+  return note;
 };
 
 export const getAllNotes = async (
   page: number,
   limit: number,
   search: string,
+  session?: ClientSession,
 ) => {
-  let skip = (page - 1) * 10;
+  const skip = (page - 1) * limit;
 
-  return await NotesModel.find({
+  return NotesModel.find({
     isDeleted: false,
+
     title: {
       $regex: search,
       $options: "i",
     },
   })
+
     .select("-__v")
-    .sort({ createdAt: -1 })
+
+    .sort({
+      createdAt: -1,
+    })
+
     .skip(skip)
-    .limit(limit);
+
+    .limit(limit)
+
+    .session(session || null);
 };
 
 export const patchUpdateNoteRepository = async (
   noteId: string,
+
   newTitle: string | undefined,
+
   newContent: string | undefined,
+
   userId: string,
+
+  session?: ClientSession,
 ) => {
-  return await NotesModel.findOneAndUpdate(
+  return NotesModel.findOneAndUpdate(
     {
       _id: noteId,
+
       user: userId,
+
+      isDeleted: false,
     },
+
     {
       $set: {
-        ...(newTitle && { title: newTitle }),
-        ...(newContent && { content: newContent }),
+        ...(newTitle && {
+          title: newTitle,
+        }),
+
+        ...(newContent && {
+          content: newContent,
+        }),
       },
     },
-    { returnDocument: "after" },
+
+    {
+      returnDocument: "after",
+
+      session,
+    },
   );
 };
 
-export const deleteNotesRepository = async (noteId: string, userId: string) => {
-  return await NotesModel.findOneAndUpdate(
+export const deleteNotesRepository = async (
+  noteId: string,
+
+  userId: string,
+
+  session?: ClientSession,
+) => {
+  return NotesModel.findOneAndUpdate(
     {
       _id: noteId,
+
       user: userId,
+
+      isDeleted: false,
     },
+
     {
       $set: {
         isDeleted: true,
       },
     },
-    { returnDocument: "after" },
+
+    {
+      returnDocument: "after",
+
+      session,
+    },
   );
 };
 
-// export const pinNotesRepository = async(noteId:string,userId:string) =>{
-//   const note = await NotesModel.findOne(
-//   {
-//   _id:noteId,
-//   user:userId,
-//   isDeleted:false
-//  })
-//  if(!note){
-//   return
-//  }
+export const findUserById = async (
+  userId: string,
 
-//  note.isPinned = !note.isPinned
-//  await note.save()
+  session?: ClientSession,
+) => {
+  return UserModel.findById(userId)
 
-//  return note
-// }
-
-export const findUserById = async (userId: string) => {
-  return await UserModel.findOne({ _id: userId });
+    .session(session || null);
 };
 
-export const pinNotesRepository = async (userId: string, noteId: string) => {
-  return await UserModel.findByIdAndUpdate(userId, {
-    $push:{
-      pinnedNotes:noteId
-    }
-  });
+export const pinNotesRepository = async (
+  userId: string,
+
+  noteId: string,
+
+  session?: ClientSession,
+) => {
+  return UserModel.findByIdAndUpdate(
+    userId,
+
+    {
+      $push: {
+        pinnedNotes: noteId,
+      },
+    },
+
+    {
+      returnDocument: "after",
+
+      session,
+    },
+  );
 };
 
-export const getPinnedNotesRepository = async (userId: string) => {
-  return await NotesModel.find({
+export const unPinNoteRepository = async (
+  userId: string,
+
+  noteId: string,
+
+  session?: ClientSession,
+) => {
+  return UserModel.findByIdAndUpdate(
+    userId,
+
+    {
+      $pull: {
+        pinnedNotes: noteId,
+      },
+    },
+
+    {
+      returnDocument: "after",
+
+      session,
+    },
+  );
+};
+
+export const getPinnedNotesRepository = async (
+  userId: string,
+
+  session?: ClientSession,
+) => {
+  return NotesModel.find({
     user: userId,
+
     isDeleted: false,
+
     isPinned: true,
-  });
+  })
+
+    .session(session || null);
 };
