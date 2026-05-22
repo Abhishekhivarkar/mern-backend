@@ -5,7 +5,6 @@ import {
   deleteNotesRepository,
   pinNotesRepository,
   findUserById,
-  getPinnedNotesRepository,
   unPinNoteRepository,
 } from "../repositories/notes.repository.js";
 
@@ -18,6 +17,7 @@ import { AppError } from "../../../common/utils/appError.util.js";
 import { HTTP_STATUS } from "../../../common/constants/httpStatus.constant.js";
 
 import { MESSAGES } from "../../../common/constants/messages.constant.js";
+import { sendNoteCreatedNotificationToUser } from "../../../common/services/notification.service.js";
 
 const clearNotesCache = async () => {
   const notesKeys = await redisClient.keys("notes:*");
@@ -48,7 +48,11 @@ export const createNotesService = async (
     await session.commitTransaction();
 
     await clearNotesCache();
-
+    await sendNoteCreatedNotificationToUser(userId,{
+      noteId:note._id.toString(),
+      title:title,
+      message:"Note created successfully"
+    })
     return note;
   } catch (error) {
     await session.abortTransaction();
@@ -306,16 +310,15 @@ export const getPinnedNotesService = async (userId: string) => {
     return JSON.parse(cached);
   }
 
-  const notes = await getPinnedNotesRepository(userId);
+  const user = await findUserById(userId);
+if(!user){
+  throw new AppError(MESSAGES.AUTH.USER_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+}
 
-  if (notes.length === 0) {
-    throw new AppError(
-      MESSAGES.PRODUCT.NOT_FOUND,
-
-      HTTP_STATUS.NOT_FOUND,
-    );
+  const notes = user.pinnedNotes
+  if(!notes || notes.length === 0){
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND)
   }
-
   await redisClient.set(
     cacheKey,
 

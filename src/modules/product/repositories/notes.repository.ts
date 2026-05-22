@@ -183,18 +183,4 @@ export const unPinNoteRepository = async (
   );
 };
 
-export const getPinnedNotesRepository = async (
-  userId: string,
 
-  session?: ClientSession,
-) => {
-  return NotesModel.find({
-    user: userId,
-
-    isDeleted: false,
-
-    isPinned: true,
-  })
-
-    .session(session || null);
-};
