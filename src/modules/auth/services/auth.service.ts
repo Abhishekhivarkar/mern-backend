@@ -3,7 +3,7 @@ import {AppError} from "../../../common/utils/appError.util.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
 import { verifyAccessToken, verifyRefreshToken } from "../../../common/helpers/token.helper.js"
-import crypto from "crypto"
+import crypto from "node:crypto"
 import { sendRegisterMail } from "../../../common/services/mail.service.js"
 import SessionModel from "../models/Session.model.js"
 export const registerService = async(body:{
