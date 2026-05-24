@@ -1,13 +1,44 @@
 import mongoose from "mongoose"
-import {config} from "./env.config.js"
+import dns from "node:dns"
 
-export const connectDB = async():Promise<void > =>{
- try{
-  await mongoose.connect(config.MONGO_URI as string)
- 
- console.log("detabase is connected")
- }catch(err){
-  console.log("failed to connect database")
-  process.exit(1)
- }
+import { config } from "./env.config.js"
+
+dns.setDefaultResultOrder(
+"ipv4first"
+)
+
+export const connectDB = async():Promise<void>=>{
+
+try{
+
+await mongoose.connect(
+
+config.MONGO_URI,
+
+{
+
+family:4
+
+}
+
+)
+
+console.log(
+"database connected"
+)
+
+}catch(err){
+
+console.log(
+"failed to connect database"
+)
+
+console.error(
+err
+)
+
+throw err
+
+}
+
 }

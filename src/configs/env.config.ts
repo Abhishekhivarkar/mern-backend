@@ -5,7 +5,7 @@ dotenv.config()
 
 export const config = cleanEnv(process.env, {
   PORT: port(),
-  MONGO_URI: url(),
+  MONGO_URI: str(),
   JWT_SECRET: str(),
   REFRESH_TOKEN_SECRET: str(),
   BREVO_API_KEY: str(),

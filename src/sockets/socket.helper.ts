@@ -1,6 +1,7 @@
-import { getIo } from "./socket.server.js";
+import { redisClient } from "../configs/redis.config.js";
 
-export const emitToUser =(
+
+export const emitToUser =async(
     userId:string,
     event:string,
     payload:{       // noteId, title, message
@@ -9,10 +10,13 @@ export const emitToUser =(
         message:string
     }   
 ) =>{
-    const io = getIo()
-
-    io.to(`user:${userId}`).emit(
+    console.log("publish")
+  await redisClient.publish(
+    "socket-events",
+    JSON.stringify({
+        room:`user:${userId}`,
         event,
         payload
-    )
+    })
+  )
 }

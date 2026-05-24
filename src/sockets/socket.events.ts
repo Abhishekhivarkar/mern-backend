@@ -5,5 +5,6 @@ export const SOCKET_EVENTS ={
     NOTE_UPDATED:"note:updated",
     NOTE_DELETED:"note:deleted",
     NOTE_PINNED:"note:pinned",
-    NOTE_UNPINNED:"note:unpinned"
+    NOTE_UNPINNED:"note:unpinned",
+    JOIN: "join"
 }
