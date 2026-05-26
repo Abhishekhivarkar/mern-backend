@@ -1,7 +1,7 @@
 import express from "express"
 import type {Request,Response} from "express"
 import authRoutes from "./modules/auth/routes/auth.routes.js"
-import notesRoutes from "./modules/product/routes/notes.routes.js"
+import notesRoutes from "./modules/notes/routes/notes.routes.js"
 import { loggerMiddleware } from "./common/middlewares/logger.middleware.js"
 import { rateLimitMiddleware } from "./common/middlewares/rateLimit.middleware.js"
 import cookieParser from "cookie-parser"
