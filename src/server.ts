@@ -1,4 +1,3 @@
-
 import { config } from "./configs/env.config.js";
 import { connectDB } from "./configs/db.config.js";
 import app from "./app.js";
@@ -13,7 +12,7 @@ const startServer = async () => {
 
     const server = http.createServer(app);
 
-    await initSocket(server);
+    initSocket(server);
 
     server.listen(PORT, () => {
       console.log("server is running on port", PORT);

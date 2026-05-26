@@ -17,7 +17,7 @@ import { AppError } from "../../../common/utils/appError.util.js";
 import { HTTP_STATUS } from "../../../common/constants/httpStatus.constant.js";
 
 import { MESSAGES } from "../../../common/constants/messages.constant.js";
-import { sendNoteCreatedNotificationToUser } from "../../../common/services/notification.service.js";
+import { sendNoteCreatedNotificationToUser, sendNoteUpdatedNotificationToUser } from "../../../common/services/notification.service.js";
 
 const clearNotesCache = async () => {
   const notesKeys = await redisClient.keys("notes:*");
@@ -138,7 +138,11 @@ export const patchUpdateNotesService = async (
     await session.commitTransaction();
 
     await clearNotesCache();
-
+    await sendNoteUpdatedNotificationToUser(userId,{
+      title:newTitle,
+      noteId:noteId,
+      message:"Note updated successfully!"
+    })
     return note;
   } catch (error) {
     await session.abortTransaction();

@@ -1,68 +1,58 @@
 
-import http from "node:http";
-import { Server } from "socket.io";
+import { Server } from "socket.io"
+import http from "http"
+import { redisClient } from "../configs/redis.config.js"
+import { getSocketAdapter } from "./socket.adapter.js"
+import { SOCKET_EVENTS } from "./socket.events.js"
+let io:Server
 
-import { SOCKET_EVENTS } from "./socket.events.js";
-import { getSocketAdapter } from "./socket.adapter.js";
+export const initSocket = (server:http.Server) =>{
+  io = new Server(
+    server,
+    {
+      cors:{
+        origin:"*"
+      }
+    }
+    
+  )
 
-import { redisClient } from "../configs/redis.config.js";
+  io.adapter(getSocketAdapter())
 
-let io: Server;
+  const subscriber = redisClient.duplicate()
 
-export const initSocket = async (server: http.Server) => {
-  io = new Server(server, {
-    cors: {
-      origin: "*",
-    },
-  });
-
-  io.adapter(getSocketAdapter());
-
-  const subscriber = redisClient.duplicate();
-
-  subscriber.subscribe("socket-events");
+  subscriber.subscribe(
+    "socket-events"
+  )
 
   subscriber.on(
     "message",
-
     (
       channel,
+      message
+    )=>{
+      const data = JSON.parse(message)
 
-      message,
-    ) => {
-      console.log("SUBSCRIBE HIT");
+      io.to(data.room).emit(data.event,data.payload)
+    }
+  )
 
-      console.log(channel);
+  io.on(SOCKET_EVENTS.CONNECTION,
+ (socket)=>{
+  socket.on(SOCKET_EVENTS.JOIN,(userId:string)=>{
+    socket.join(`user:${userId}`)
+  })
+ }
+     
+  )
+}
 
-      console.log(message);
 
-      const data = JSON.parse(message);
-
-      io.to(data.room).emit(data.event, data.payload);
-    },
-  );
-
-  io.on(
-    SOCKET_EVENTS.CONNECTION,
-
-    (socket) => {
-      socket.on(
-        SOCKET_EVENTS.JOIN,
-
-        (userId: string) => {
-          console.log("User joined", userId);
-
-          socket.join(`user:${userId}`);
-        },
-      );
-    },
-  );
-};
-
-export const getIo = () => {
-  if (!io) {
-    throw new Error("Socket not initialized");
+export const getIo = () =>{
+  if(!io){
+    throw new Error("Socket not initilized")
   }
+  return io
+}
 
-  return io;
-};
+

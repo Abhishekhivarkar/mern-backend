@@ -1,6 +1,7 @@
 import { redisClient } from "../configs/redis.config.js";
 
 
+
 export const emitToUser =async(
     userId:string,
     event:string,
@@ -20,3 +21,4 @@ export const emitToUser =async(
     })
   )
 }
+
