@@ -18,7 +18,7 @@ export const notificationSchema = new mongoose.Schema<INotification>({
     },
     message:{
         type:String,
-        reuqired:true
+        required:true
     },
     metaData:{
         type:Object,
