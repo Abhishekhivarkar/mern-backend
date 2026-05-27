@@ -10,7 +10,7 @@ interface SendNotificationOptions{
   message:string
  }
 }
-
+console.log("send notification processor run ")
 export const sendNotificationProcessor =
 async({
 
@@ -21,7 +21,7 @@ event,
 payload
 
 }:SendNotificationOptions)=>{
-
+console.log("create notification run ")
 await createNotification(
     userId,
     event,

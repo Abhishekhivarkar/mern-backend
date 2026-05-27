@@ -4,7 +4,7 @@ import http from "http"
 import { redisClient } from "../configs/redis.config.js"
 import { getSocketAdapter } from "./socket.adapter.js"
 import { SOCKET_EVENTS } from "./socket.events.js"
-import { getUnreadNotifications, markNotificationRead } from "../modules/notifications/repositories/notification.repository.js"
+import { getUnreadNotifications } from "../modules/notifications/repositories/notification.repository.js"
 let io:Server
 
 export const initSocket = (server:http.Server) =>{
@@ -55,9 +55,6 @@ export const initSocket = (server:http.Server) =>{
         })
     }
 
-    await markNotificationRead(
-        userId
-    )
 
 
   })
