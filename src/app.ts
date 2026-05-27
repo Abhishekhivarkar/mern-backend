@@ -4,6 +4,7 @@ import authRoutes from "./modules/auth/routes/auth.routes.js"
 import notesRoutes from "./modules/notes/routes/notes.routes.js"
 import { loggerMiddleware } from "./common/middlewares/logger.middleware.js"
 import { rateLimitMiddleware } from "./common/middlewares/rateLimit.middleware.js"
+import notificationRoutes from "./modules/notifications/routes/notification.routes.js"
 import cookieParser from "cookie-parser"
 import helmet from "helmet"
 const app = express()
@@ -12,9 +13,12 @@ app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())
 app.use(loggerMiddleware)
+
 app.use(rateLimitMiddleware)
+
 app.use("/api/auth", authRoutes)
 app.use("/api/notes", notesRoutes)
+app.use("/api/notification", notificationRoutes)
 
 app.use("/health",(_:Request,res:Response):void=>{
  res.status(200).json({

@@ -26,6 +26,10 @@ export const MESSAGES = {
 
  LIMITER:{
     TOO_MANY_REQUESTS:"To many requests! please try after some time"
+ },
+
+ NOTIFICATION:{
+   NOTIFICATION_NOT_FOUND: "Notification not found!"
  }
  
  
