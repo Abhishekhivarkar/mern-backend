@@ -1,41 +1,44 @@
-import winston from "winston"
+import pino from "pino";
 
-export const logger = winston.createLogger({
+const isDevelopment = process.env.NODE_ENV !== "production";
 
- level:
-  process.env.NODE_ENV === "development"
-   ? "silly"
-   : "info",
+export const logger = pino({
 
- format:winston.format.combine(
+  /* if project is in devlopment isDevlopment = debug */
+  level: isDevelopment ? "debug" : "info", 
 
-  winston.format.timestamp(),
+  /* give process id */  
+  base: {
+    pid: process.pid, 
+  },
 
-  winston.format.errors({
-   stack:true
-  }),
+  /* it gives timestamps in proper format without this time:17484333 and with this time = "2026-05-28T12:00:00.000Z" in redable format */
 
-  winston.format.printf((info:any)=>{
+  timestamp: pino.stdTimeFunctions.isoTime, 
 
-   return `
-[${info.timestamp}]
-LEVEL: ${info.level.toUpperCase()}
-MESSAGE: ${info.message}
-`
-  })
- ),
 
- transports:[
+  /*  hides sensitive data like passwords, tokens , accesstokens and we can add which fields to hide in paths list  and cencor:"[REDACTED]" means what to show in hidden fileds value like if log mistakely prints actual password "password":"123456" so pino hides it and shows like "password":"[REDACTED]" */
+  redact:{ 
+    paths:[
+      "password",
+      "token",
+      "accessToken",
+      "refreshToken",
+      "authorization",
+      "req.headers.authorization"
+    ],
+    censor:"[REDACTED]"
+  },
 
-  new winston.transports.Console(),
+  /* transport use for how to output logs, pino prints raw json that are not redable so we use pino-pretty it makes logs redable and also colorized green for info, yellow for warnings and red for error that makes easy to read logs */
 
-  new winston.transports.File({
-   filename:"logs/error.log",
-   level:"error"
-  }),
-
-  new winston.transports.File({
-   filename:"logs/combined.log"
-  })
- ]
-})
+  transport: isDevelopment?{
+    target:"pino-pretty",
+    options:{
+      colorize:true, // makes logs colorized
+      translateTime:"SYS:standard",  // makes redable timestamps
+      ignore:"pid,hostname"
+    }
+  }
+  :undefined  // this makes pretty logging off in production and turn on raw JSON on transport = undefined 
+});
