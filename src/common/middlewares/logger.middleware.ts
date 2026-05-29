@@ -9,7 +9,7 @@ export const loggerMiddleware = (req:Request,res:Response,next:NextFunction):voi
     res.on("finish",()=>{
           const duration = Date.now() - start
 
-          logger.http(
+          logger.info(
             `${req.method} ${req.originalUrl}
             STATUS: ${req.statusCode}
             Time: ${duration}ms
