@@ -23,6 +23,8 @@ import { RegisterResponseDto } from "../types/dtos/register.response.dto.js"
 import { LoginResponseDto } from "../types/dtos/login.response.dto.js"
 import { LogoutDto } from "../types/dtos/logout.dto.js"
 import { LogoutResponseDto } from "../types/dtos/logout.response.dto.js"
+import { logger } from "../../../common/services/logger.service.js"
+import type{ RegisterDto } from "../validations/auth.validation.js"
 
 
 
@@ -32,14 +34,22 @@ export const register = asyncHandler(
     req: Request<
       {},
       RegisterResponseDto,
-      AuthDto
+      RegisterDto
     >,
 
     res: Response<RegisterResponseDto>
   ) => {
-
+    logger.info({
+      message:"Register request received",
+      email: req.body.email,
+      ip: req.ip
+    })
     const user = await registerService(req.body)
 
+    logger.info({
+      message:"User registered successsfully",
+      userId:req.userId?.toString()
+    })
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: MESSAGES.AUTH.REGISTER_SUCCESS,
@@ -51,6 +61,12 @@ export const register = asyncHandler(
 
 //login
 export const login = asyncHandler(async(req:Request<{},LoginResponseDto,AuthDto>,res:Response<LoginResponseDto>)=>{
+
+  logger.info({
+    message:"Login request received",
+    email:req.body.email,
+    ip:req.ip
+  })
   const {email,password} = req.body
 
   const user = await loginService(email,password)
@@ -85,6 +101,11 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,AuthDto>
 
   const accessToken = generateAccessToken({
    id:user._id.toString(),sessionId:session._id.toString()
+  })
+
+  logger.info({
+    message:"User loggedin successfully",
+    userId:req.userId
   })
   return res.status(HTTP_STATUS.OK).json({
     success:true,
