@@ -39,17 +39,25 @@ export const registerService = async(body:RegisterDto) =>{
  return user
 }
 
-export const loginService = async(email:string,password:string) =>{
-
-    const user = await findUserByEmailForLogin({email})
+export const loginService = async(body:LoginDto) =>{
+    const normalizedEmail = body.email.trim().toLowerCase()
+    const user = await findUserByEmailForLogin({email:normalizedEmail})
     
     if(!user){
+     logger.warn({
+      message:"USER_NOT_FOUND",
+      email:user.normalizedEmail
+     })
         throw new AppError(MESSAGES.AUTH.USER_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
     }
 
-    const isCorrect =await user.comparePassword(password)
+    const isCorrect =await user.comparePassword(body.password)
 
     if(!isCorrect){
+        logger.warn({
+         message:"Incorrect password",
+         password:body.password
+        })
         throw new AppError(MESSAGES.AUTH.WRONG_CREDENTIALS,HTTP_STATUS.BAD_REQUEST)
     }
 

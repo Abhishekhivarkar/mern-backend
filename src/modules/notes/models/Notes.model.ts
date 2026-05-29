@@ -5,12 +5,16 @@ import type {INotes} from "../types/notes.interface.js"
 const notesSchema = new mongoose.Schema<INotes>({
  title:{
   type:String,
-  required:true
+  required:true,
+  trim:true,
+  minlength:1,
+  maxlength:100
  },
  content:{
   type:String,
   required:true,
-  maxlength:50
+  minlength:1,
+  trim:true
  },
  user:{
   type:mongoose.Types.ObjectId,

@@ -24,7 +24,7 @@ import { LoginResponseDto } from "../types/dtos/login.response.dto.js"
 import { LogoutDto } from "../types/dtos/logout.dto.js"
 import { LogoutResponseDto } from "../types/dtos/logout.response.dto.js"
 import { logger } from "../../../common/services/logger.service.js"
-import type{ RegisterDto } from "../validations/auth.validation.js"
+import type{ RegisterDto,LoginDto } from "../validations/auth.validation.js"
 
 
 
@@ -60,16 +60,15 @@ export const register = asyncHandler(
 
 
 //login
-export const login = asyncHandler(async(req:Request<{},LoginResponseDto,AuthDto>,res:Response<LoginResponseDto>)=>{
+export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto>,res:Response<LoginResponseDto>)=>{
 
   logger.info({
     message:"Login request received",
     email:req.body.email,
     ip:req.ip
   })
-  const {email,password} = req.body
 
-  const user = await loginService(email,password)
+  const user = await loginService(req.body)
   const expiresAt = new Date(
     Date.now() + 7 * 24 * 60 * 60 * 1000
   )
