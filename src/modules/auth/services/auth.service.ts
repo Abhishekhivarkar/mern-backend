@@ -6,20 +6,36 @@ import { verifyAccessToken, verifyRefreshToken } from "../../../common/helpers/t
 import crypto from "node:crypto"
 import { sendRegisterMail } from "../../../common/services/mail.service.js"
 import SessionModel from "../models/Session.model.js"
-export const registerService = async(body:{
- email:string,
- password:string
-}) =>{
+import { logger } from "../../../common/services/logger.service.js"
+import type{ RegisterDto } from "../validations/auth.validation.js"
+export const registerService = async(body:RegisterDto) =>{
  
- const isExists = await findUserByEmail({email:body.email})
+    const normalizedEmail = body.email.trim().toLowerCase()
+ const isExists = await findUserByEmail({email:normalizedEmail})
  
  if(isExists){
+
+    logger.warn({
+        event:"REGISTER_DUPLICATE_EMAIL",
+        email:normalizedEmail
+    })
   throw new AppError(MESSAGES.AUTH.ALREADY_REGISTERED,HTTP_STATUS.CONFLICT)
  }
- const user = await register(body.email,body.password)
+ const user = await register(normalizedEmail,body.password)
 
- await sendRegisterMail(user.email)
-
+ logger.info({
+    message:"USER_REGISTERED",
+    userId:user._id.toString(),
+    email:user.email
+ })
+  sendRegisterMail(user.email)
+.catch(error=>{
+    logger.error({
+        event:"REGISTER_MAIL_FAILED",
+        userId:user._id.toString(),
+        error
+    })
+})
  return user
 }
 
