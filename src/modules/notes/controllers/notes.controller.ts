@@ -4,7 +4,7 @@ import type {Request,Response} from "express"
 import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,unPinNotesService,getPinnedNotesService} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../common/utils/asyncHandler.util.js"
-import type { CreateNoteDto } from "../types/dtos/createNote.dto.js"
+
 import type { UpdateNoteDto } from "../types/dtos/updateNote.dto.js"
 import type { NoteResponseDto } from "../types/dtos/notes.response.dto.js"
 import type { GetAllNotesResponseDto } from "../types/dtos/getAllNotes.response.dto.js"
@@ -13,18 +13,26 @@ import type { NoteParamDto } from "../types/dtos/note.params.dto.js"
 import type { GetAllNotesQueryDto } from "../types/dtos/getAllNotes.query.dto.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
+import { createNotesDto, patchUpdateNotesDto } from "../validations/notes.validations.js"
+import { logger } from "../../../common/services/logger.service.js"
 
 
 
 
-export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,CreateNoteDto>,res:Response<NoteResponseDto>) =>{
+export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,createNotesDto>,res:Response<NoteResponseDto>) =>{
  const {title,content} = req.body 
  const userId = req.userId!
 
- 
+ logger.info({
+  message:"Create notes request received",
+  title:title
+ })
 
  await createNotesService(title,content,userId)
  
+ logger.info({
+  message:"Note created successfully"
+ })
  return res.status(HTTP_STATUS.CREATED).json({
   success:true,
   message:MESSAGES.PRODUCT.CREATED_SUCCESS
@@ -33,13 +41,18 @@ export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,Cre
 
 
 export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponseDto,{},GetAllNotesQueryDto>,res:Response<GetAllNotesResponseDto>) =>{
- 
+ logger.info({
+  message:"Get all notes request received"
+ })
  const page = Number(req.query.page) || 1
  const limit = Number(req.query.limit) || 10
  const search = req.query.search || ""
  
  const notes = await getAllNotesService(page,limit,search)
- 
+ logger.info({
+  message:"Notes received successfully"
+ })
+
  return res.status(HTTP_STATUS.OK).json({
   success:true,
   data:notes
@@ -64,9 +77,11 @@ export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponse
 export const patchUpdateNotes = asyncHandler<
   NoteParamDto,
   NoteResponseDto,
-  UpdateNoteDto
+  patchUpdateNotesDto
 >(async (req, res) => {
-
+  logger.info({
+    message:"Patch update notes request received"
+  })
  const { noteId } = req.params
 
  await patchUpdateNotesService(
@@ -75,7 +90,9 @@ export const patchUpdateNotes = asyncHandler<
    req.body.newContent,
    req.userId!
  )
-
+ logger.info({
+  message:"Patch update successfully"
+ })
  res.status(200).json({
    success: true,
    message: MESSAGES.PRODUCT.UPDATED_SUCCESS

@@ -10,7 +10,7 @@ export const validate = (schema:{
             req.body = await schema.body.parseAsync(req.body)
         }
         if(schema.params){
-            req.body =await schema.params.parseAsync(req.params)
+            req.params =await schema.params.parseAsync(req.params)
         }
         if(schema.query){
             req.query = await schema.query.parseAsync(req.query)
