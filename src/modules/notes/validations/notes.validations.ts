@@ -1,4 +1,4 @@
-import {z} from "zod"
+/*import {z} from "zod"
 
 // validation for noteId
 
@@ -37,4 +37,4 @@ export const patchUpdateNotesSchema = z.object({
         .max(100,"content is too long")
 }).strict()
 
-export type patchUpdateNotesDto = z.infer<typeof patchUpdateNotesSchema>
+export type patchUpdateNotesDto = z.infer<typeof patchUpdateNotesSchema>*/

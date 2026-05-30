@@ -1,7 +1,8 @@
-import {register,findUserByEmail,findUserByEmailForLogin,findSessionByIdRepository,createBlackListTokenRepository} from "../repositories/auth.repository.js"
+import {register,findUserByEmail/*,findUserByEmailForLogin,findSessionByIdRepository,createBlackListTokenRepository*/} from "../repositories/auth.repository.js"
 import {AppError} from "../../../common/utils/appError.util.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
+import bcryptjs from "bcryptjs"
 import { verifyAccessToken, verifyRefreshToken } from "../../../common/helpers/token.helper.js"
 import crypto from "node:crypto"
 import { sendRegisterMail } from "../../../common/services/mail.service.js"
@@ -9,7 +10,7 @@ import SessionModel from "../models/Session.model.js"
 import { logger } from "../../../common/services/logger.service.js"
 import type{ RegisterDto } from "../validations/auth.validation.js"
 export const registerService = async(body:RegisterDto) =>{
- 
+ console.log(body.email,body.password)
     const normalizedEmail = body.email.trim().toLowerCase()
  const isExists = await findUserByEmail({email:normalizedEmail})
  
@@ -21,18 +22,20 @@ export const registerService = async(body:RegisterDto) =>{
     })
   throw new AppError(MESSAGES.AUTH.ALREADY_REGISTERED,HTTP_STATUS.CONFLICT)
  }
- const user = await register(normalizedEmail,body.password)
+ const hashPassword =await bcryptjs.hash(body.password,10)
+ 
+ const user = await register(normalizedEmail,hashPassword)
 
  logger.info({
     message:"USER_REGISTERED",
-    userId:user._id.toString(),
+    userId:user.id.toString(),
     email:user.email
  })
   sendRegisterMail(user.email)
 .catch(error=>{
     logger.error({
         event:"REGISTER_MAIL_FAILED",
-        userId:user._id.toString(),
+        userId:user.id.toString(),
         error
     })
 })

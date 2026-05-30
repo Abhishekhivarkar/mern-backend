@@ -18,7 +18,8 @@ export const config = cleanEnv(process.env, {
   REDIS_URL: url(),
   NODE_ENV: str(),
   REDIS_HOST: str(),
-  REDIS_PORT: port()
+  REDIS_PORT: port(),
+  DATABASE_URL: url()
 })
 
 

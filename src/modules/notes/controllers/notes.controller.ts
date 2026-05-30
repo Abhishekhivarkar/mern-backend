@@ -1,4 +1,4 @@
-import type {Request,Response} from "express"
+/*import type {Request,Response} from "express"
  
 //services
 import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,unPinNotesService,getPinnedNotesService} from "../services/notes.service.js"
@@ -153,3 +153,4 @@ export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesRes
 })
 
 
+*/

@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+/*import mongoose from "mongoose"
 import type {Model} from "mongoose"
 import type {INotes} from "../types/notes.interface.js"
 
@@ -30,4 +30,4 @@ const notesSchema = new mongoose.Schema<INotes>({
 
 const NotesModel:Model<INotes> = mongoose.model("Note",notesSchema)
 
-export default NotesModel
+export default NotesModel*/

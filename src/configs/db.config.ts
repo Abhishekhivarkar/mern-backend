@@ -1,4 +1,18 @@
-import mongoose from "mongoose"
+import { config } from "./env.config.js"
+import {Pool} from "pg"
+
+export const pool = new Pool({
+ connectionString: config.DATABASE_URL,
+ ssl:{
+  rejectUnauthorized: false
+ }
+})
+
+
+export const connectDB = async () =>{
+ await pool.query("SELECT 1")
+}
+/*import mongoose from "mongoose"
 import dns from "node:dns"
 
 import { config } from "./env.config.js"
@@ -41,4 +55,5 @@ throw err
 
 }
 
-}
+}*/
+

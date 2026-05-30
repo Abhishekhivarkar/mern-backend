@@ -8,7 +8,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "worker": "tsx watch src/worker.ts"
+    "worker": "tsx watch src/worker.ts",
+    "migrate":"tsx src/database/migrate.ts"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +31,7 @@
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.2",
+    "pg": "^8.21.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
     "qs": "^6.15.2",

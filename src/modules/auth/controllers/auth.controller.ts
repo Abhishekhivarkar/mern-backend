@@ -48,12 +48,12 @@ export const register = asyncHandler(
 
     logger.info({
       message:"User registered successsfully",
-      userId:req.userId?.toString()
+      userId:req.userId
     })
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: MESSAGES.AUTH.REGISTER_SUCCESS,
-      data: user._id.toString(),
+      data: user.id,
     })
   }
 )
@@ -73,14 +73,14 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
     Date.now() + 7 * 24 * 60 * 60 * 1000
   )
   const session = new SessionModel({
-    user:user._id,
+    user:user.id,
     ip:req.ip,
     userAgent:req.headers["user-agent"] || "",
     expiresAt
   })
 
 
-  const refreshToken = generateRefreshToken({id:user._id.toString(),sessionId:session._id.toString()})
+  const refreshToken = generateRefreshToken({id:user.id,sessionId:session.id})
   
   const hashRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex")
 
@@ -89,7 +89,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   await session.save()
 
   await redisClient.set(
-    `refreshToken:${user._id.toString()}`,
+    `refreshToken:${user.id}`,
     hashRefreshToken,
   
       "EX", 60 * 60 * 24 * 7
@@ -99,7 +99,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   setRefreshTokenCookie(refreshToken,res)
 
   const accessToken = generateAccessToken({
-   id:user._id.toString(),sessionId:session._id.toString()
+   id:user.id,sessionId:session.id
   })
 
   logger.info({
@@ -109,7 +109,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   return res.status(HTTP_STATUS.OK).json({
     success:true,
     message:MESSAGES.AUTH.LOGIN_SUCCESS,
-    data:user._id.toString(),
+    data:user.id,
     accessToken
   })
 })
@@ -139,11 +139,11 @@ export const refreshToken = asyncHandler(async(req,res) =>{
   const token = await refreshTokenService(refreshToken)
 
   const accessToken =  generateAccessToken(
-    {id:token.userId.toString(),sessionId:token.session._id.toString()},
+    {id:token.userId.toString(),sessionId:token.session.id.toString()},
   )
 
   const newRefreshToken = generateRefreshToken(
-    {id:token.userId.toString(),sessionId:token.session._id.toString()}
+    {id:token.userId,sessionId:token.session.id}
   )
 
   const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex")
