@@ -28,13 +28,21 @@ export const findUserByEmail = async(
      )
      return result.rows[0] ?? null
 }
-/*
+
 export const findUserByEmailForLogin = async({email}:{email:string}) =>{
- return await UserModel.findOne({email}).select("+password")
+ const result = pool.query<User>(
+  `
+  SELECT * FROM users WHERE email = $1
+  LIMIT 1
+  
+  `,
+  [email]
+  )
+  return result.rows[0] ?? null
 }
 
 export const findSessionByIdRepository = async(sessionId:string) =>{
-    return await SessionModel.findById(sessionId)
+    const result = await pool.query<Session>
 }
 
 export const createBlackListTokenRepository = async(accessToken:string) =>{
@@ -47,4 +55,3 @@ export const findSessionByRefreshTokenHash = async(refreshTokenHash:string) =>{
     })
 }
 
-*/

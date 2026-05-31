@@ -1,26 +1,84 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+
 import { pool } from "../configs/db.config.js";
 
 const migrate = async () => {
   try {
-    const migrationPath = path.join(
+    // Migration tracking table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS migrations (
+        id SERIAL PRIMARY KEY,
+        filename VARCHAR(255) UNIQUE NOT NULL,
+        executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    const migrationsDir = path.join(
       process.cwd(),
       "src",
       "database",
-      "migrations",
-      "001_create_users.sql"
+      "migrations"
     );
 
-    const sql = await fs.readFile(migrationPath, "utf8");
+    // Folder ki saari files read karo
+    const files = await fs.readdir(migrationsDir);
 
-    await pool.query(sql);
+    // Sorting important hai
+    const migrationFiles = files
+      .filter(file => file.endsWith(".sql"))
+      .sort();
 
-    console.log("✅ Migration executed successfully");
+    for (const file of migrationFiles) {
+
+      // Check migration pehle run hui ya nahi
+      const existingMigration = await pool.query(
+        `
+        SELECT *
+        FROM migrations
+        WHERE filename = $1
+        LIMIT 1
+        `,
+        [file]
+      );
+
+      if (existingMigration.rows.length > 0) {
+        console.log(`⏭ Skipping ${file}`);
+        continue;
+      }
+
+      console.log(`Running ${file}`);
+
+      const migrationPath = path.join(
+        migrationsDir,
+        file
+      );
+
+      const sql = await fs.readFile(
+        migrationPath,
+        "utf8"
+      );
+
+      await pool.query(sql);
+
+      await pool.query(
+        `
+        INSERT INTO migrations(filename)
+        VALUES($1)
+        `,
+        [file]
+      );
+
+      console.log(`completed ${file}`);
+    }
+
+    console.log("All migrations completed");
 
     process.exit(0);
+
   } catch (error) {
-    console.error("❌ Migration failed");
+
+    console.error("migration failed");
     console.error(error);
 
     process.exit(1);
