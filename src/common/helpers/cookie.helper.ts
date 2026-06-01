@@ -10,7 +10,7 @@ export const setRefreshTokenCookie = (refreshToken:string,res:Response):void =>{
   )
 }
 
-export const removeRefreshTokenCokie = (res:Response):void =>{
+export const removeRefreshTokenCookie = (res:Response):void =>{
   res.clearCookie(
     REFRESH_COOKIE_NAME
   )
