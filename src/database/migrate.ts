@@ -21,17 +21,17 @@ const migrate = async () => {
       "migrations"
     );
 
-    // Folder ki saari files read karo
+    
     const files = await fs.readdir(migrationsDir);
 
-    // Sorting important hai
+
     const migrationFiles = files
       .filter(file => file.endsWith(".sql"))
       .sort();
 
     for (const file of migrationFiles) {
 
-      // Check migration pehle run hui ya nahi
+     
       const existingMigration = await pool.query(
         `
         SELECT *
@@ -43,7 +43,7 @@ const migrate = async () => {
       );
 
       if (existingMigration.rows.length > 0) {
-        console.log(`⏭ Skipping ${file}`);
+        console.log(`Skipping ${file}`);
         continue;
       }
 
