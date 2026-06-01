@@ -1,9 +1,10 @@
-import BlackListLokenModel from "../models/BlackListToken.model.js"
-import SessionModel from "../models/Session.model.js"
+import { BlackListLoken } from "../models/BlackListToken.model.js"
+
 
 
 import {pool} from "../../../configs/db.config.js"
 import type {User} from "../models/User.model.js"
+import { Session } from "../models/Session.model.js";
 
 export const register = async(email:string,password:string):Promise<User> =>{
  
@@ -30,7 +31,7 @@ export const findUserByEmail = async(
 }
 
 export const findUserByEmailForLogin = async({email}:{email:string}) =>{
- const result = pool.query<User>(
+ const result =await pool.query<User>(
   `
   SELECT * FROM users WHERE email = $1
   LIMIT 1
@@ -42,16 +43,29 @@ export const findUserByEmailForLogin = async({email}:{email:string}) =>{
 }
 
 export const findSessionByIdRepository = async(sessionId:string) =>{
-    const result = await pool.query<Session>
+    const result = await pool.query<Session>(
+        `SELECT * FROM sessions WHERE session_id = $1
+        LIMIT 1`,
+        [sessionId]
+    )
+    return result.rows[0] ?? null
 }
 
 export const createBlackListTokenRepository = async(accessToken:string) =>{
-    return await BlackListLokenModel.create({token:accessToken})
+    const result = await pool.query<BlackListLoken>(
+        `
+        INSERT INTO black_list_token(access_token) VALUES ($1)
+        RETURNING *
+        `,
+        [accessToken]
+    )
+
+    return result.rows[0]
 }
 
-export const findSessionByRefreshTokenHash = async(refreshTokenHash:string) =>{
-    return await SessionModel.findOne({
-        refreshTokenHash:refreshTokenHash
-    })
-}
+// export const findSessionByRefreshTokenHash = async(refreshTokenHash:string) =>{
+//     return await SessionModel.findOne({
+//         refreshTokenHash:refreshTokenHash
+//     })
+// }
 
