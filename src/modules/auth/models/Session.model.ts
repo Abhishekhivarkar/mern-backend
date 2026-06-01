@@ -1,37 +1,12 @@
-import mongoose from "mongoose"
-import type {ISession} from "../types/auth.interface.js"
-import type { Model } from "mongoose"
 
 
-const sessionSchema = new mongoose.Schema<ISession>({
-    user:{
-        type:mongoose.Types.ObjectId,
-        required:true
-    },
-    refreshTokenHash:{
-        type:String,
-        required:true
-    },
-    ip:{
-        
-        type:String,
-        required:true
-    }
-        ,
-    userAgent:{
-        type:String,
-        required:true
-    },
-    isRevoked:{
-        type:Boolean,
-        default:false
-    },
-    expiresAt:{
-        type:Date,
-        expires:0
-    }
-})
-
-const SessionModel:Model<ISession> = mongoose.model("Session",sessionSchema)
-
-export default SessionModel
+export interface Session {
+    session_id:string,
+    user_id:string,
+    ip:string,
+    user_agent:string,
+    is_revoked:boolean,
+    expires_at:Date,
+    created_at:Date,
+    updated_at:Date
+}
