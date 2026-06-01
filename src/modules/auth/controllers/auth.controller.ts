@@ -4,19 +4,19 @@ import type { Request, Response } from "express"
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js"
 
 // service imports
-import { registerService,loginService,BlackListTokenService,refreshTokenService} from "../services/auth.service.js"
+import { registerService,loginService,logoutService /*,refreshTokenService*/} from "../services/auth.service.js"
 
 
-import SessionModel from "../models/Session.model.js"
+// import SessionModel from "../models/Session.model.js"
 
 
-import crypto from "crypto"
+import crypto, { randomUUID } from "crypto"
 import { redisClient } from "../../../configs/redis.config.js"
 
 
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
-import {removeRefreshTokenCokie, setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
+import {removeRefreshTokenCookie, setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
 import {generateRefreshToken,generateAccessToken} from "../../../common/helpers/token.helper.js"
 import { AuthDto } from "../types/dtos/auth.dto.js"
 import { RegisterResponseDto } from "../types/dtos/register.response.dto.js"
@@ -25,6 +25,7 @@ import { LogoutDto } from "../types/dtos/logout.dto.js"
 import { LogoutResponseDto } from "../types/dtos/logout.response.dto.js"
 import { logger } from "../../../common/services/logger.service.js"
 import type{ RegisterDto,LoginDto } from "../validations/auth.validation.js"
+import { pool } from "../../../configs/db.config.js"
 
 
 
@@ -53,7 +54,7 @@ export const register = asyncHandler(
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: MESSAGES.AUTH.REGISTER_SUCCESS,
-      data: user.id,
+      data: user.user_id,
     })
   }
 )
@@ -69,27 +70,46 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   })
 
   const user = await loginService(req.body)
+
   const expiresAt = new Date(
     Date.now() + 7 * 24 * 60 * 60 * 1000
   )
-  const session = new SessionModel({
-    user:user.id,
-    ip:req.ip,
-    userAgent:req.headers["user-agent"] || "",
-    expiresAt
-  })
+
+ const sessionId = randomUUID()
 
 
-  const refreshToken = generateRefreshToken({id:user.id,sessionId:session.id})
+  const refreshToken = generateRefreshToken({id:user._id,sessionId})
   
   const hashRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex")
 
-  session.refreshTokenHash = hashRefreshToken
 
-  await session.save()
+  await pool.query(
+    `
+    INSERT INTO sessions(
+
+    session_id,
+    user_id,
+    refresh_token_hash,
+    ip,
+    user_agent,
+    expires_at
+
+    )VALUES(
+    $1,$2,$3,$4,$5,$6
+    )
+    `,
+    [
+      sessionId,
+      user.user_id,
+      hashRefreshToken,
+      req.ip,
+      req.headers["user-agent"] || "",
+      expiresAt
+    ]
+  )
 
   await redisClient.set(
-    `refreshToken:${user.id}`,
+    `refreshToken:${user.user_id}`,
     hashRefreshToken,
   
       "EX", 60 * 60 * 24 * 7
@@ -99,7 +119,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   setRefreshTokenCookie(refreshToken,res)
 
   const accessToken = generateAccessToken({
-   id:user.id,sessionId:session.id
+   id:user.user_id,sessionId
   })
 
   logger.info({
@@ -121,9 +141,9 @@ export const logout = asyncHandler(async(req:LogoutDto,res:Response<LogoutRespon
   const refreshToken = req.cookies?.refreshToken
   const accessToken = req.headers.authorization?.split(" ")[1]
 
-  await BlackListTokenService(refreshToken as string,accessToken as string)
+  await logoutService(refreshToken as string,accessToken as string)
 
-   removeRefreshTokenCokie(res)
+   removeRefreshTokenCookie(res)
 
    return res.status(200).json({
     success:true,
@@ -133,29 +153,29 @@ export const logout = asyncHandler(async(req:LogoutDto,res:Response<LogoutRespon
 })
 
 
-export const refreshToken = asyncHandler(async(req,res) =>{
-  const refreshToken = req.cookies?.refreshToken
+// export const refreshToken = asyncHandler(async(req,res) =>{
+//   const refreshToken = req.cookies?.refreshToken
 
-  const token = await refreshTokenService(refreshToken)
+//   const token = await refreshTokenService(refreshToken)
 
-  const accessToken =  generateAccessToken(
-    {id:token.userId.toString(),sessionId:token.session.id.toString()},
-  )
+//   const accessToken =  generateAccessToken(
+//     {id:token.userId.toString(),sessionId:token.session.id.toString()},
+//   )
 
-  const newRefreshToken = generateRefreshToken(
-    {id:token.userId,sessionId:token.session.id}
-  )
+//   const newRefreshToken = generateRefreshToken(
+//     {id:token.userId,sessionId:token.session.id}
+//   )
 
-  const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex")
+//   const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex")
 
 
-  token.session.refreshTokenHash = newRefreshTokenHash
-  await token.session.save()
+//   token.session.refreshTokenHash = newRefreshTokenHash
+//   await token.session.save()
 
-  setRefreshTokenCookie(newRefreshToken,res)
+//   setRefreshTokenCookie(newRefreshToken,res)
 
-  return res.status(200).json({
-    success:true,
-    accessToken:accessToken
-  })
-})
+//   return res.status(200).json({
+//     success:true,
+//     accessToken:accessToken
+//   })
+// })
