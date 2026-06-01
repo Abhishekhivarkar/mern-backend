@@ -1,4 +1,4 @@
-/*import type { ClientSession } from "mongoose";
+import type { ClientSession } from "mongoose";
 
 import UserModel from "../../auth/models/User.model.js";
 import NotesModel from "../models/Notes.model.js";
@@ -24,7 +24,7 @@ export const createNotes = async (
 
   return note;
 };
-
+/*
 export const getAllNotes = async (
   page: number,
   limit: number,

@@ -4,7 +4,7 @@ import type { Request, Response } from "express"
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js"
 
 // service imports
-import { registerService,loginService,logoutService /*,refreshTokenService*/} from "../services/auth.service.js"
+import { registerService,loginService,logoutService,refreshTokenService} from "../services/auth.service.js"
 
 
 // import SessionModel from "../models/Session.model.js"
@@ -153,29 +153,37 @@ export const logout = asyncHandler(async(req:LogoutDto,res:Response<LogoutRespon
 })
 
 
-// export const refreshToken = asyncHandler(async(req,res) =>{
-//   const refreshToken = req.cookies?.refreshToken
+export const refreshToken = asyncHandler(async(req,res) =>{
+  const refreshToken = req.cookies?.refreshToken
 
-//   const token = await refreshTokenService(refreshToken)
+  const token = await refreshTokenService(refreshToken)
 
-//   const accessToken =  generateAccessToken(
-//     {id:token.userId.toString(),sessionId:token.session.id.toString()},
-//   )
+  const accessToken =  generateAccessToken(
+    {id:token.userId,sessionId:token.session.session_id},
+  )
 
-//   const newRefreshToken = generateRefreshToken(
-//     {id:token.userId,sessionId:token.session.id}
-//   )
+  const newRefreshToken = generateRefreshToken(
+    {id:token.userId,sessionId:token.session.session_id}
+  )
 
-//   const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex")
+  const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex")
 
+  await pool.query(
+    `
+    UPDATE sessions
+    SET refresh_token_hash = $1
+    WHERE session_id = $2
+    `,
+    [
+      newRefreshTokenHash,
+      token.session.session_id
+    ]
+  )
 
-//   token.session.refreshTokenHash = newRefreshTokenHash
-//   await token.session.save()
+  setRefreshTokenCookie(newRefreshToken,res)
 
-//   setRefreshTokenCookie(newRefreshToken,res)
-
-//   return res.status(200).json({
-//     success:true,
-//     accessToken:accessToken
-//   })
-// })
+  return res.status(200).json({
+    success:true,
+    accessToken:accessToken
+  })
+})

@@ -10,7 +10,7 @@
 // export const authMiddleware =async (req:Request,res:Response,next:NextFunction) =>{
 //  try{
 //  const token = req.headers.authorization?.split(" ")[1]
- 
+
 //  if(!token){
 //   return res.status(HTTP_STATUS.FORBIDDEN).json({
 //    success:false,
@@ -28,18 +28,18 @@
 //         message:"Invliad or expired token"
 //     })
 //  }
- 
+
 //  const decoded = verifyAccessToken(token)
- 
+
 //  const user = await UserModel.findById(decoded.id)
- 
+
 //  if(!user){
 //   return res.status(HTTP_STATUS.FORBIDDEN).json({
 //    success:false,
 //    message:MESSAGES.AUTH.FORBIDDEN
 //   })
 //  }
- 
+
 //  req.userId = decoded.id
 //  next()
 //  }catch(err){
@@ -47,76 +47,65 @@
 //  }
 // }
 
-import type {
- RequestHandler
-} from "express"
-import { MESSAGES } from "../constants/messages.constant.js"
-import { HTTP_STATUS } from "../constants/httpStatus.constant.js"
-import UserModel from "../../modules/auth/models/User.model.js"
-import { verifyAccessToken } from "../helpers/token.helper.js"
-import BlackListLokenModel from "../../modules/auth/models/BlackListToken.model.js"
+import type { RequestHandler } from "express";
+import { MESSAGES } from "../constants/messages.constant.js";
+import { HTTP_STATUS } from "../constants/httpStatus.constant.js";
 
-export const authMiddleware: RequestHandler =
-async (req, res, next) => {
- try {
+import { verifyAccessToken } from "../helpers/token.helper.js";
 
-  const token =
-   req.headers.authorization?.split(" ")[1]
+import { pool } from "../../configs/db.config.js";
 
-  if (!token) {
-   res.status(
-    HTTP_STATUS.FORBIDDEN
-   ).json({
-    success: false,
-    message:
-     MESSAGES.AUTH.FORBIDDEN
-   })
+export const authMiddleware: RequestHandler = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
 
-   return
+    if (!token) {
+      res.status(HTTP_STATUS.FORBIDDEN).json({
+        success: false,
+        message: MESSAGES.AUTH.FORBIDDEN,
+      });
+
+      return;
+    }
+
+    const blackListToken = await pool.query(
+      `
+    SELECT * FROM black_list_token WHERE black_list_token_id = $1 LIMIT 1
+    `,
+      [token],
+    );
+
+    if (blackListToken) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+
+      return;
+    }
+
+    const decoded = verifyAccessToken(token);
+
+    const user = await pool.query(
+      `
+    SELECT * FROM users where user_id = $1
+    `,
+      [decoded.id],
+    );
+
+    if (!user) {
+      res.status(HTTP_STATUS.FORBIDDEN).json({
+        success: false,
+        message: MESSAGES.AUTH.FORBIDDEN,
+      });
+
+      return;
+    }
+
+    req.userId = decoded.id;
+
+    next();
+  } catch (err) {
+    next(err);
   }
-
-  const blackListToken =
-   await BlackListLokenModel.findOne({
-    token
-   })
-
-  if (blackListToken) {
-
-   res.status(401).json({
-    success: false,
-    message:
-     "Invalid or expired token"
-   })
-
-   return
-  }
-
-  const decoded =
-   verifyAccessToken(token)
-
-  const user =
-   await UserModel.findById(
-    decoded.id
-   )
-
-  if (!user) {
-
-   res.status(
-    HTTP_STATUS.FORBIDDEN
-   ).json({
-    success: false,
-    message:
-     MESSAGES.AUTH.FORBIDDEN
-   })
-
-   return
-  }
-
-  req.userId = decoded.id
-
-  next()
-
- } catch (err) {
-   next(err)
- }
-}
+};

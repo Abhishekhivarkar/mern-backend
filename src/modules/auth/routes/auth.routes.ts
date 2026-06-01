@@ -1,5 +1,5 @@
 import express from "express"
-import {register,login,logout /*, refreshToken*/} from "../controllers/auth.controller.js"
+import {register,login,logout , refreshToken} from "../controllers/auth.controller.js"
 import { authLimitMiddleware } from "../../../common/middlewares/rateLimit.middleware.js"
 import { validate } from "../../../common/middlewares/validation.middleware.js"
 import { registerSchema, loginSchema } from "../validations/auth.validation.js"
@@ -11,6 +11,6 @@ router.post("/login",authLimitMiddleware,validate({body:loginSchema}),login)
 
 router.post("/logout",logout)
 
-// router.post("/refresh-token",refreshToken)
+router.post("/refresh-token",refreshToken)
 
 export default router

@@ -36,3 +36,4 @@ export const loginSchema = z.object({
 }).strict()
 
 export type LoginDto = z.infer<typeof loginSchema>
+

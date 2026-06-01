@@ -104,48 +104,53 @@ export const logoutService = async (refreshToken:string, accessToken:string) =>{
 
 }
 
-// export const refreshTokenService = async(token:string)=>{
-//     if(!token){
-//         throw new AppError(MESSAGES.AUTH.TOKEN_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
-//     }
+export const refreshTokenService = async(token?:string)=>{
+    if(!token){
+        throw new AppError(MESSAGES.AUTH.TOKEN_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+    }
 
-//     const decoded = verifyRefreshToken(token)
+    const decoded = verifyRefreshToken(token)
 
-//     const refreshTokenHash = crypto.createHash("sha256").update(token).digest("hex")
+    const refreshTokenHash = crypto.createHash("sha256").update(token).digest("hex")
 
-//     const session = await findSessionByIdRepository(decoded.sessionId)
+    const session = await findSessionByIdRepository(decoded.sessionId)
 
     
-//     if(!session){
-//         throw new AppError(MESSAGES.AUTH.SESSION_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
-//     }
+    if(!session){
+        throw new AppError(MESSAGES.AUTH.SESSION_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+    }
 
-//     if(session.isRevoked){
-//         throw new AppError(
-//             MESSAGES.AUTH.SESSION_REVOKED,HTTP_STATUS.UNAUTHORIZED
-//         )
-//     }
+    if(session.is_revoked){
+        throw new AppError(
+            MESSAGES.AUTH.SESSION_REVOKED,HTTP_STATUS.UNAUTHORIZED
+        )
+    }
 
-//     if(session.expiresAt < new Date()){
-//         throw new AppError(
-//             MESSAGES.AUTH.SESSION_EXPIRED,HTTP_STATUS.UNAUTHORIZED
-//         )
-//     }
-//     if(session.refreshTokenHash !== refreshTokenHash){
+    if(session.expires_at < new Date()){
+        throw new AppError(
+            MESSAGES.AUTH.SESSION_EXPIRED,HTTP_STATUS.UNAUTHORIZED
+        )
+    }
+    if(session.refresh_token_hash !== refreshTokenHash){
 
-//         await SessionModel.updateMany({
-//             user:decoded.id
-//         },
-//         {
-//             isRevoked:true
-//         }
-//     )
-//         throw new AppError(MESSAGES.AUTH.REFRESH_TOKEN_REUSE,HTTP_STATUS.UNAUTHORIZED)
-//     }
+        await pool.query(
+            `
+            UPDATE sessions 
+            SET is_revoked = TRUE,
+            updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = $1
+            `,
+            [
+                decoded.id
+            ]
+        )
+        throw new AppError(MESSAGES.AUTH.REFRESH_TOKEN_REUSE,HTTP_STATUS.UNAUTHORIZED)
+    }
 
-//     return {
-//         userId:decoded.id,
-//         session
+    
+    return {
+        userId:decoded.id,
+        session
         
-//     }
-// }
+    }
+}
