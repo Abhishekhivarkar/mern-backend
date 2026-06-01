@@ -35,4 +35,4 @@ export const loginSchema = z.object({
      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,"Password must contain uppercasem lowercase and number")
 }).strict()
 
-export type loginDto = z.infer<typeof loginSchema>
+export type LoginDto = z.infer<typeof loginSchema>
