@@ -1,9 +1,13 @@
 
 CREATE TABLE users(
- id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
- email VARCHAR(255) NOT NULL UNIQUE,
+ user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+ email VARCHAR(255) NOT NULL UNIQUE CHECK (email = LOWER(email)),
+
  password VARCHAR(255) NOT NULL,
+
  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ 
  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
  )
  
