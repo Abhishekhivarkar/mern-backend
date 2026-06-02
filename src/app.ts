@@ -1,7 +1,7 @@
 import express from "express"
 import type {Request,Response} from "express"
 import authRoutes from "./modules/auth/routes/auth.routes.js"
-//import notesRoutes from "./modules/notes/routes/notes.routes.js"
+import notesRoutes from "./modules/notes/routes/notes.routes.js"
 import { loggerMiddleware } from "./common/middlewares/logger.middleware.js"
 import { rateLimitMiddleware } from "./common/middlewares/rateLimit.middleware.js"
 import notificationRoutes from "./modules/notifications/routes/notification.routes.js"
@@ -17,7 +17,7 @@ app.use(loggerMiddleware)
 app.use(rateLimitMiddleware)
 
 app.use("/api/auth", authRoutes)
-//app.use("/api/notes", notesRoutes)
+app.use("/api/notes", notesRoutes)
 app.use("/api/notification", notificationRoutes)
 
 app.use("/health",(_:Request,res:Response):void=>{

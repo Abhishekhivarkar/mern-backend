@@ -70,7 +70,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     const blackListToken = await pool.query(
       `
-    SELECT * FROM black_list_token WHERE black_list_token_id = $1 LIMIT 1
+    SELECT access_token FROM black_list_token WHERE access_token = $1 LIMIT 1
     `,
       [token],
     );
@@ -78,7 +78,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     if (blackListToken) {
       res.status(401).json({
         success: false,
-        message: "Invalid or expired token",
+        message: "Invalid or expired token, black listed token",
       });
 
       return;

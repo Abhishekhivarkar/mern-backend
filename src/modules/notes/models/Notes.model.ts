@@ -1,39 +1,10 @@
-// import mongoose from "mongoose"
-// import type {Model} from "mongoose"
-// import type {INotes} from "../types/notes.interface.js"
-
-// const notesSchema = new mongoose.Schema<INotes>({
-//  title:{
-//   type:String,
-//   required:true,
-//   trim:true,
-//   minlength:1,
-//   maxlength:100
-//  },
-//  content:{
-//   type:String,
-//   required:true,
-//   minlength:1,
-//   trim:true
-//  },
-//  user:{
-//   type:mongoose.Types.ObjectId,
-//   ref:"User",
-//   required:true
-//  },
-//  isPinned:{
-//  type:Boolean,
-//  default:false
-//  },
-//  isDeleted:{
-//   type:Boolean,
-//   default:false
-//  },
-
-// },{timestamps:true})
-
-// const NotesModel:Model<INotes> = mongoose.model("Note",notesSchema)
-
-// export default NotesModel
-
-export 
+export interface Notes{
+    note_id:string,
+    note_title:string,
+    note_content:string,
+    is_pinned:Boolean,
+    is_deleated:Boolean,
+    user_id:string,
+    created_at:Date,
+    updated_at:Date
+}

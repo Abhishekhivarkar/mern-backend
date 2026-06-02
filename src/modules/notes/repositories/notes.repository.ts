@@ -1,28 +1,26 @@
-import type { ClientSession } from "mongoose";
-
-import UserModel from "../../auth/models/User.model.js";
-import NotesModel from "../models/Notes.model.js";
+import type {PoolClient} from "pg";
+import { Notes } from "../models/Notes.model.js";
 
 export const createNotes = async (
-  title: string,
-  content: string,
+  note_title: string,
+  note_content: string,
   userId: string,
-  session?: ClientSession,
-) => {
-  const [note] = await NotesModel.create(
-    [
-      {
-        title,
-        content,
-        user: userId,
-      },
-    ],
-    {
-      session,
-    },
-  );
+  client: PoolClient,
+):Promise<Notes>=> {
+ const result = await client.query(
+  `
+  INSERT INTO notes(
+  note_title,note_content,userId
+  )VALUES($1,$2,$3)
+  RETURNING *
+  `,
+  [
+    note_title,note_content,userId
+  ]
 
-  return note;
+ )
+
+ return result.rows[0];
 };
 /*
 export const getAllNotes = async (

@@ -3,18 +3,18 @@ import {z} from "zod"
 // validation for noteId
 
 export const noteIdParamSchema = z.object({
-    noteId:z
+    note_id:z
         .uuid({message:"Invalid note id"})
 })
 
 export const createNotesSchema = z.object({
- title:z
+ note_title:z
      .string()
      .trim()
      .min(1,"Title is required")
      .max(100,"Title is too long"),
      
- content:z
+ note_content:z
      .string()
      .trim()
      .min(1,"Content is required"),

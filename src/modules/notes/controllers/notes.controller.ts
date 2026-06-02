@@ -20,15 +20,15 @@ import { logger } from "../../../common/services/logger.service.js"
 
 
 export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,createNotesDto>,res:Response<NoteResponseDto>) =>{
- const {title,content} = req.body 
+ const {note_title,note_content} = req.body 
  const userId = req.userId!
 
  logger.info({
   message:"Create notes request received",
-  title:title
+  title:note_title
  })
 
- await createNotesService(title,content,userId)
+ await createNotesService(note_title,note_content,userId)
  
  logger.info({
   message:"Note created successfully"

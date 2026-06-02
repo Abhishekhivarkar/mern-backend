@@ -18,6 +18,7 @@ import { HTTP_STATUS } from "../../../common/constants/httpStatus.constant.js";
 
 import { MESSAGES } from "../../../common/constants/messages.constant.js";
 import { sendNoteCreatedNotificationToUser, sendNoteUpdatedNotificationToUser } from "../../../common/services/notification.service.js";
+import { pool } from "../../../configs/db.config.js";
 
 const clearNotesCache = async () => {
   const notesKeys = await redisClient.keys("notes:*");
@@ -32,34 +33,33 @@ const clearNotesCache = async () => {
 };
 
 export const createNotesService = async (
-  title: string,
+  note_title: string,
 
-  content: string,
+  note_content: string,
 
   userId: string,
 ) => {
-  const session = await mongoose.startSession();
+  const client = await pool.connect()
 
   try {
-    session.startTransaction();
+    await client.query("BEGIN")
 
-    const note = await createNotes(title, content, userId, session);
+    const note = await createNotes(note_title, note_content, userId, client);
 
-    await session.commitTransaction();
-
+    await client.query("COMMIT")
     await clearNotesCache();
     await sendNoteCreatedNotificationToUser(userId,{
-      noteId:note._id.toString(),
-      title:title,
+      noteId:note.note_id,
+      title:note_title,
       message:"Note created successfully"
     })
     return note;
   } catch (error) {
-    await session.abortTransaction();
+   await client.query("ROLLBACK")
 
     throw error;
   } finally {
-    await session.endSession();
+    await client.release()
   }
 };
 

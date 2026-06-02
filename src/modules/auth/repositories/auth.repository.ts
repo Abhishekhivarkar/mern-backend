@@ -30,7 +30,7 @@ export const findUserByEmail = async(
      return result.rows[0] ?? null
 }
 
-export const findUserByEmailForLogin = async({email}:{email:string}) =>{
+export const findUserByEmailForLogin = async({email}:{email:string}):Promise<User>=>{
  const result =await pool.query<User>(
   `
   SELECT * FROM users WHERE email = $1
@@ -42,7 +42,7 @@ export const findUserByEmailForLogin = async({email}:{email:string}) =>{
   return result.rows[0] ?? null
 }
 
-export const findSessionByIdRepository = async(sessionId:string) =>{
+export const findSessionByIdRepository = async(sessionId:string):Promise<Session> =>{
     const result = await pool.query<Session>(
         `SELECT * FROM sessions WHERE session_id = $1
         LIMIT 1`,
@@ -51,7 +51,7 @@ export const findSessionByIdRepository = async(sessionId:string) =>{
     return result.rows[0] ?? null
 }
 
-export const createBlackListTokenRepository = async(accessToken:string) =>{
+export const createBlackListTokenRepository = async(accessToken:string):Promise<BlackListLoken> =>{
     const result = await pool.query<BlackListLoken>(
         `
         INSERT INTO black_list_token(access_token) VALUES ($1)
