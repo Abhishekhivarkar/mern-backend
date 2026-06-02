@@ -1,6 +1,6 @@
 import {
-  createNotes
-  // getAllNotes,
+  createNotes,
+  getAllNotesRepository,
   // patchUpdateNoteRepository,
   // deleteNotesRepository,
   // pinNotesRepository,
@@ -33,7 +33,7 @@ const clearNotesCache = async () => {
 };
 
 export const createNotesService = async (
-  note_title: string,
+  note_name: string,
 
   note_content: string,
 
@@ -44,13 +44,13 @@ export const createNotesService = async (
   try {
     await client.query("BEGIN")
 
-    const note = await createNotes(note_title, note_content, userId, client);
+    const note = await createNotes(note_name, note_content, userId, client);
 
     await client.query("COMMIT")
     await clearNotesCache();
     await sendNoteCreatedNotificationToUser(userId,{
       noteId:note.note_id,
-      title:note_title,
+      title:note_name,
       message:"Note created successfully"
     })
     return note;
@@ -63,43 +63,43 @@ export const createNotesService = async (
   }
 };
 
-// export const getAllNotesService = async (
-//   page: number,
+export const getAllNotesService = async (
+  page: number,
 
-//   limit: number,
+  limit: number,
 
-//   search: string,
-// ) => {
-//   const cacheKey = `notes:${page}:${limit}:${search}`;
+  search: string,
+) => {
+  const cacheKey = `notes:${page}:${limit}:${search}`;
 
-//   const cached = await redisClient.get(cacheKey);
+  const cached = await redisClient.get(cacheKey);
 
-//   if (cached) {
-//     return JSON.parse(cached);
-//   }
+  if (cached) {
+    return JSON.parse(cached);
+  }
 
-//   const notes = await getAllNotes(page, limit, search);
+  const notes = await getAllNotesRepository(page, limit, search);
 
-//   if (notes.length === 0) {
-//     throw new AppError(
-//       MESSAGES.PRODUCT.NOT_FOUND,
+  if (notes.length === 0) {
+    throw new AppError(
+      MESSAGES.PRODUCT.NOT_FOUND,
 
-//       HTTP_STATUS.NOT_FOUND,
-//     );
-//   }
+      HTTP_STATUS.NOT_FOUND,
+    );
+  }
 
-//   await redisClient.set(
-//     cacheKey,
+  await redisClient.set(
+    cacheKey,
 
-//     JSON.stringify(notes),
+    JSON.stringify(notes),
 
-//     "EX",
+    "EX",
 
-//     60,
-//   );
+    60,
+  );
 
-//   return notes;
-// };
+  return notes;
+};
 
 // export const patchUpdateNotesService = async (
 //   noteId: string,
