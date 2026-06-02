@@ -1,6 +1,6 @@
 export interface Notes{
     note_id:string,
-    note_title:string,
+    note_name:string,
     note_content:string,
     is_pinned:Boolean,
     is_deleated:Boolean,
