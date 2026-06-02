@@ -58,7 +58,7 @@ import { pool } from "../../configs/db.config.js";
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-
+    
     if (!token) {
       res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
@@ -67,7 +67,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
       return;
     }
-
+   
     const blackListToken = await pool.query(
       `
     SELECT access_token FROM black_list_token WHERE access_token = $1 LIMIT 1
@@ -75,7 +75,9 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       [token],
     );
 
-    if (blackListToken) {
+  
+
+    if (blackListToken.rows.length > 0) {
       res.status(401).json({
         success: false,
         message: "Invalid or expired token, black listed token",
