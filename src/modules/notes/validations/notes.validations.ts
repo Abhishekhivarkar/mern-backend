@@ -8,7 +8,7 @@ export const noteIdParamSchema = z.object({
 })
 
 export const createNotesSchema = z.object({
- note_title:z
+ note_name:z
      .string()
      .trim()
      .min(1,"Title is required")
