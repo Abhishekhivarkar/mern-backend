@@ -80,13 +80,7 @@ export const getAllNotesService = async (
 
   const notes = await getAllNotesRepository(page, limit, search);
 
-  if (notes.length === 0) {
-    throw new AppError(
-      MESSAGES.PRODUCT.NOT_FOUND,
-
-      HTTP_STATUS.NOT_FOUND,
-    );
-  }
+ 
 
   await redisClient.set(
     cacheKey,
@@ -101,57 +95,57 @@ export const getAllNotesService = async (
   return notes;
 };
 
-// export const patchUpdateNotesService = async (
-//   noteId: string,
+export const patchUpdateNotesService = async (
+  noteId: string,
 
-//   newTitle: string | undefined,
+  newTitle: string | undefined,
 
-//   newContent: string | undefined,
+  newContent: string | undefined,
 
-//   userId: string,
-// ) => {
-//   const session = await mongoose.startSession();
+  userId: string,
+) => {
+  const  client = pool.connect()
 
-//   try {
-//     session.startTransaction();
+  try {
+    client.query("BEGIN")
 
-//     const note = await patchUpdateNoteRepository(
-//       noteId,
+    const note = await patchUpdateNoteRepository(
+      noteId,
 
-//       newTitle,
+      newTitle,
 
-//       newContent,
+      newContent,
 
-//       userId,
+      userId,
 
-//       session,
-//     );
+      session,
+    );
 
-//     if (!note) {
-//       throw new AppError(
-//         MESSAGES.PRODUCT.NOT_FOUND,
+    if (!note) {
+      throw new AppError(
+        MESSAGES.PRODUCT.NOT_FOUND,
 
-//         HTTP_STATUS.NOT_FOUND,
-//       );
-//     }
+        HTTP_STATUS.NOT_FOUND,
+      );
+    }
 
-//     await session.commitTransaction();
+    await client.query("COMMIT")
 
-//     await clearNotesCache();
-//     await sendNoteUpdatedNotificationToUser(userId,{
-//       title:newTitle,
-//       noteId:noteId,
-//       message:"Note updated successfully!"
-//     })
-//     return note;
-//   } catch (error) {
-//     await session.abortTransaction();
+    await clearNotesCache();
+    await sendNoteUpdatedNotificationToUser(userId,{
+      title:newTitle,
+      noteId:noteId,
+      message:"Note updated successfully!"
+    })
+    return note;
+  } catch (error) {
+    await client.query("ROLLBACK");
 
-//     throw error;
-//   } finally {
-//     await session.endSession();
-//   }
-// };
+    throw error;
+  } finally {
+    await clinet.release();
+  }
+};
 
 // export const deleteNotesService = async (
 //   noteId: string,

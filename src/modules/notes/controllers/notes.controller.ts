@@ -1,7 +1,7 @@
 import type {Request,Response} from "express"
  
 //services
-import {createNotesService/*getAllNotesService,patchUpdateNotesService,deleteNotesService,pinNotesService,unPinNotesService,getPinnedNotesService*/} from "../services/notes.service.js"
+import {createNotesService,getAllNotesService/*,patchUpdateNotesService,deleteNotesService,pinNotesService,unPinNotesService,getPinnedNotesService*/} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../common/utils/asyncHandler.util.js"
 
@@ -60,19 +60,19 @@ export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponse
 })
 
 
-// // export const patchUpdateNotes: RequestHandler<NoteParamDto,NoteResponseDto,UpdateNoteDto> = asyncHandler(async(req,res)=>{
-// //  const {noteId}= req.params
-// //  const userId = req.userId!
-// //  const {newTitle,newContent} = req.body
+export const patchUpdateNotes:   RequestHandler<NoteParamDto,NoteResponseDto,UpdateNoteDto> = asyncHandler(async(req,res)=>{
+const {noteId}= req.params
+ const userId = req.userId!
+ const {newTitle,newContent} = req.body
  
 
-// //  const notes = await patchUpdateNotesService(noteId,newTitle,newContent,userId)
+ const notes = await patchUpdateNotesService(noteId,newTitle,newContent,userId)
  
-// //  return res.status(HTTP_STATUS.OK).json({
-// //   success:true,
-// //   message:MESSAGES.PRODUCT.UPDATED_SUCCESS
-// //  })
-// // })
+ return res.status(HTTP_STATUS.OK).json({
+  success:true,
+  message:MESSAGES.PRODUCT.UPDATED_SUCCESS
+ })
+})
 
 // export const patchUpdateNotes = asyncHandler<
 //   NoteParamDto,

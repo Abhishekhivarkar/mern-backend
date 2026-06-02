@@ -24,24 +24,43 @@ export const createNotes = async (
  return result.rows[0];
 };
 
-export const getAllNotes = async (
+export const getAllNotesRepository = async (
   page: number,
   limit: number,
   search: string,
 ) => {
   const skip = (page - 1) * limit;
-  const result =await pool.query(
+
+  const notesResult = await pool.query(
     `
-    SELECT * FROM notes where is_deleted = FALSE AND note_name ILIKE $1 order_by DESC  LIMIT $2 OFFSET $3
+    SELECT *
+    FROM notes
+    WHERE is_deleted = FALSE
+      AND note_name ILIKE $1
+    ORDER BY created_at DESC
+    LIMIT $2
+    OFFSET $3
     `,
-    [
-      `%${search}%`,limit,skip
-    ]
-  )
-  const total = Number(result.rows[0].total)
+    [`%${search}%`, limit, skip]
+  );
+
+  const countResult = await pool.query(
+    `
+    SELECT COUNT(*) AS total
+    FROM notes
+    WHERE is_deleted = FALSE
+      AND note_name ILIKE $1
+    `,
+    [`%${search}%`]
+  );
+
+  return {
+    notes: notesResult.rows,
+    total: Number(countResult.rows[0].total),
+  };
 };
 
-/*
+
 export const patchUpdateNoteRepository = async (
   noteId: string,
 
@@ -82,6 +101,7 @@ export const patchUpdateNoteRepository = async (
   );
 };
 
+/*
 export const deleteNotesRepository = async (
   noteId: string,
 
@@ -172,3 +192,26 @@ export const unPinNoteRepository = async (
 
 
 */
+
+export const patchUpdateNoteRepository = async (
+  noteId: string,
+
+  newTitle: string | undefined,
+
+  newContent: string | undefined,
+
+  userId: string,
+
+  session?: ClientSession,
+) => {
+ const result = await pool.query(
+  `
+  UPDATE notes 
+  SET note_name = $1, note_content = $2
+  WHERE user_id = $3 AND note_id = $4
+  `,
+  [newTitle,newContent,user_id,noteId]
+  
+  )
+ return result.rows[0]
+}
