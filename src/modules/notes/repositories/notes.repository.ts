@@ -1,8 +1,9 @@
 import type {PoolClient} from "pg";
 import { Notes } from "../models/Notes.model.js";
+import { pool } from "../../../configs/db.config.js";
 
 export const createNotes = async (
-  note_title: string,
+  note_name: string,
   note_content: string,
   userId: string,
   client: PoolClient,
@@ -10,49 +11,37 @@ export const createNotes = async (
  const result = await client.query(
   `
   INSERT INTO notes(
-  note_title,note_content,userId
+  note_name,note_content,user_id
   )VALUES($1,$2,$3)
   RETURNING *
   `,
   [
-    note_title,note_content,userId
+    note_name,note_content,userId
   ]
 
  )
 
  return result.rows[0];
 };
-/*
+
 export const getAllNotes = async (
   page: number,
   limit: number,
   search: string,
-  session?: ClientSession,
 ) => {
   const skip = (page - 1) * limit;
-
-  return NotesModel.find({
-    isDeleted: false,
-
-    title: {
-      $regex: search,
-      $options: "i",
-    },
-  })
-
-    .select("-__v")
-
-    .sort({
-      createdAt: -1,
-    })
-
-    .skip(skip)
-
-    .limit(limit)
-
-    .session(session || null);
+  const result =await pool.query(
+    `
+    SELECT * FROM notes where is_deleted = FALSE AND note_name ILIKE $1 order_by DESC  LIMIT $2 OFFSET $3
+    `,
+    [
+      `%${search}%`,limit,skip
+    ]
+  )
+  const total = Number(result.rows[0].total)
 };
 
+/*
 export const patchUpdateNoteRepository = async (
   noteId: string,
 
