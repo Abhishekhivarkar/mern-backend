@@ -3,10 +3,10 @@ import { redisClient } from "../configs/redis.config.js";
 
 
 export const emitToUser =async(
-    userId:string,
+    user_id:string,
     event:string,
-    payload:{       // noteId, title, message
-        noteId?:string,
+    payload:{       // note_id, title, message
+        note_id?:string,
         title?:string,
         message:string
     }   
@@ -15,7 +15,7 @@ export const emitToUser =async(
   await redisClient.publish(
     "socket-events",
     JSON.stringify({
-        room:`user:${userId}`,
+        room:`user:${user_id}`,
         event,
         payload
     })

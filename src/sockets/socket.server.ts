@@ -40,11 +40,11 @@ export const initSocket = (server:http.Server) =>{
 
   io.on(SOCKET_EVENTS.CONNECTION,
  (socket)=>{
-  socket.on(SOCKET_EVENTS.JOIN,async(userId:string)=>{
-    socket.join(`user:${userId}`)
+  socket.on(SOCKET_EVENTS.JOIN,async(user_id:string)=>{
+    socket.join(`user:${user_id}`)
 
     const unRead = await getUnreadNotifications(
-        userId
+        user_id
     )
 
     for(let notification of unRead){
