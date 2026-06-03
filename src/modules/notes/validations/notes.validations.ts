@@ -1,10 +1,12 @@
 import {z} from "zod"
 
-// validation for noteId
+// validation for note_id
 
-export const noteIdParamSchema = z.object({
-    note_id:z
-        .uuid({message:"Invalid note id"})
+export const note_idParamSchema = z.object({
+    note_id:z.string({
+        message:"Invalid note id"
+    })
+
 })
 
 export const createNotesSchema = z.object({
@@ -24,17 +26,18 @@ export type createNotesDto = z.infer<typeof createNotesSchema>
 
 
 export const patchUpdateNotesSchema = z.object({
-    newTitle:z
+    new_note_name:z
         .string()
         .trim()
         .min(1,"New title required")
-        .max(100,"Title is too long"),
-
-    newContent:z
+        .max(100,"Title is too long")
+        .optional(),
+    new_note_content:z
         .string()
         .trim()
         .min(1,"New content required")
         .max(100,"content is too long")
+        .optional()
 }).strict()
 
 export type patchUpdateNotesDto = z.infer<typeof patchUpdateNotesSchema>
