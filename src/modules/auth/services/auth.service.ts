@@ -30,14 +30,14 @@ export const registerService = async(body:RegisterDto) =>{
 
  logger.info({
     message:"USER_REGISTERED",
-    userId:user.user_id.toString(),
+    user_id:user.user_id.toString(),
     email:user.email
  })
   sendRegisterMail(user.email)
 .catch(error=>{
     logger.error({
         event:"REGISTER_MAIL_FAILED",
-        userId:user.user_id.toString(),
+        user_id:user.user_id.toString(),
         error
     })
 })
@@ -149,7 +149,7 @@ export const refreshTokenService = async(token?:string)=>{
 
     
     return {
-        userId:decoded.id,
+        user_id:decoded.id,
         session
         
     }

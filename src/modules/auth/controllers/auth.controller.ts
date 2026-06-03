@@ -49,7 +49,7 @@ export const register = asyncHandler(
 
     logger.info({
       message:"User registered successsfully",
-      userId:req.userId
+      user_id:req.user_id
     })
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
@@ -124,7 +124,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
 
   logger.info({
     message:"User loggedin successfully",
-    userId:req.userId
+    user_id:req.user_id
   })
   return res.status(HTTP_STATUS.OK).json({
     success:true,
@@ -159,11 +159,11 @@ export const refreshToken = asyncHandler(async(req,res) =>{
   const token = await refreshTokenService(refreshToken)
 
   const accessToken =  generateAccessToken(
-    {id:token.userId,sessionId:token.session.session_id},
+    {id:token.user_id,sessionId:token.session.session_id},
   )
 
   const newRefreshToken = generateRefreshToken(
-    {id:token.userId,sessionId:token.session.session_id}
+    {id:token.user_id,sessionId:token.session.session_id}
   )
 
   const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex")

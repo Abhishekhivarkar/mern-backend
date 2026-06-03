@@ -40,7 +40,7 @@
 //   })
 //  }
 
-//  req.userId = decoded.id
+//  req.user_id = decoded.id
 //  next()
 //  }catch(err){
 //   console.log("Auth middleware error : ",err)
@@ -104,7 +104,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    req.userId = decoded.id;
+    req.user_id = decoded.id;
 
     next();
   } catch (err) {
