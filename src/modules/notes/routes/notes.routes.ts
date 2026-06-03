@@ -1,8 +1,8 @@
- import {createNotes,getAllNotes/*,patchUpdateNotes,deleteNotes,pinNotes,getPinnedNotes, unPinNotes*/} from "../controllers/notes.controller.js"
+ import {createNotes,getAllNotes,patchUpdateNotes,deleteNotes,pinNotes ,unPinNotes,getPinnedNotes, getMyNotes} from "../controllers/notes.controller.js"
 import express from "express"
 import {authMiddleware} from "../../../common/middlewares/auth.middleware.js"
 import { validate } from "../../../common/middlewares/validation.middleware.js"
-import { createNotesSchema, noteIdParamSchema, patchUpdateNotesSchema } from "../validations/notes.validations.js"
+import { createNotesSchema, note_idParamSchema, patchUpdateNotesSchema } from "../validations/notes.validations.js"
 
 const router = express.Router()
 
@@ -12,20 +12,20 @@ router.post("/create",authMiddleware,validate({body:createNotesSchema}),createNo
 router.get("/all",authMiddleware,getAllNotes)
 
 
-router.patch("/:noteId",authMiddleware,validate({
+router.patch("/:note_id",authMiddleware,validate({
     body:patchUpdateNotesSchema,
-    params:noteIdParamSchema
+    params:note_idParamSchema
 }),patchUpdateNotes)
 
-/*
-router.delete("/:noteId",authMiddleware,deleteNotes)
 
-router.patch("/pin/:noteId",authMiddleware,pinNotes)
+router.delete("/:note_id",authMiddleware,deleteNotes)
+
+router.patch("/pin/:note_id",authMiddleware,pinNotes)
+
+router.patch("/un-pin/:note_id",authMiddleware,unPinNotes)
 
 router.get("/pin",authMiddleware,getPinnedNotes)
-router.patch("/un-pin/:noteId",authMiddleware,unPinNotes)
-
-*/
+router.get("/my",authMiddleware,getMyNotes)
 export default router
 
 

@@ -1,14 +1,17 @@
 import {
   createNotes,
   getAllNotesRepository,
-  // patchUpdateNoteRepository,
-  // deleteNotesRepository,
-  // pinNotesRepository,
+  patchUpdateNoteRepository,
+  deleteNotesRepository,
+  pinNotesRepository,
+  findNoteByIdRepository,
+  unPinNoteRepository,
   // findUserById,
-  // unPinNoteRepository,
+  getPinnedNotesRepository,
+  getMyNotesRepository
+
 } from "../repositories/notes.repository.js";
 
-import mongoose from "mongoose";
 
 import { redisClient } from "../../../configs/redis.config.js";
 
@@ -37,19 +40,19 @@ export const createNotesService = async (
 
   note_content: string,
 
-  userId: string,
+  user_id: string,
 ) => {
   const client = await pool.connect()
 
   try {
     await client.query("BEGIN")
 
-    const note = await createNotes(note_name, note_content, userId, client);
+    const note = await createNotes(note_name, note_content, user_id, client);
 
     await client.query("COMMIT")
     await clearNotesCache();
-    await sendNoteCreatedNotificationToUser(userId,{
-      noteId:note.note_id,
+    await sendNoteCreatedNotificationToUser(user_id,{
+      note_id:note.note_id,
       title:note_name,
       message:"Note created successfully"
     })
@@ -96,29 +99,29 @@ export const getAllNotesService = async (
 };
 
 export const patchUpdateNotesService = async (
-  noteId: string,
+  note_id: string,
 
-  newTitle: string | undefined,
+  new_note_name: string | undefined,
 
-  newContent: string | undefined,
+  new_note_content: string | undefined,
 
-  userId: string,
+  user_id: string,
 ) => {
-  const  client = pool.connect()
+  const  client = await pool.connect()
 
   try {
     client.query("BEGIN")
 
     const note = await patchUpdateNoteRepository(
-      noteId,
+      note_id,
 
-      newTitle,
+      new_note_name,
 
-      newContent,
+      new_note_content,
 
-      userId,
+      user_id,
 
-      session,
+      client,
     );
 
     if (!note) {
@@ -132,9 +135,9 @@ export const patchUpdateNotesService = async (
     await client.query("COMMIT")
 
     await clearNotesCache();
-    await sendNoteUpdatedNotificationToUser(userId,{
-      title:newTitle,
-      noteId:noteId,
+    await sendNoteUpdatedNotificationToUser(user_id,{
+      title:new_note_name,
+      note_id:note_id,
       message:"Note updated successfully!"
     })
     return note;
@@ -143,189 +146,193 @@ export const patchUpdateNotesService = async (
 
     throw error;
   } finally {
-    await clinet.release();
+    await client.release();
   }
 };
 
-// export const deleteNotesService = async (
-//   noteId: string,
+export const deleteNotesService = async (
+  note_id: string,
 
-//   userId: string,
-// ) => {
-//   const session = await mongoose.startSession();
+  user_id: string,
+) => {
+  const client = await pool.connect()
 
-//   try {
-//     session.startTransaction();
+  try {
+    client.query("BEGIN");
 
-//     const note = await deleteNotesRepository(
-//       noteId,
+    const note = await deleteNotesRepository(
+      note_id,
 
-//       userId,
+      user_id,
 
-//       session,
-//     );
+      client,
+    );
 
-//     if (!note) {
-//       throw new AppError(
-//         MESSAGES.PRODUCT.NOT_FOUND,
+    if(!note){
+      throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.BAD_REQUEST)
+    }
 
-//         HTTP_STATUS.NOT_FOUND,
-//       );
-//     }
+    await client.query("COMMIT");
 
-//     await session.commitTransaction();
+    await clearNotesCache();
 
-//     await clearNotesCache();
+    return note;
+  } catch (error) {
+    await client.query("ROLLBACK")
 
-//     return note;
-//   } catch (error) {
-//     await session.abortTransaction();
+    throw error;
+  } finally {
+    await client.release();
+  }
+};
 
-//     throw error;
-//   } finally {
-//     await session.endSession();
-//   }
-// };
+export const pinNotesService = async (
+  note_id: string,
 
-// export const pinNotesService = async (
-//   noteId: string,
+  user_id: string,
+) => {
+  const client = await pool.connect();
 
-//   userId: string,
-// ) => {
-//   const session = await mongoose.startSession();
+  try {
+    client.query("BEGIN");
 
-//   try {
-//     session.startTransaction();
+    const note = await findNoteByIdRepository(note_id, client);
 
-//     const user = await findUserById(userId, session);
+    if (!note) {
+      throw new AppError(
+        MESSAGES.PRODUCT.NOT_FOUND,
 
-//     if (!user) {
-//       throw new AppError(
-//         MESSAGES.AUTH.USER_NOT_FOUND,
+        HTTP_STATUS.NOT_FOUND,
+      );
+    }
 
-//         HTTP_STATUS.NOT_FOUND,
-//       );
-//     }
+  
+    if (note.is_pinned === true) {
+      throw new AppError(
+        MESSAGES.PRODUCT.ALREADY_PINNED,
 
-//     const alreadyPinned = user.pinnedNotes.some((id) => id.equals(noteId));
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
 
-//     if (alreadyPinned) {
-//       throw new AppError(
-//         MESSAGES.PRODUCT.ALREADY_PINNED,
+    if (note.is_pinned.length >= 5) {
+      throw new AppError(
+        MESSAGES.PRODUCT.PIN_LIMIT_EXCEEDED,
 
-//         HTTP_STATUS.BAD_REQUEST,
-//       );
-//     }
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
 
-//     if (user.pinnedNotes.length >= 5) {
-//       throw new AppError(
-//         MESSAGES.PRODUCT.PIN_LIMIT_EXCEEDED,
+    const pin_note = await pinNotesRepository(
+      user_id,
 
-//         HTTP_STATUS.BAD_REQUEST,
-//       );
-//     }
+      note_id,
 
-//     const note = await pinNotesRepository(
-//       userId,
+      client,
+    );
 
-//       noteId,
+    await client.query("COMMIT");
 
-//       session,
-//     );
+    await clearNotesCache();
 
-//     await session.commitTransaction();
+    return pin_note;
+  } catch (error) {
+    await client.query("ROLLBACK");
 
-//     await clearNotesCache();
+    throw error;
+  } finally {
+    await client.release();
+  }
+};
 
-//     return note;
-//   } catch (error) {
-//     await session.abortTransaction();
+export const unPinNotesService = async (
+  user_id: string,
 
-//     throw error;
-//   } finally {
-//     await session.endSession();
-//   }
-// };
+  note_id: string,
+) => {
+  const client = await pool.connect();
 
-// export const unPinNotesService = async (
-//   userId: string,
+  try {
+    client.query("BEGIN");
 
-//   noteId: string,
-// ) => {
-//   const session = await mongoose.startSession();
+    const note = await findNoteByIdRepository(note_id, client);
 
-//   try {
-//     session.startTransaction();
+    if (!note) {
+      throw new AppError(
+        MESSAGES.PRODUCT.NOT_FOUND,
 
-//     const user = await findUserById(userId, session);
+        HTTP_STATUS.NOT_FOUND,
+      );
+    }
 
-//     if (!user) {
-//       throw new AppError(
-//         MESSAGES.AUTH.USER_NOT_FOUND,
+  
 
-//         HTTP_STATUS.NOT_FOUND,
-//       );
-//     }
+    if (note.is_pinned === false) {
+      throw new AppError(
+        MESSAGES.PRODUCT.ALREADY_UNPINNED,
 
-//     const exists = user.pinnedNotes.some((id) => id.equals(noteId));
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
 
-//     if (!exists) {
-//       throw new AppError(
-//         MESSAGES.PRODUCT.NOT_FOUND,
+    const un_pin_note = await unPinNoteRepository(
+      user_id,
 
-//         HTTP_STATUS.NOT_FOUND,
-//       );
-//     }
+      note_id,
 
-//     const note = await unPinNoteRepository(
-//       userId,
+      client,
+    );
 
-//       noteId,
+    await client.query("COMMIT");
 
-//       session,
-//     );
+    await clearNotesCache();
 
-//     await session.commitTransaction();
+    return un_pin_note;
+  } catch (error) {
+    await client.query("ROLLBACK");
 
-//     await clearNotesCache();
+    throw error;
+  } finally {
+    await client.release();
+  }
+};
 
-//     return note;
-//   } catch (error) {
-//     await session.abortTransaction();
+export const getPinnedNotesService = async (user_id: string) => {
+  const cacheKey = `pinnedNotes:${user_id}`;
 
-//     throw error;
-//   } finally {
-//     await session.endSession();
-//   }
-// };
+  const cached = await redisClient.get(cacheKey);
 
-// export const getPinnedNotesService = async (userId: string) => {
-//   const cacheKey = `pinnedNotes:${userId}`;
+  if (cached) {
+    return JSON.parse(cached);
+  }
 
-//   const cached = await redisClient.get(cacheKey);
+  const notes = await getPinnedNotesRepository(user_id);
 
-//   if (cached) {
-//     return JSON.parse(cached);
-//   }
+if(!notes || notes.length === 0){
+  throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+}
 
-//   const user = await findUserById(userId);
-// if(!user){
-//   throw new AppError(MESSAGES.AUTH.USER_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
-// }
+  await redisClient.set(
+    cacheKey,
 
-//   const notes = user.pinnedNotes
-//   if(!notes || notes.length === 0){
-//     throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND)
-//   }
-//   await redisClient.set(
-//     cacheKey,
+    JSON.stringify(notes),
 
-//     JSON.stringify(notes),
+    "EX",
 
-//     "EX",
+    60,
+  );
 
-//     60,
-//   );
+  return notes;
+};
 
-//   return notes;
-// };
+
+export const getMyNotesService = async(user_id:string) =>{
+   const note = await getMyNotesRepository(user_id)
+
+   if(note.length === 0){
+    throw new AppError(MESSAGES.PRODUCT.ZERO_NOTES,HTTP_STATUS.BAD_REQUEST)
+   }
+
+   return note
+
+}

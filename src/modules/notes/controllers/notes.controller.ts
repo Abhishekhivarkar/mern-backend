@@ -1,11 +1,11 @@
-import type {Request,Response} from "express"
+import type {Request,Response, RequestHandler} from "express"
  
 //services
-import {createNotesService,getAllNotesService/*,patchUpdateNotesService,deleteNotesService,pinNotesService,unPinNotesService,getPinnedNotesService*/} from "../services/notes.service.js"
+import {createNotesService,getAllNotesService,patchUpdateNotesService,deleteNotesService ,pinNotesService,unPinNotesService,getPinnedNotesService,getMyNotesService} from "../services/notes.service.js"
 // async handler
 import {asyncHandler} from "../../../common/utils/asyncHandler.util.js"
 
-import type { UpdateNoteDto } from "../types/dtos/updateNote.dto.js"
+
 import type { NoteResponseDto } from "../types/dtos/notes.response.dto.js"
 import type { GetAllNotesResponseDto } from "../types/dtos/getAllNotes.response.dto.js"
 import type { GetPinnedNotesResponseDto } from "../types/dtos/getPinnedNotes.response.dto.js"
@@ -21,14 +21,14 @@ import { logger } from "../../../common/services/logger.service.js"
 
 export const createNotes = asyncHandler(async(req:Request<{},NoteResponseDto,createNotesDto>,res:Response<NoteResponseDto>) =>{
  const {note_name,note_content} = req.body 
- const userId = req.userId!
+ const user_id = req.user_id!
 
  logger.info({
   message:"Create notes request received",
   title:note_name
  })
 
- await createNotesService(note_name,note_content,userId)
+ await createNotesService(note_name,note_content,user_id)
  
  logger.info({
   message:"Note created successfully"
@@ -60,13 +60,13 @@ export const getAllNotes = asyncHandler(async(req:Request<{},GetAllNotesResponse
 })
 
 
-export const patchUpdateNotes:   RequestHandler<NoteParamDto,NoteResponseDto,UpdateNoteDto> = asyncHandler(async(req,res)=>{
-const {noteId}= req.params
- const userId = req.userId!
- const {newTitle,newContent} = req.body
+export const patchUpdateNotes:RequestHandler<NoteParamDto,NoteResponseDto,patchUpdateNotesDto> = asyncHandler(async(req,res)=>{
+const {note_id}= req.params
+ const user_id = req.user_id!
+ const {new_note_name,new_note_content} = req.body
  
 
- const notes = await patchUpdateNotesService(noteId,newTitle,newContent,userId)
+ const notes = await patchUpdateNotesService(note_id,new_note_name,new_note_content,user_id)
  
  return res.status(HTTP_STATUS.OK).json({
   success:true,
@@ -82,13 +82,13 @@ const {noteId}= req.params
 //   logger.info({
 //     message:"Patch update notes request received"
 //   })
-//  const { noteId } = req.params
+//  const { note_id } = req.params
 
 //  await patchUpdateNotesService(
-//    noteId,
-//    req.body.newTitle,
-//    req.body.newContent,
-//    req.userId!
+//    note_id,
+//    req.body.new_note_name,
+//    req.body.new_note_content,
+//    req.user_id!
 //  )
 //  logger.info({
 //   message:"Patch update successfully"
@@ -100,56 +100,70 @@ const {noteId}= req.params
 // })
 
 
-// export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
-//   const {noteId} = req.params
-//   const userId = req.userId!
+export const deleteNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
+  const {note_id} = req.params
+  const user_id = req.user_id!
+
   
+  await deleteNotesService(note_id,user_id)
   
-//   await deleteNotesService(noteId,userId)
-  
-//   return res.status(HTTP_STATUS.OK).json({
-//    success:true,
-//    message:MESSAGES.PRODUCT.DELETE_SUCCESS
-//   })
-// })
+  return res.status(HTTP_STATUS.OK).json({
+   success:true,
+   message:MESSAGES.PRODUCT.DELETE_SUCCESS
+  })
+})
 
 
 
-// export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
-//  const {noteId} = req.params
-//  const userId = req.userId!
+export const pinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,{},{}>,res:Response<NoteResponseDto>)=>{
+ const {note_id} = req.params
+ const user_id = req.user_id!
   
-//  await pinNotesService(noteId,userId)
+ await pinNotesService(note_id,user_id)
  
-//  return res.status(HTTP_STATUS.OK).json({
-//   success:true,
-//   message:MESSAGES.PRODUCT.PINNED
-//  })
-// })
+ return res.status(HTTP_STATUS.OK).json({
+  success:true,
+  message:MESSAGES.PRODUCT.PINNED
+ })
+})
 
-// export const unPinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,NoteResponseDto>,res:Response<NoteResponseDto>)=>{
-//   const userId = req.userId!
-//   const {noteId} = req.params
+export const unPinNotes = asyncHandler(async(req:Request<NoteParamDto,NoteResponseDto,NoteResponseDto>,res:Response<NoteResponseDto>)=>{
+  const user_id = req.user_id!
+  const {note_id} = req.params
    
-//   await unPinNotesService(userId,noteId)
+  await unPinNotesService(user_id,note_id)
 
-//   return res.status(HTTP_STATUS.OK).json({
-//     success:true,
-//     message:MESSAGES.PRODUCT.UNPINNED
-//   })
-// })
+  return res.status(HTTP_STATUS.OK).json({
+    success:true,
+    message:MESSAGES.PRODUCT.UNPINNED
+  })
+})
 
 
-// export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesResponseDto,{},{}>,res:Response<GetPinnedNotesResponseDto>)=>{
-//  const userId = req.userId!
+export const getPinnedNotes =asyncHandler(async(req:Request<{},GetPinnedNotesResponseDto,{},{}>,res:Response<GetPinnedNotesResponseDto>)=>{
+ const user_id = req.user_id!
   
-//  const user = await getPinnedNotesService(userId)
+ const user = await getPinnedNotesService(user_id)
  
-//  return res.status(HTTP_STATUS.OK).json({
-//   success:true,
-//   data:user,
-//   count:user.length
-//  })
-// })
+ return res.status(HTTP_STATUS.OK).json({
+  success:true,
+  data:user,
+  count:user.length
+ })
+})
 
 
+
+export const getMyNotes = asyncHandler(async(req:Request,res:Response)=>{
+    const user_id = req.user_id!
+    const {note_id} = req.params
+
+    const notes = await getMyNotesService(user_id)
+
+    return res.status(HTTP_STATUS.OK).json({
+        success:true,
+        data:notes,
+        count:notes.length
+    }
+    )
+})

@@ -3,5 +3,5 @@ import type{
 } from "express-serve-static-core"
 
 export interface NoteParamDto extends ParamsDictionary{
-    noteId:string
+    note_id:string
 }

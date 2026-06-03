@@ -1,11 +1,11 @@
-import type {PoolClient} from "pg";
+import type {Pool, PoolClient} from "pg";
 import { Notes } from "../models/Notes.model.js";
 import { pool } from "../../../configs/db.config.js";
 
 export const createNotes = async (
   note_name: string,
   note_content: string,
-  userId: string,
+  user_id: string,
   client: PoolClient,
 ):Promise<Notes>=> {
  const result = await client.query(
@@ -16,7 +16,7 @@ export const createNotes = async (
   RETURNING *
   `,
   [
-    note_name,note_content,userId
+    note_name,note_content,user_id
   ]
 
  )
@@ -33,7 +33,7 @@ export const getAllNotesRepository = async (
 
   const notesResult = await pool.query(
     `
-    SELECT *
+    SELECT note_id,user_id,note_name,note_content
     FROM notes
     WHERE is_deleted = FALSE
       AND note_name ILIKE $1
@@ -61,157 +61,160 @@ export const getAllNotesRepository = async (
 };
 
 
-export const patchUpdateNoteRepository = async (
-  noteId: string,
 
-  newTitle: string | undefined,
 
-  newContent: string | undefined,
 
-  userId: string,
-
-  session?: ClientSession,
-) => {
-  return NotesModel.findOneAndUpdate(
-    {
-      _id: noteId,
-
-      user: userId,
-
-      isDeleted: false,
-    },
-
-    {
-      $set: {
-        ...(newTitle && {
-          title: newTitle,
-        }),
-
-        ...(newContent && {
-          content: newContent,
-        }),
-      },
-    },
-
-    {
-      returnDocument: "after",
-
-      session,
-    },
-  );
-};
-
-/*
 export const deleteNotesRepository = async (
-  noteId: string,
+  note_id: string,
 
-  userId: string,
+  user_id: string,
 
-  session?: ClientSession,
+  client: PoolClient,
 ) => {
-  return NotesModel.findOneAndUpdate(
-    {
-      _id: noteId,
+  try{
 
-      user: userId,
+  
+  const result = await client.query(
+    `
+    UPDATE notes 
+    SET is_deleted = TRUE
+    WHERE note_id = $1 AND 
+          user_id = $2
+    RETURNING *
+    `,
+    [
+      note_id,user_id
+    ]
+  )
+  return result.rows[0]
 
-      isDeleted: false,
-    },
 
-    {
-      $set: {
-        isDeleted: true,
-      },
-    },
-
-    {
-      returnDocument: "after",
-
-      session,
-    },
-  );
+}catch(err){
+  throw err
+}
 };
 
-export const findUserById = async (
-  userId: string,
+export const findNoteByIdRepository = async (
+  note_id: string,
 
-  session?: ClientSession,
+  client: PoolClient,
 ) => {
-  return UserModel.findById(userId)
+  const result =await client.query(
+    `
+    SELECT * FROM notes WHERE note_id = $1
+    `,
+    [note_id]
+  )
 
-    .session(session || null);
+  return result.rows[0]
 };
 
 export const pinNotesRepository = async (
-  userId: string,
+  user_id: string,
 
-  noteId: string,
+  note_id: string,
 
-  session?: ClientSession,
+  client: PoolClient,
 ) => {
-  return UserModel.findByIdAndUpdate(
-    userId,
+  const result = await client.query(
 
-    {
-      $push: {
-        pinnedNotes: noteId,
-      },
-    },
-
-    {
-      returnDocument: "after",
-
-      session,
-    },
-  );
+    `
+      UPDATE notes 
+      SET is_pinned = TRUE
+      WHERE note_id = $1 AND
+            user_id = $2
+      RETURNING *
+    `,[
+      note_id,user_id
+    ]
+  )
+  return result.rows[0]
 };
+
 
 export const unPinNoteRepository = async (
-  userId: string,
+  user_id: string,
 
-  noteId: string,
+  note_id: string,
 
-  session?: ClientSession,
+client:PoolClient
+
 ) => {
-  return UserModel.findByIdAndUpdate(
-    userId,
+  const result = await client.query(
+`
+UPDATE notes
+SET is_pinned = FALSE
+WHERE note_id = $1 AND 
+      user_id = $2
+RETURNING *
+`,
+[
+  note_id,user_id
+]
 
-    {
-      $pull: {
-        pinnedNotes: noteId,
-      },
-    },
+  )
 
-    {
-      returnDocument: "after",
-
-      session,
-    },
-  );
+  return result.rows[0]
 };
 
 
-*/
+
 
 export const patchUpdateNoteRepository = async (
-  noteId: string,
+  note_id: string,
 
-  newTitle: string | undefined,
+  new_note_name: string | undefined,
 
-  newContent: string | undefined,
+  new_note_content: string | undefined,
 
-  userId: string,
+  user_id: string,
 
-  session?: ClientSession,
+  client: PoolClient,
 ) => {
- const result = await pool.query(
+ const result = await client.query(
   `
   UPDATE notes 
-  SET note_name = $1, note_content = $2
+  SET note_name = COALESCE($1,note_name),
+      note_content = COALESCE($2, note_content)
   WHERE user_id = $3 AND note_id = $4
+  RETURNING *
   `,
-  [newTitle,newContent,user_id,noteId]
+  [new_note_name,new_note_content,user_id,note_id]
   
   )
+
+ 
  return result.rows[0]
 }
+
+
+export const getPinnedNotesRepository = async(user_id:string) =>{
+  try{
+    const result = await pool.query(
+      `
+      SELECT note_id,user_id,note_name,note_name FROM notes 
+      WHERE is_deleted = FALSE AND user_id = $1
+
+      `,
+      [user_id]
+    )
+
+    return result.rows
+  }catch(err){
+    throw err
+  }
+}
+
+export const getMyNotesRepository = async (user_id:string) =>{
+  const result = await pool.query(
+
+  `
+    SELECT * FROM notes 
+    WHERE user_id = $1
+
+  `,
+  [user_id]
+  )
+
+  return result.rows
+} 
