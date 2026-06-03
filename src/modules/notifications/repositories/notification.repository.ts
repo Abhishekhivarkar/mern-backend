@@ -28,7 +28,7 @@ export const getUnreadNotifications = async(user:string) =>{
 
     
         user,
-        idRead:false
+        isRead:false
     }
     ).sort({createdAt:-1})
 }
