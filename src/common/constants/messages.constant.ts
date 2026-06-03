@@ -21,7 +21,9 @@ export const MESSAGES = {
   UNPINNED:"Note unpinned successfully!",
   NOT_FOUND:"Notes not found!",
   PIN_LIMIT_EXCEEDED: "You can pin up to 5 notes only!",
-  ALREADY_PINNED: "Note already pinned!"
+  ALREADY_PINNED: "Note already pinned!",
+  ALREADY_UNPINNED: "Note already un pinned!",
+  ZERO_NOTES: "0 notes found"
  },
 
  LIMITER:{
