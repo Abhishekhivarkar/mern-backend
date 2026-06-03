@@ -1,17 +1,17 @@
 import { notificationQueue } from "../../jobs/queues/notification.queue.js";
 
-export const sendNoteCreatedNotificationToUser = async(userId:string,payload:{
-    noteId:string,
+export const sendNoteCreatedNotificationToUser = async(user_id:string,payload:{
+    note_id:string,
     title:string,
     message:string
 }) =>{
-    await notificationQueue.add("note-created",{userId:userId,event:"note:created",payload})
+    await notificationQueue.add("note-created",{user_id:user_id,event:"note:created",payload})
 }
 
-export const sendNoteUpdatedNotificationToUser = async(userId:string,payload:{
-    title:string | undefined,noteId:string,message:string
+export const sendNoteUpdatedNotificationToUser = async(user_id:string,payload:{
+    title:string | undefined,note_id:string,message:string
 }) =>{
     await notificationQueue.add("note-update",{
-        userId,event:"note:update",payload
+        user_id,event:"note:update",payload
     })
 }
