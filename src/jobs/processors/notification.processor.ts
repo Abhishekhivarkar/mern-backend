@@ -2,10 +2,10 @@ import { createNotification } from "../../modules/notifications/repositories/not
 import { emitToUser } from "../../sockets/socket.helper.js";
 
 interface SendNotificationOptions{
- userId:string
+ user_id:string
  event:string
  payload:{
-  noteId?:string
+  note_id?:string
   title?:string
   message:string
  }
@@ -14,7 +14,7 @@ console.log("send notification processor run ")
 export const sendNotificationProcessor =
 async({
 
-userId,
+user_id,
 
 event,
 
@@ -23,14 +23,14 @@ payload
 }:SendNotificationOptions)=>{
 console.log("create notification run ")
 await createNotification(
-    userId,
+    user_id,
     event,
     payload.title || "Notification",
     payload.message,
     payload
 )
 await emitToUser(
-userId,
+user_id,
 event,
 payload
 )

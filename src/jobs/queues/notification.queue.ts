@@ -3,10 +3,10 @@ import { redisClient } from "../../configs/redis.config.js"
 
 
 export interface NotificationJobData{
-    userId:string,
+    user_id:string,
     event:string,
     payload:{
-        noteId?:string,
+        note_id?:string,
         title?:string,
         message:string
     }

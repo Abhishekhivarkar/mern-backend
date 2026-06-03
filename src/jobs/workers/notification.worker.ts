@@ -8,7 +8,7 @@ export const notificationWorker = new Worker("notificationQueue",
         console.log("processed notification job id",job.id)
 
         await sendNotificationProcessor({
-            userId:job.data.userId,
+            user_id:job.data.user_id,
             event:job.data.event,
             payload:job.data.payload
         })
