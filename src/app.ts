@@ -7,6 +7,7 @@ import { rateLimitMiddleware } from "./common/middlewares/rateLimit.middleware.j
 import notificationRoutes from "./modules/notifications/routes/notification.routes.js"
 import cookieParser from "cookie-parser"
 import helmet from "helmet"
+import { errorMiddleware } from "./common/middlewares/error.middleware.js"
 const app = express()
 app.disable("x-powered-by")
 app.use(helmet())
@@ -27,4 +28,5 @@ app.use("/health",(_:Request,res:Response):void=>{
  })
 })
 
+app.use(errorMiddleware)
 export default app

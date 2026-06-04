@@ -78,7 +78,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
  const sessionId = randomUUID()
 
 
-  const refreshToken = generateRefreshToken({id:user._id,sessionId})
+  const refreshToken = generateRefreshToken({id:user.user_id,sessionId})
   
   const hashRefreshToken = crypto.createHash("sha256").update(refreshToken).digest("hex")
 
@@ -129,7 +129,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   return res.status(HTTP_STATUS.OK).json({
     success:true,
     message:MESSAGES.AUTH.LOGIN_SUCCESS,
-    data:user.id,
+    data:user.user_id,
     accessToken
   })
 })
