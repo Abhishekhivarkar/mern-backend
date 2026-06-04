@@ -1,53 +1,58 @@
-import NotificationModel from "../models/notification.model.js"
+import { pool } from "../../../configs/db.config.js"
 
 
-export const getAllNotificatiosnRepository = async() =>{
-    return await NotificationModel.find()
+export const getAllNotificatiosnRepository = async(user_id:string | undefined) =>{
+    const result = await pool.query<Notification>(
+        `
+        SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC
+        `,
+        [user_id]
+    )
+    return result.rows
 }
-export const createNotification = async(user:string,type:string,title:string,message:string,metaData:object) =>{
-    try{
-  const notification = await NotificationModel.create({
-        user:user,
-        type,
-        title,
-        message,
-        metaData,
-        isRead:false
-    })
 
-    return notification
-    }catch(err){
-        console.log(err)
-        throw err
-    }
+export const createNotification = async(user_id:string,type:string,title:string,message:string,metaData:object) =>{
+    await pool.query(
+        `
+        INSERT INTO notifications(user_id,notification_type,notification_name,notification_message,meta_data) VALUES ($1,$2,$3,$4,$5)
+        `,
+        [
+            user_id,type,title,message,metaData
+        ]
+    )
   
 }
 
 export const getUnreadNotifications = async(user:string) =>{
-    return await NotificationModel.find({
-
-    
-        user,
-        isRead:false
-    }
-    ).sort({createdAt:-1})
-}
-
-
-export const markNotificationRead = async(user:string) =>{
-    return await NotificationModel.updateMany(
-        {
-            user:user,
-            isRead:false
-        },{
-            isRead:true
-        }
+    const result = await pool.query(
+        `
+        SELECT * FROM notifications WHERE user_id = $1 AND is_read = FALSE        
+        `,
+        [user]
     )
+    return result.rows
 }
 
 
-export const getUnreadNotificationsRepository = async () =>{
-    return await NotificationModel.find({
-        isRead:false
-    })
+// export const markNotificationRead = async(user:string) =>{
+//     return await NotificationModel.updateMany(
+//         {
+//             user:user,
+//             isRead:false
+//         },{
+//             isRead:true
+//         }
+//     )
+// }
+
+
+export const getUnreadNotificationsRepository = async (user_id:string | undefined) =>{
+   const result = await pool.query(
+    `
+    SELECT * FROM notifications WHERE user_id = $1 AND is_read = FALSE ORDER BY created_at DESC
+    `,
+    [user_id]
+   )
+
+   return result.rows
 }
