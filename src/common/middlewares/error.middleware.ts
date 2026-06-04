@@ -1,154 +1,148 @@
 import type {
- Request,
- Response,
- NextFunction
-} from "express"
+  Request,
+  Response,
+  NextFunction,
+} from "express";
 
-import mongoose from "mongoose"
+import jwt from "jsonwebtoken";
 
-// import type {
-//  JsonWebTokenError,
-//  TokenExpiredError
-// } from "jsonwebtoken"
+import { AppError } from "../utils/appError.util.js";
 
-import jwt  from "jsonwebtoken"
-import { AppError }
-from "../utils/appError.util.js"
+const handlePostgresError = (
+  err: any
+): AppError | any => {
+  switch (err.code) {
+    case "23505":
+      return new AppError(
+        "Resource already exists",
+        409
+      );
 
-const handleCastErrorDB = (
- err:mongoose.Error.CastError
-)=>{
- return new AppError(
-  `Invalid ${err.path}: ${err.value}`,
-  400
- )
-}
+    case "23503":
+      return new AppError(
+        "Referenced resource does not exist",
+        400
+      );
 
-const handleDuplicateFieldsDB = (
- err:any
-)=>{
- const field = Object.keys(
-  err.keyValue
- )[0]
+    case "23502":
+      return new AppError(
+        `${err.column} is required`,
+        400
+      );
 
- const value = err.keyValue[field]
+    case "22P02":
+      return new AppError(
+        "Invalid input format",
+        400
+      );
 
- return new AppError(
-  `${field} ${value} already exists`,
-  400
- )
-}
+    case "23514":
+      return new AppError(
+        "Constraint validation failed",
+        400
+      );
 
-const handleValidationErrorDB = (
- err:mongoose.Error.ValidationError
-)=>{
- const errors = Object
-  .values(err.errors)
-  .map((el)=>el.message)
+    default:
+      return err;
+  }
+};
 
- return new AppError(
-  errors.join(", "),
-  400
- )
-}
+const handleJWTError = () => {
+  return new AppError(
+    "Invalid token, please login again",
+    401
+  );
+};
 
-const handleJWTError = ()=>{
- return new AppError(
-  "Invalid token, please login again",
-  401
- )
-}
-
-const handleJWTExpiredError = ()=>{
- return new AppError(
-  "Your token has expired, please login again",
-  401
- )
-}
+const handleJWTExpiredError = () => {
+  return new AppError(
+    "Your token has expired, please login again",
+    401
+  );
+};
 
 const sendDevError = (
- err:any,
- res:Response
-)=>{
- return res.status(err.statusCode).json({
-  success:false,
-  status:err.status,
-  message:err.message,
-  stack:err.stack,
-  error:err
- })
-}
+  err: any,
+  res: Response
+) => {
+  return res.status(err.statusCode || 500).json({
+    success: false,
+    status: err.status || "error",
+    message: err.message,
+    stack: err.stack,
+    error: err,
+  });
+};
 
 const sendProdError = (
- err:any,
- res:Response
-)=>{
+  err: any,
+  res: Response
+) => {
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      success: false,
+      status: err.status,
+      message: err.message,
+    });
+  }
 
- if(err.isOperational){
+  console.error("Unknown Error:", err);
 
-  return res.status(err.statusCode).json({
-   success:false,
-   status:err.status,
-   message:err.message
-  })
- }
-
- console.error("Unknown Error:",err)
-
- return res.status(500).json({
-  success:false,
-  status:"error",
-  message:"Something went wrong"
- })
-}
+  return res.status(500).json({
+    success: false,
+    status: "error",
+    message: "Something went wrong",
+  });
+};
 
 export const errorMiddleware = (
- err:any,
- req:Request,
- res:Response,
- next:NextFunction
-)=>{
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  err.statusCode =
+    err.statusCode || 500;
 
- err.statusCode =
-  err.statusCode || 500
+  err.status =
+    err.status || "error";
 
- err.status =
-  err.status || "error"
-
- if(process.env.NODE_ENV === "development"){
-
-  sendDevError(err,res)
-
- }else if(
-  process.env.NODE_ENV === "production"
- ){
-
-  let error = err
-
-  if(
-   err instanceof mongoose.Error.CastError
-  ){
-   error = handleCastErrorDB(err)
+  if (
+    process.env.NODE_ENV ===
+    "development"
+  ) {
+    return sendDevError(err, res);
   }
 
-  if(err.code === 11000){
-   error = handleDuplicateFieldsDB(err)
+  if (
+    process.env.NODE_ENV ===
+    "production"
+  ) {
+    let error = err;
+
+    if (err?.code) {
+      error = handlePostgresError(err);
+    }
+
+    if (
+      err instanceof
+      jwt.JsonWebTokenError
+    ) {
+      error = handleJWTError();
+    }
+
+    if (
+      err instanceof
+      jwt.TokenExpiredError
+    ) {
+      error = handleJWTExpiredError();
+    }
+
+    return sendProdError(
+      error,
+      res
+    );
   }
 
-  if(
-   err instanceof mongoose.Error.ValidationError
-  ){
-   error = handleValidationErrorDB(err)
-  }
-
-  if(err instanceof jwt.JsonWebTokenError){
-   error = handleJWTError()
-  }
-
-  if(err instanceof jwt.TokenExpiredError){
-   error = handleJWTExpiredError()
-  }
-
-  sendProdError(error,res)
- }
-}
+  return sendProdError(err, res);
+};
