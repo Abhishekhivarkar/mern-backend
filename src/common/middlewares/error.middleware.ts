@@ -6,11 +6,12 @@ import type {
 
 import mongoose from "mongoose"
 
-import {
- JsonWebTokenError,
- TokenExpiredError
-} from "jsonwebtoken"
+// import type {
+//  JsonWebTokenError,
+//  TokenExpiredError
+// } from "jsonwebtoken"
 
+import jwt  from "jsonwebtoken"
 import { AppError }
 from "../utils/appError.util.js"
 
@@ -140,11 +141,11 @@ export const errorMiddleware = (
    error = handleValidationErrorDB(err)
   }
 
-  if(err instanceof JsonWebTokenError){
+  if(err instanceof jwt.JsonWebTokenError){
    error = handleJWTError()
   }
 
-  if(err instanceof TokenExpiredError){
+  if(err instanceof jwt.TokenExpiredError){
    error = handleJWTExpiredError()
   }
 
