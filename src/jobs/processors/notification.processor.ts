@@ -3,6 +3,7 @@ import { emitToUser } from "../../sockets/socket.helper.js";
 
 interface SendNotificationOptions{
  user_id:string
+ type:string
  event:string
  payload:{
   note_id?:string
@@ -15,7 +16,7 @@ export const sendNotificationProcessor =
 async({
 
 user_id,
-
+type,
 event,
 
 payload
@@ -24,7 +25,7 @@ payload
 console.log("create notification run ")
 await createNotification(
     user_id,
-    event,
+    type,
     payload.title || "Notification",
     payload.message,
     payload

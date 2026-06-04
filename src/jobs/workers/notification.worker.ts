@@ -9,13 +9,14 @@ export const notificationWorker = new Worker("notificationQueue",
 
         await sendNotificationProcessor({
             user_id:job.data.user_id,
+            type:job.data.type,
             event:job.data.event,
             payload:job.data.payload
         })
         console.log("Note created notification sent successfully!")
     },
     {
-        connection:redisClient,
+        connection:redisClient as any,
         concurrency:10
     },
     
