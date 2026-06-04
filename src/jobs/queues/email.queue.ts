@@ -10,7 +10,7 @@ export interface EmailJobData{
 
 export const emailQueue = new Queue<EmailJobData>("emailQueue",
     {
-    connection:redisClient,
+    connection:redisClient as any,
     
     defaultJobOptions:{
         attempts:3,
