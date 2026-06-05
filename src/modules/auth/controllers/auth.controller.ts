@@ -49,20 +49,20 @@ export const register = asyncHandler(
 
     logger.info({
       message:"User registered successsfully",
-      user_id:req.user_id
+      user_id:user.user_id
     })
     
-await auditLog({
-   user_id:req.user_id,
-   action:"User_Register",
-   entity_type:"User",
-   entity_id:req.user_id,
-   old_value:null,
-   new_value:user,
-   ip_address:req.ip,
-   user_agent:req.headers["user-agent"] || ""
+await auditLog(
+  user.user_id,
+   "User_Register",
+   "User",
+   user.user_id,
+   null,
+   user,
+   req.ip ?? "",
+   req.headers["user-agent"] || ""
    
-  })
+  )
   
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
@@ -194,9 +194,26 @@ export const refreshToken = asyncHandler(async(req,res) =>{
   )
 
   setRefreshTokenCookie(newRefreshToken,res)
+const newValue = {
+  ...token.session,
+  refresh_token_hash: newRefreshTokenHash
+}
+  await auditLog(
+    token.user_id,
+    "Token_Refresh",
+    "Token",
+    token.session.session_id,
+    token.old_value,
+    newValue,
+    req.ip ?? "",
+    req.headers["user-agent"] || ""
+  )
 
   return res.status(200).json({
     success:true,
     accessToken:accessToken
   })
 })
+
+
+

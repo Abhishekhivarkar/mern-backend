@@ -5,10 +5,11 @@ import { BlackListLoken } from "../models/BlackListToken.model.js"
 import {pool} from "../../../configs/db.config.js"
 import type {User} from "../models/User.model.js"
 import { Session } from "../models/Session.model.js";
+import { PoolClient } from "pg";
 
-export const register = async(email:string,password:string):Promise<User> =>{
+export const register = async(email:string,password:string,client:PoolClient):Promise<User> =>{
  
-    const result = await pool.query<User>(
+    const result = await client.query<User>(
      `
      INSERT INTO users(email,password) VALUES($1, $2)
      RETURNING *

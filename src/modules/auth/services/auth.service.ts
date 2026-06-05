@@ -14,7 +14,11 @@ import { pool } from "../../../configs/db.config.js"
 
 
 export const registerService = async(body:RegisterDto) =>{
- console.log(body.email,body.password)
+    const client = await pool.connect()
+
+    try{
+       await client.query("BEGIN")
+    
     const normalizedEmail = body.email.trim().toLowerCase()
  const isExists = await findUserByEmail({email:normalizedEmail})
  
@@ -28,8 +32,9 @@ export const registerService = async(body:RegisterDto) =>{
  }
  const hashPassword =await bcryptjs.hash(body.password,10)
  
- const user = await register(normalizedEmail,hashPassword)
+ const user = await register(normalizedEmail,hashPassword,client)
 
+    await client.query("COMMIT")
  logger.info({
     message:"USER_REGISTERED",
     user_id:user.user_id.toString(),
@@ -44,7 +49,15 @@ export const registerService = async(body:RegisterDto) =>{
         error
     })
 })
- return user
+
+  return user
+
+}catch(err){
+    await client.query("ROLLBACK")
+    throw err
+}finally{       
+    await client.release()
+}
 }
 
 export const loginService = async(body:LoginDto) =>{
@@ -134,6 +147,7 @@ export const refreshTokenService = async(token?:string)=>{
             MESSAGES.AUTH.SESSION_EXPIRED,HTTP_STATUS.UNAUTHORIZED
         )
     }
+    const old_value = session
     if(session.refresh_token_hash !== refreshTokenHash){
 
         await pool.query(
@@ -153,7 +167,8 @@ export const refreshTokenService = async(token?:string)=>{
     
     return {
         user_id:decoded.id,
-        session
+        session,
+        old_value
         
     }
 }

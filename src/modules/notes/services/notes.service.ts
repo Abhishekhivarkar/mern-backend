@@ -110,7 +110,7 @@ export const patchUpdateNotesService = async (
   const  client = await pool.connect()
 
   try {
-    client.query("BEGIN")
+    await client.query("BEGIN")
 
     const note = await patchUpdateNoteRepository(
       note_id,
@@ -158,7 +158,7 @@ export const deleteNotesService = async (
   const client = await pool.connect()
 
   try {
-    client.query("BEGIN");
+   await client.query("BEGIN");
 
     const note = await deleteNotesRepository(
       note_id,
@@ -194,7 +194,7 @@ export const pinNotesService = async (
   const client = await pool.connect();
 
   try {
-    client.query("BEGIN");
+    await client.query("BEGIN");
 
     const note = await findNoteByIdRepository(note_id, client);
 
@@ -253,7 +253,7 @@ export const unPinNotesService = async (
   const client = await pool.connect();
 
   try {
-    client.query("BEGIN");
+    await client.query("BEGIN");
 
     const note = await findNoteByIdRepository(note_id, client);
 
