@@ -26,7 +26,7 @@ import { LogoutResponseDto } from "../types/dtos/logout.response.dto.js"
 import { logger } from "../../../common/services/logger.service.js"
 import type{ RegisterDto,LoginDto } from "../validations/auth.validation.js"
 import { pool } from "../../../configs/db.config.js"
-
+import {auditLog} from "../../auditLogs/repositories/auditLogs.repository.js"
 
 
 // register
@@ -51,6 +51,19 @@ export const register = asyncHandler(
       message:"User registered successsfully",
       user_id:req.user_id
     })
+    
+await auditLog({
+   user_id:req.user_id,
+   action:"User_Register",
+   entity_type:"User",
+   entity_id:req.user_id,
+   old_value:null,
+   new_value:user,
+   ip_address:req.ip,
+   user_agent:req.headers["user-agent"] || ""
+   
+  })
+  
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: MESSAGES.AUTH.REGISTER_SUCCESS,

@@ -11,6 +11,8 @@ import { sendRegisterMail } from "../../../common/services/mail.service.js"
 import { logger } from "../../../common/services/logger.service.js"
 import type{ LoginDto, RegisterDto } from "../validations/auth.validation.js"
 import { pool } from "../../../configs/db.config.js"
+
+
 export const registerService = async(body:RegisterDto) =>{
  console.log(body.email,body.password)
     const normalizedEmail = body.email.trim().toLowerCase()
@@ -34,6 +36,7 @@ export const registerService = async(body:RegisterDto) =>{
     email:user.email
  })
   sendRegisterMail(user.email)
+  
 .catch(error=>{
     logger.error({
         event:"REGISTER_MAIL_FAILED",
