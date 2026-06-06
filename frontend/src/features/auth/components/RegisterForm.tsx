@@ -1,69 +1,49 @@
-import { useState }
-    from "react"
+import { useState } from "react";
 
-import {
-    useRegister
-}
-    from "../hooks/useRegister"
+import { useRegister } from "../hooks/useRegister";
+import { useNavigate } from "react-router-dom";
 
-export const RegisterForm = ()=> {
+export const RegisterForm = () => {
+  const navigate = useNavigate();
+  const registerMutation = useRegister();
 
-    const registerMutation =
-        useRegister()
+  const [email, setEmail] = useState("");
 
-    const [email, setEmail] =
-        useState("")
+  const [password, setPassword] = useState("");
 
-    const [password, setPassword] =
-        useState("")
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const handleSubmit = (
-        e: React.FormEvent
-    ) => {
+    registerMutation.mutate(
+      {
+        email,
 
-        e.preventDefault()
+        password,
+      },
+      {
+        onSuccess: () => {
+          navigate("/login");
+        },
+      },
+    );
+  };
 
-        registerMutation.mutate({
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
 
-            email,
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      />
 
-            password
-
-        })
-
-    }
-
-    return (
-
-        <form
-            onSubmit={handleSubmit}
-        >
-
-            <input
-                value={email}
-                onChange={(e) =>
-                    setEmail(e.target.value)
-                }
-                placeholder="Email"
-            />
-
-            <input
-                type="password"
-                value={password}
-                onChange={(e) =>
-                    setPassword(e.target.value)
-                }
-                placeholder="Password"
-            />
-
-            <button
-                type="submit"
-            >
-                Register
-            </button>
-
-        </form>
-
-    )
-
-}
+      <button type="submit">Register</button>
+    </form>
+  );
+};

@@ -5,6 +5,5 @@ export interface RegisterPayload{
 
 export interface User{
     user_id:string,
-    email:string,
-    password:string
+    email:string
 }
