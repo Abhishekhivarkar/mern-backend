@@ -11,8 +11,10 @@ function LoginForm() {
     const navigate = useNavigate()
     const [email,setEmail] = useState("")
      const [password,setPassword] = useState("")
-
+     console.log(useLogin)
+console.log("inside handle submit")
     const handleSubmit = (e:React.FormEvent) =>{
+        console.log("handle clicked")
         e.preventDefault()
 
         loginMutation.mutate({
@@ -20,11 +22,11 @@ function LoginForm() {
         },
     {
         onSuccess:(data) => {
+            
             setUser(data.data)
             navigate("/")
         }
     })
-
     }
   return (
     <div>
@@ -33,9 +35,9 @@ function LoginForm() {
             <input type="email" name="email" value={email} placeholder="Enter your email" onChange={(e)=>setEmail(e.target.value)}/>
 
             <input type="password" name="password" value={password} placeholder="Enter your password"  onChange={(e)=>setPassword(e.target.value)}/>
-
+            
             <button type="submit">
-    Enter
+              Enter
             </button>
         </form>
 

@@ -1,4 +1,4 @@
-import { REFRESH_COOKIE_NAME,REFRESH_COOKIE_OPTIONS } from "../constants/cookie.constant.js"
+import { ACCESS_COOKIE_NAME, ACCESS_COOKIE_OPTIONS, REFRESH_COOKIE_NAME,REFRESH_COOKIE_OPTIONS } from "../constants/cookie.constant.js"
 import type {Response} from "express"
 
 export const setRefreshTokenCookie = (refreshToken:string,res:Response):void =>{
@@ -15,3 +15,10 @@ export const removeRefreshTokenCookie = (res:Response):void =>{
     REFRESH_COOKIE_NAME
   )
 }
+export const setAccessTokenCookie = (accessToken:string,res:Response):void =>{
+  res.cookie(
+    ACCESS_COOKIE_NAME,
+    accessToken,
+    ACCESS_COOKIE_OPTIONS
+  )
+} 

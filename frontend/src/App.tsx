@@ -8,7 +8,7 @@ import LoginPage from './features/auth/pages/LoginPage'
 export default function App() {
   return (
     <>
-
+    <div className='min-h-screen bg-black text-white'>
     <AuthInitializer/>
     <Routes>
       <Route path="/"
@@ -40,7 +40,7 @@ export default function App() {
    />
   </Routes>
 
- 
+ </div>
 
     </>    
   )

@@ -22,6 +22,6 @@ export const getMeApi = async(
 export const loginApi = async (data:LoginPayload) =>{
     const response = await axios.post("/auth/login",data)
 
-
+console.log("Api response",response.data)
     return response.data
 }

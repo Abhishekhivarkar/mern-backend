@@ -16,7 +16,7 @@ import { redisClient } from "../../../configs/redis.config.js"
 
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
-import {removeRefreshTokenCookie, setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
+import {removeRefreshTokenCookie, setAccessTokenCookie, setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
 import {generateRefreshToken,generateAccessToken} from "../../../common/helpers/token.helper.js"
 import { AuthDto } from "../types/dtos/auth.dto.js"
 import { RegisterResponseDto } from "../types/dtos/register.response.dto.js"
@@ -137,6 +137,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
    id:user.user_id,sessionId
   })
 
+  setAccessTokenCookie(accessToken,res)
   logger.info({
     message:"User loggedin successfully",
     user_id:req.user_id
@@ -144,8 +145,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   return res.status(HTTP_STATUS.OK).json({
     success:true,
     message:MESSAGES.AUTH.LOGIN_SUCCESS,
-    data:user,
-    accessToken
+    data:user
   })
 })
 

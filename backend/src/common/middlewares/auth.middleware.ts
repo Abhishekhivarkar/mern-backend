@@ -57,7 +57,7 @@ import { pool } from "../../configs/db.config.js";
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken
     
     if (!token) {
       res.status(HTTP_STATUS.FORBIDDEN).json({

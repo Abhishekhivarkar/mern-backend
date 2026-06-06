@@ -5,5 +5,5 @@ export interface LoginResponseDto{
     email:string,
     password:string
   };
-  accessToken:string
+
 }
