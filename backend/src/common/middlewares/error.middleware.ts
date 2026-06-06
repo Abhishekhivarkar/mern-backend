@@ -7,6 +7,7 @@ import type {
 import jwt from "jsonwebtoken";
 
 import { AppError } from "../utils/appError.util.js";
+import { logger } from "../services/logger.service.js";
 
 const handlePostgresError = (
   err: any
@@ -101,6 +102,13 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+
+  logger.error({
+  message: err.message,
+  stack: err.stack,
+  error: err
+})
+
   err.statusCode =
     err.statusCode || 500;
 
