@@ -1,3 +1,4 @@
+
 import express from "express"
 import type {Request,Response} from "express"
 import authRoutes from "./modules/auth/routes/auth.routes.js"
@@ -8,9 +9,13 @@ import notificationRoutes from "./modules/notifications/routes/notification.rout
 import cookieParser from "cookie-parser"
 import helmet from "helmet"
 import { errorMiddleware } from "./common/middlewares/error.middleware.js"
-
+import cors from "cors"
 import auditLogsRoutes from "./modules/auditLogs/routes/auditLogs.routes.js"
 const app = express()
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true
+}))
 app.disable("x-powered-by")
 app.use(helmet())
 app.use(express.json())
