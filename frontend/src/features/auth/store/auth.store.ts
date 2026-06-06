@@ -22,10 +22,11 @@ export const useAuthStore = create<AuthState>(
             set({
                 user:null
             }),
-        setLoading:(loading)=>{
+        setLoading:(loading)=>
             set({
                 loading
             })
-        }
+        
 })
 )
+
