@@ -1,5 +1,6 @@
 import {register,findUserByEmail,findSessionByIdRepository,createBlackListTokenRepository,/*,findUserByEmailForLogin,*/
-findUserByEmailForLogin} from "../repositories/auth.repository.js"
+findUserByEmailForLogin,
+getMeRepository} from "../repositories/auth.repository.js"
 import {AppError} from "../../../common/utils/appError.util.js"
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
@@ -171,4 +172,18 @@ export const refreshTokenService = async(token?:string)=>{
         old_value
         
     }
+}
+
+
+
+export const getMeService = async (user_id:string | undefined) =>{
+    
+    const user = await getMeRepository(user_id)
+
+    if(!user){
+        throw new AppError(MESSAGES.AUTH.USER_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+    }
+
+
+    return user
 }

@@ -70,3 +70,15 @@ export const createBlackListTokenRepository = async(accessToken:string):Promise<
 //     })
 // }
 
+
+export const getMeRepository = async(user_id:string | undefined) =>{
+    const result = await pool.query(
+        `
+        SELECT user_id,email FROM users
+        WHERE user_id = $1 
+        `,
+        [user_id]
+    )
+
+    return result.rows[0]
+}       

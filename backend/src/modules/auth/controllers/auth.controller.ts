@@ -4,7 +4,7 @@ import type { Request, Response } from "express"
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js"
 
 // service imports
-import { registerService,loginService,logoutService,refreshTokenService} from "../services/auth.service.js"
+import { registerService,loginService,logoutService,refreshTokenService,getMeService} from "../services/auth.service.js"
 
 
 // import SessionModel from "../models/Session.model.js"
@@ -67,7 +67,7 @@ await auditLog(
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: MESSAGES.AUTH.REGISTER_SUCCESS,
-      data: user.user_id,
+      data: user,
     })
   }
 )
@@ -121,6 +121,8 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
     ]
   )
 
+  console.log(hashRefreshToken)
+
   await redisClient.set(
     `refreshToken:${user.user_id}`,
     hashRefreshToken,
@@ -142,7 +144,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   return res.status(HTTP_STATUS.OK).json({
     success:true,
     message:MESSAGES.AUTH.LOGIN_SUCCESS,
-    data:user.user_id,
+    data:user,
     accessToken
   })
 })
@@ -217,3 +219,13 @@ const newValue = {
 
 
 
+export const getMe =asyncHandler(async(req:Request,res:Response) =>{
+  const user_id = req.user_id
+ 
+  const user = await getMeService(user_id)
+
+  return res.status(HTTP_STATUS.OK).json({
+    success:true,
+    data:user
+  })
+})

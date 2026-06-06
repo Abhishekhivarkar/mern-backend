@@ -1,6 +1,9 @@
 export interface LoginResponseDto{
   success:boolean;
   message:string;
-  data:string;
+  data:{
+    email:string,
+    password:string
+  };
   accessToken:string
 }
