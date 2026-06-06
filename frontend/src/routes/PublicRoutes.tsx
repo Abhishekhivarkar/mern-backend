@@ -24,7 +24,7 @@ export const PublicRoute = ({
     if(user){
         return(
             <Navigate
-            to="/dashboard"
+            to="/"
             replace
             />
         )
