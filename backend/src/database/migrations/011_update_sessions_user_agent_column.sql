@@ -1,0 +1,2 @@
+ALTER TABLE sessions
+ALTER COLUMN user_agent TYPE TEXT;
