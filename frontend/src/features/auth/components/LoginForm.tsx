@@ -29,14 +29,17 @@ console.log("inside handle submit")
     })
     }
   return (
-    <div>
-        <form onSubmit={handleSubmit}>
+    <div className="flex justify-center items-center h-screen">
 
-            <input type="email" name="email" value={email} placeholder="Enter your email" onChange={(e)=>setEmail(e.target.value)}/>
 
-            <input type="password" name="password" value={password} placeholder="Enter your password"  onChange={(e)=>setPassword(e.target.value)}/>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2  rounded-lg p-2 bg-gray-700">
             
-            <button type="submit">
+            <input type="email" name="email" value={email} placeholder="Email" onChange={(e)=>setEmail(e.target.value)} className="border rounded p-1"/>
+
+           
+            <input type="password" name="password" value={password} placeholder="Password"  onChange={(e)=>setPassword(e.target.value)} className="border rounded p-1" />
+            
+            <button type="submit" className="bg-gray-400 rounded hover:bg-blue-500 tranisition-transform duration-150 active:scale-98">
               Enter
             </button>
         </form>

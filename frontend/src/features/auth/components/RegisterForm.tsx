@@ -29,21 +29,25 @@ export const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
+    <div className="flex justify-center items-center h-screen ">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 bg-gray-700  rounded-lg p-2 ">
+      <input 
+      className="border rounded p-1"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
       />
 
       <input
+      className="border rounded p-1"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
       />
 
-      <button type="submit">Register</button>
+      <button className="bg-gray-400 rounded hover:bg-blue-500 tranisition-transform duration-150 active:scale-98"type="submit">Register</button>
     </form>
+    </div>
   );
 };
