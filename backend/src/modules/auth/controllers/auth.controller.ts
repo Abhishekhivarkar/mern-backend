@@ -154,7 +154,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
 
 export const logout = asyncHandler(async(req:LogoutDto,res:Response<LogoutResponseDto>)=>{
   const refreshToken = req.cookies?.refreshToken
-  const accessToken = req.headers.authorization?.split(" ")[1]
+  const accessToken = req.headers.authorization?.split(" ")[1] || req.cookies.accessToken
 
   await logoutService(refreshToken as string,accessToken as string)
 
