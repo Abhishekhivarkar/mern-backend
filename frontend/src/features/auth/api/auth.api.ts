@@ -1,7 +1,7 @@
 import axios from "../../../common/api/axios";
 
-import type { RegisterPayload } from "../types/auth.types";
-import type { LoginPayload } from "../types/login.types";
+import type { RegisterPayload,LoginPayload } from "../types/auth.types";
+
 
 export const registerApi = async(
     data:RegisterPayload
@@ -23,5 +23,11 @@ export const loginApi = async (data:LoginPayload) =>{
     const response = await axios.post("/auth/login",data)
 
 console.log("Api response",response.data)
+    return response.data
+}
+
+export const logoutApi = async () =>{
+    const response = await axios.post("/auth/logout")
+
     return response.data
 }

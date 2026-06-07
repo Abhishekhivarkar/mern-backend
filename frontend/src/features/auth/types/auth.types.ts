@@ -7,3 +7,8 @@ export interface User{
     user_id:string,
     email:string
 }
+
+export interface LoginPayload{
+    email:string,
+    password:string
+}
