@@ -1,12 +1,7 @@
-import {Navigate} from "react-router-dom"
+import {Navigate,Outlet} from "react-router-dom"
 import { useAuthStore } from "../features/auth/store/auth.store"
-import type { ReactNode } from "react"
-interface ProtectedRouteProps{
-    children:ReactNode
-}
-export const ProtectedRoute=({
-    children
-}:ProtectedRouteProps) =>{
+
+export const ProtectedRoute=() =>{
     const user = useAuthStore(
         state => state.user
     )
@@ -28,5 +23,5 @@ export const ProtectedRoute=({
         )
     }
 
-    return children
+    return <Outlet/>
 }

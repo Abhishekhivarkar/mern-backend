@@ -1,14 +1,10 @@
-import {Navigate} from "react-router-dom"
+import {Navigate,Outlet} from "react-router-dom"
 
 import { useAuthStore } from "../features/auth/store/auth.store"
-import type { ReactNode } from "react"
 
-interface PublicRouteProps{
-    children:ReactNode
-}
-export const PublicRoute = ({
-    children
-}:PublicRouteProps) =>{
+
+
+export const PublicRoute = () =>{
     const user = useAuthStore(
         state => state.user
     )
@@ -30,5 +26,5 @@ export const PublicRoute = ({
         )
     }
 
-    return children
+    return <Outlet/>
 }
