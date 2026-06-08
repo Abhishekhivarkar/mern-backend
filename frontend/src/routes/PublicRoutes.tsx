@@ -1,7 +1,7 @@
 import {Navigate,Outlet} from "react-router-dom"
 
 import { useAuthStore } from "../features/auth/store/auth.store"
-
+import { Loader } from "../common/components/IsLoading"
 
 
 export const PublicRoute = () =>{
@@ -13,9 +13,7 @@ export const PublicRoute = () =>{
     )
 
     if(loading){
-        return(
-            <div>Loading...</div>
-        )
+        return <Loader/>
     }
     if(user){
         return(
