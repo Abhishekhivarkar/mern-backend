@@ -24,6 +24,7 @@ console.log("inside handle submit")
         onSuccess:(data) => {
             
             setUser(data.data)
+            
             navigate("/")
         }
     })
