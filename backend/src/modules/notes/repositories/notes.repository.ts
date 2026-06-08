@@ -250,19 +250,23 @@ export const createNotePurchase = async(
   seller_id:string,
   idempotency_key:string,
   amount:number,
+  razorpay_order_id: string,
+  razorpay_payment_id:string,
   client:PoolClient
 
 ) =>{   
   const result = await client.query(
     `
-    INSERT INTO note_purchases(note_id,buyer_id,seller_id,idempotency_key,amount) VALUES ($1,$2,$3,$4,$5) RETURNING *
+    INSERT INTO note_purchases(note_id,buyer_id,seller_id,idempotency_key,amount,razorpay_order_id,razorpay_payment_id) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *
     `,
     [
       note_id,
       buyer_id,
       seller_id,
       idempotency_key,
-      amount
+      amount,
+      razorpay_order_id,
+      razorpay_payment_id
     ]
   )
   return result.rows[0]
