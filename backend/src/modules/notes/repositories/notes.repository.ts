@@ -101,7 +101,7 @@ export const findNoteByIdRepository = async (
 ) => {
   const result =await client.query(
     `
-    SELECT * FROM notes WHERE note_id = $1
+    SELECT * FROM notes WHERE note_id = $1 AND is_deleted = FALSE
     `,
     [note_id]
   )
@@ -218,3 +218,52 @@ export const getMyNotesRepository = async (user_id:string) =>{
 
   return result.rows
 } 
+
+
+export const findPurchaseByNoteAndBuyer = async(note_id:string,buyer_id:string, client:PoolClient) =>{
+  const result = await client.query(
+    `
+    SELECT * FROM note_purchases 
+    WHERE note_id = $1 
+    AND buyer_id = $2
+    LIMIT 1
+    `,
+    [note_id,buyer_id]
+  )
+  return result.rows[0]
+}
+
+export const findPurchaseByIdempotencyKey = async(idempotencyKey:string,client:PoolClient) => {
+  const result = await client.query(
+    `
+    SELECT * FROM note_purchases
+    WHERE idempotency_key = $1
+    LIMIT 1 
+    `,[idempotencyKey]
+  )
+  return result.rows[0]
+}
+
+export const createNotePurchase = async(
+  note_id:string,
+  buyer_id:string,
+  seller_id:string,
+  idempotency_key:string,
+  amount:number,
+  client:PoolClient
+
+) =>{   
+  const result = await client.query(
+    `
+    INSERT INTO note_purchases(note_id,buyer_id,seller_id,idempotency_key,amount) VALUES ($1,$2,$3,$4,$5) RETURNING *
+    `,
+    [
+      note_id,
+      buyer_id,
+      seller_id,
+      idempotency_key,
+      amount
+    ]
+  )
+  return result.rows[0]
+}
