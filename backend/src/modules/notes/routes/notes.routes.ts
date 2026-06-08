@@ -1,4 +1,4 @@
- import {createNotes,getAllNotes,patchUpdateNotes,deleteNotes,pinNotes ,unPinNotes,getPinnedNotes, getMyNotes,createNotePurchase} from "../controllers/notes.controller.js"
+ import {createNotes,getAllNotes,patchUpdateNotes,deleteNotes,pinNotes ,unPinNotes,getPinnedNotes, getMyNotes,createNotePurchase, createNoteOrder} from "../controllers/notes.controller.js"
 import express from "express"
 import {authMiddleware} from "../../../common/middlewares/auth.middleware.js"
 import { validate } from "../../../common/middlewares/validation.middleware.js"
@@ -28,6 +28,8 @@ router.get("/pin",authMiddleware,getPinnedNotes)
 router.get("/my",authMiddleware,getMyNotes)
 
 router.post("/:note_id/purchase",authMiddleware,createNotePurchase)
+
+router.post("/:note_id/order",authMiddleware,createNoteOrder)
 export default router
 
 
