@@ -11,6 +11,7 @@ import {
   getPinnedNotesService,
   getMyNotesService,
   createNotePurchaseService,
+  createNoteOrderService,
 } from "../services/notes.service.js";
 // async handler
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js";
@@ -206,35 +207,57 @@ export const getMyNotes = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// export const createNotePurchase = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     const { note_id } = req.params;
 
-export const createNotePurchase = asyncHandler(
+//     const buyer_id = req.user_id!;
+
+//     const idempotency_key = req.headers["idempotency-key"] as
+//       | string
+//       | undefined;
+
+//     if (!idempotency_key) {
+//       throw new AppError(
+//         MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,
+//         HTTP_STATUS.BAD_REQUEST,
+//       );
+//     }
+
+//     const purchase = await createNotePurchaseService(
+//       note_id,
+//       buyer_id,
+//       idempotency_key,
+//     );
+
+//     return res.status(HTTP_STATUS.CREATED).json({
+//       success: true,
+//       message: MESSAGES.PRODUCT.PURCHASE_SUCCESS,
+//       data: purchase,
+//     });
+//   },
+// );
+
+export const createNoteOrder = asyncHandler(
   async (req: Request, res: Response) => {
-    const { note_id } = req.params;
+    const {note_id} = req.params;
+    const user_id = req.user_id;
+    const idempotency_key = req.headers["idempotency-key"] as
+      | string
+      | undefined;
 
-    const buyer_id = req.user_id!;
-
-    const idempotency_key = req.headers[
-      "idempotency-key"
-    ] as string | undefined;
-
-    if (!idempotency_key) {
-      throw new AppError(
-        MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,
-        HTTP_STATUS.BAD_REQUEST
-      );
+    if(!idempotency_key){
+      throw new AppError(MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,HTTP_STATUS.BAD_REQUEST)
     }
-
-    const purchase =
-      await createNotePurchaseService(
-        note_id,
-        buyer_id,
-        idempotency_key
-      );
+    const note_order = await createNoteOrderService(
+      note_id,
+      user_id,
+      idempotency_key,
+    );
 
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
-      message: MESSAGES.PRODUCT.PURCHASE_SUCCESS,
-      data: purchase,
+      data: {},
     });
-  }
+  },
 );
