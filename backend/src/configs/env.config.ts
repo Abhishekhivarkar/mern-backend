@@ -19,7 +19,9 @@ export const config = cleanEnv(process.env, {
   NODE_ENV: str(),
   REDIS_HOST: str(),
   REDIS_PORT: port(),
-  DATABASE_URL: url()
+  DATABASE_URL: url(),
+  RAZORPAY_KEY_ID: str(),
+  RAZORPAY_SECRET: str()
 })
 
 
