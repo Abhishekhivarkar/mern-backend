@@ -29,7 +29,8 @@ export const MESSAGES = {
     CAN_NOT_PURCHASE_OWN_NOTE: "Can not purchase own note!",
     ALREADY_PURCHASED: "Note already purchased!",
     NOTE_IS_FREE: "Note is free!",
-    PURCHASE_SUCCESS: "Note purchased successfuly!"
+    PURCHASE_SUCCESS: "Note purchased successfuly!",
+    NOTE_ORDER_CREATED:"Note order created successfully!",
   },
 
   LIMITER: {
