@@ -26,6 +26,8 @@ import {
   sendNoteUpdatedNotificationToUser,
 } from "../../../common/services/notification.service.js";
 import { pool } from "../../../configs/db.config.js";
+import { razorpay } from "../../../configs/razorpay.config.js";
+import { config } from "../../../configs/env.config.js";
 
 const clearNotesCache = async () => {
   const notesKeys = await redisClient.keys("notes:*");
@@ -334,12 +336,12 @@ export const getMyNotesService = async (user_id: string) => {
   return note;
 };
 
-
-
 export const createNotePurchaseService = async (
   note_id: string,
   buyer_id: string,
-  idempotency_key: string
+  idempotency_key: string,
+  razorpay_order_id:string,
+  razorpay_payment_id:string
 ) => {
   const client = await pool.connect();
 
@@ -349,7 +351,7 @@ export const createNotePurchaseService = async (
     // Idempotency Check
     const existingPurchase = await findPurchaseByIdempotencyKey(
       idempotency_key,
-      client
+      client,
     );
 
     if (existingPurchase) {
@@ -357,50 +359,43 @@ export const createNotePurchaseService = async (
       return existingPurchase;
     }
 
-    const note = await findNoteByIdRepository(
-      note_id,
-      client
-    );
+    const note = await findNoteByIdRepository(note_id, client);
 
     if (!note) {
-      throw new AppError(
-        MESSAGES.PRODUCT.NOT_FOUND,
-        HTTP_STATUS.NOT_FOUND
-      );
+      throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     }
 
     if (!note.is_published) {
       throw new AppError(
         MESSAGES.PRODUCT.NOT_PUBLISHED,
-        HTTP_STATUS.BAD_REQUEST
+        HTTP_STATUS.BAD_REQUEST,
       );
     }
 
     if (!note.is_paid || Number(note.price) <= 0) {
       throw new AppError(
         MESSAGES.PRODUCT.NOTE_IS_FREE,
-        HTTP_STATUS.BAD_REQUEST
+        HTTP_STATUS.BAD_REQUEST,
       );
     }
 
     if (note.user_id === buyer_id) {
       throw new AppError(
         MESSAGES.PRODUCT.CAN_NOT_PURCHASE_OWN_NOTE,
-        HTTP_STATUS.BAD_REQUEST
+        HTTP_STATUS.BAD_REQUEST,
       );
     }
 
-    const alreadyPurchased =
-      await findPurchaseByNoteAndBuyer(
-        note_id,
-        buyer_id,
-        client
-      );
+    const alreadyPurchased = await findPurchaseByNoteAndBuyer(
+      note_id,
+      buyer_id,
+      client,
+    );
 
     if (alreadyPurchased) {
       throw new AppError(
         MESSAGES.PRODUCT.ALREADY_PURCHASED,
-        HTTP_STATUS.BAD_REQUEST
+        HTTP_STATUS.BAD_REQUEST,
       );
     }
 
@@ -410,7 +405,9 @@ export const createNotePurchaseService = async (
       note.user_id,
       idempotency_key,
       Number(note.price),
-      client
+      razorpay_order_id,
+      razorpay_payment_id,
+      client,
     );
 
     await client.query("COMMIT");
@@ -421,5 +418,77 @@ export const createNotePurchaseService = async (
     throw error;
   } finally {
     client.release();
+  }
+};
+
+export const createNoteOrderService = async (
+  note_id: string,
+  user_id: string,
+  idempotency_key: string,
+) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    
+    const note = await findNoteByIdRepository(note_id, client);
+
+    if (!note) {
+      throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (!note.is_published) {
+      throw new AppError(
+        MESSAGES.PRODUCT.NOT_PUBLISHED,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    if (!note.is_paid || Number(note.price) <= 0) {
+      throw new AppError(
+        MESSAGES.PRODUCT.NOTE_IS_FREE,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    if (note.user_id === user_id) {
+      throw new AppError(
+        MESSAGES.PRODUCT.CAN_NOT_PURCHASE_OWN_NOTE,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const alreadyPurchased = await findPurchaseByNoteAndBuyer(
+      note_id,
+      user_id,
+      client,
+    );
+
+    if (alreadyPurchased) {
+      throw new AppError(MESSAGES.PRODUCT.ALREADY_PURCHASED, HTTP_STATUS.NOT_FOUND);
+    } 
+
+    const amountInPaise = Number(note.price) * 100
+
+   const order = await razorpay.orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt: note_id
+    })
+
+    await client.query("COMMIT")
+
+    return {
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      key: config.RAZORPAY_KEY_ID,
+      noteId: note.note_id
+    }
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    await client.release();
   }
 };
