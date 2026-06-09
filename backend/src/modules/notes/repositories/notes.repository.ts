@@ -10,15 +10,21 @@ export const createNotes = async (
   is_published:boolean,
   client: PoolClient,
 ):Promise<Notes>=> {
+  const is_paid = price > 0
  const result = await client.query(
   `
   INSERT INTO notes(
-  note_name,note_content,user_id,price,is_published
-  )VALUES($1,$2,$3,$4,$5)
+  note_name,
+  note_content,
+  user_id,
+  price,
+  is_paid,
+  is_published
+  )VALUES($1,$2,$3,$4,$5,$6)
   RETURNING *
   `,
   [
-    note_name,note_content,user_id,price,is_published
+    note_name,note_content,user_id,price,is_paid,is_published
   ]
 
  )
