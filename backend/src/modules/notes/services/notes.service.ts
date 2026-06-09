@@ -61,15 +61,8 @@ export const createNotesService = async (
 
     const note = await createNotes(note_name, note_content, user_id, price,is_published,client);
 
-    if(note.price > 0){
-      await pool.query(
-        `
-        UPDATE notes 
-        SET is_paid = TRUE
-        WHERE user_id = $1
-        `,
-        [user_id]
-      )
+    if(price<0){
+      throw new AppError(MESSAGES.PRODUCT.INVALID_PRICE,HTTP_STATUS.BAD_REQUEST)
     }
     await client.query("COMMIT");
     await clearNotesCache();
@@ -440,7 +433,7 @@ export const createNotePurchaseService = async (
 export const createNoteOrderService = async (
   note_id: string,
   user_id: string,
-  idempotency_key: string,
+
 ) => {
   const client = await pool.connect();
 
