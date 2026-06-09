@@ -32,6 +32,7 @@ export const MESSAGES = {
     PURCHASE_SUCCESS: "Note purchased successfuly!",
     PAID_NOTE:"Can not read paid note!",
     NOTE_ORDER_CREATED:"Note order created successfully!",
+    INVALID_PRICE:"Note price is invalid!"
   },
 
   LIMITER: {
