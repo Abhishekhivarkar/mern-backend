@@ -8,6 +8,7 @@ import { LogoutButton } from "./features/auth/components/LogoutButton";
 import { CreateNotePage } from "./features/notes/pages/CreateNotePage";
 import pageNotFound from "./assets/404.mp4"
 import { GetAllNotesPage } from "./features/notes/pages/GetAllNotesPage";
+import { Dashboard } from "./features/home/Dashboard";
 export default function App() {
   return (
     <>
@@ -36,8 +37,7 @@ export default function App() {
               path="/"
               element={
                 <>
-                  <div>Home page</div>
-                  <LogoutButton />
+                  <Dashboard/>
                 </>
               }
             />
