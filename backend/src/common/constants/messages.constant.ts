@@ -30,6 +30,7 @@ export const MESSAGES = {
     ALREADY_PURCHASED: "Note already purchased!",
     NOTE_IS_FREE: "Note is free!",
     PURCHASE_SUCCESS: "Note purchased successfuly!",
+    PAID_NOTE:"Can not read paid note!",
     NOTE_ORDER_CREATED:"Note order created successfully!",
   },
 
@@ -45,6 +46,8 @@ export const MESSAGES = {
   },
 
   COMMON:{
-      IDEMPOTENCY_KEY_REQUIRED: "Idempotency key is required!"
+      IDEMPOTENCY_KEY_REQUIRED: "Idempotency key is required!",
+      PAYMENT_VERIFIED: "Payment verified successfully!",
+      INVALID_PAYMENT_SIGNATURE:"Invalid payment signature!",
   }
 };
