@@ -65,7 +65,7 @@ export const loginService = async(body:LoginDto) =>{
     const normalizedEmail = body.email.trim().toLowerCase()
 
     const user = await findUserByEmailForLogin({email:normalizedEmail})
-    
+  
     if(!user){
      logger.warn({
       message:"USER_NOT_FOUND",
@@ -74,8 +74,10 @@ export const loginService = async(body:LoginDto) =>{
         throw new AppError(MESSAGES.AUTH.USER_NOT_FOUND,HTTP_STATUS.NOT_FOUND)
     }
 
+
     const comparePassword =await bcryptjs.compare(body.password,user.password)
 
+  
 
     if(!comparePassword){
         logger.warn({
