@@ -20,6 +20,11 @@ export const createNotesSchema = z.object({
      .string()
      .trim()
      .min(1,"Content is required"),
+
+price:z
+    .number(),
+is_published:z
+    .boolean()
 }).strict()
 
 export type createNotesDto = z.infer<typeof createNotesSchema>
