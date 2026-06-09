@@ -136,7 +136,7 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   const accessToken = generateAccessToken({
    id:user.user_id,sessionId
   })
-
+console.log(accessToken)
   setAccessTokenCookie(accessToken,res)
   logger.info({
     message:"User loggedin successfully",
@@ -145,7 +145,8 @@ export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto
   return res.status(HTTP_STATUS.OK).json({
     success:true,
     message:MESSAGES.AUTH.LOGIN_SUCCESS,
-    data:user
+    data:user,
+    accessToken
   })
 })
 
