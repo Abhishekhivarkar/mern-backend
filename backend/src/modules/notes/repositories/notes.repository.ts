@@ -6,17 +6,19 @@ export const createNotes = async (
   note_name: string,
   note_content: string,
   user_id: string,
+  price:number,
+  is_published:boolean,
   client: PoolClient,
 ):Promise<Notes>=> {
  const result = await client.query(
   `
   INSERT INTO notes(
-  note_name,note_content,user_id
-  )VALUES($1,$2,$3)
+  note_name,note_content,user_id,price,is_published
+  )VALUES($1,$2,$3,$4,$5)
   RETURNING *
   `,
   [
-    note_name,note_content,user_id
+    note_name,note_content,user_id,price,is_published
   ]
 
  )
@@ -95,7 +97,7 @@ export const deleteNotesRepository = async (
 };
 
 export const findNoteByIdRepository = async (
-  note_id: string,
+  note_id: string | string[],
 
   client: PoolClient,
 ) => {
@@ -220,8 +222,9 @@ export const getMyNotesRepository = async (user_id:string) =>{
 } 
 
 
-export const findPurchaseByNoteAndBuyer = async(note_id:string,buyer_id:string, client:PoolClient) =>{
-  const result = await client.query(
+export const findPurchaseByNoteAndBuyer = async(note_id:string | string[],buyer_id:string, client?:PoolClient) =>{
+  const db = client ?? pool
+  const result = await db.query(
     `
     SELECT * FROM note_purchases 
     WHERE note_id = $1 
@@ -233,8 +236,9 @@ export const findPurchaseByNoteAndBuyer = async(note_id:string,buyer_id:string, 
   return result.rows[0]
 }
 
-export const findPurchaseByIdempotencyKey = async(idempotencyKey:string,client:PoolClient) => {
-  const result = await client.query(
+export const findPurchaseByIdempotencyKey = async(idempotencyKey:string,client?:PoolClient) => {
+  const db = client ?? pool
+  const result = await db.query(
     `
     SELECT * FROM note_purchases
     WHERE idempotency_key = $1
@@ -252,10 +256,12 @@ export const createNotePurchase = async(
   amount:number,
   razorpay_order_id: string,
   razorpay_payment_id:string,
-  client:PoolClient
+  client?:PoolClient
 
 ) =>{   
-  const result = await client.query(
+
+  const db = client ?? pool
+  const result = await db.query(
     `
     INSERT INTO note_purchases(note_id,buyer_id,seller_id,idempotency_key,amount,razorpay_order_id,razorpay_payment_id) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *
     `,
@@ -267,6 +273,33 @@ export const createNotePurchase = async(
       amount,
       razorpay_order_id,
       razorpay_payment_id
+    ]
+  )
+  return result.rows[0]
+}
+
+
+export const getPurchasedNotesRepository = async(user_id:string | undefined) =>{
+  const result = await pool.query(
+    `
+    SELECT purchase_id,note_id,buyer_id,seller_id,amount,status,purchased_at FROM note_purchases
+    WHERE buyer_id = $1
+    `,
+    [user_id]
+  )
+  return result.rows
+}
+
+
+export const getNoteByIdRepository = async(note_id:string)=>{
+  const result = await pool.query(
+    `
+    SELECT * from notes 
+    WHERE note_id = $1 AND is_deleted = FALSE
+    LIMIT 1
+    `,
+    [
+      note_id
     ]
   )
   return result.rows[0]
