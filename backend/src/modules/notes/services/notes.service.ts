@@ -12,8 +12,10 @@ import {
   createNotePurchase,
   findPurchaseByIdempotencyKey,
   findPurchaseByNoteAndBuyer,
+  getPurchasedNotesRepository,
+  getNoteByIdRepository,
 } from "../repositories/notes.repository.js";
-
+import crypto from "crypto";
 import { redisClient } from "../../../configs/redis.config.js";
 
 import { AppError } from "../../../common/utils/appError.util.js";
@@ -28,6 +30,8 @@ import {
 import { pool } from "../../../configs/db.config.js";
 import { razorpay } from "../../../configs/razorpay.config.js";
 import { config } from "../../../configs/env.config.js";
+import { getPurchasedNotes } from "../controllers/notes.controller.js";
+
 
 const clearNotesCache = async () => {
   const notesKeys = await redisClient.keys("notes:*");
@@ -47,14 +51,26 @@ export const createNotesService = async (
   note_content: string,
 
   user_id: string,
+  price:number,
+  is_published:boolean
 ) => {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    const note = await createNotes(note_name, note_content, user_id, client);
+    const note = await createNotes(note_name, note_content, user_id, price,is_published,client);
 
+    if(note.price > 0){
+      await pool.query(
+        `
+        UPDATE notes 
+        SET is_paid = TRUE
+        WHERE user_id = $1
+        `,
+        [user_id]
+      )
+    }
     await client.query("COMMIT");
     await clearNotesCache();
     await sendNoteCreatedNotificationToUser(user_id, {
@@ -340,8 +356,8 @@ export const createNotePurchaseService = async (
   note_id: string,
   buyer_id: string,
   idempotency_key: string,
-  razorpay_order_id:string,
-  razorpay_payment_id:string
+  razorpay_order_id: string,
+  razorpay_payment_id: string,
 ) => {
   const client = await pool.connect();
 
@@ -430,7 +446,7 @@ export const createNoteOrderService = async (
 
   try {
     await client.query("BEGIN");
-    
+
     const note = await findNoteByIdRepository(note_id, client);
 
     if (!note) {
@@ -465,26 +481,29 @@ export const createNoteOrderService = async (
     );
 
     if (alreadyPurchased) {
-      throw new AppError(MESSAGES.PRODUCT.ALREADY_PURCHASED, HTTP_STATUS.NOT_FOUND);
-    } 
+      throw new AppError(
+        MESSAGES.PRODUCT.ALREADY_PURCHASED,
+        HTTP_STATUS.NOT_FOUND,
+      );
+    }
 
-    const amountInPaise = Number(note.price) * 100
+    const amountInPaise = Number(note.price) * 100;
 
-   const order = await razorpay.orders.create({
+    const order = await razorpay.orders.create({
       amount: amountInPaise,
       currency: "INR",
-      receipt: note_id
-    })
+      receipt: note_id,
+    });
 
-    await client.query("COMMIT")
+    await client.query("COMMIT");
 
     return {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
       key: config.RAZORPAY_KEY_ID,
-      noteId: note.note_id
-    }
+      noteId: note.note_id,
+    };
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -492,3 +511,80 @@ export const createNoteOrderService = async (
     await client.release();
   }
 };
+
+export const verifyPaymentService = async (
+  note_id: string,
+  buyer_id: string,
+  idempotency_key: string,
+  razorpay_order_id: string,
+  razorpay_payment_id: string,
+  razorpay_signature: string,
+) => {
+  const generateSignature = crypto
+    .createHmac("sha256", config.RAZORPAY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest("hex");
+
+
+  if (generateSignature !== razorpay_signature) {
+    throw new AppError(MESSAGES.COMMON.INVALID_PAYMENT_SIGNATURE, HTTP_STATUS.FORBIDDEN)
+  }
+
+  return await createNotePurchaseService(
+    note_id,
+    buyer_id,
+    idempotency_key,
+    razorpay_order_id,
+    razorpay_payment_id,
+  )
+
+};
+
+
+export const getPurchasedNotesService = async (user_id: string | undefined) => {
+
+  const purchasedNotes = getPurchasedNotesRepository(user_id)
+
+  if (!purchasedNotes) {
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+  }
+
+  return purchasedNotes
+}
+
+
+
+export const getNoteByIdService = async (note_id: string, user_id: string) => {
+
+
+
+    const note = await getNoteByIdRepository(note_id)
+
+    if (!note) {
+      throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    if (!note.is_paid) {
+      return{
+        ...note,
+        is_locked:false
+      }
+    }
+
+    const purchasedNote = await findPurchaseByNoteAndBuyer(note_id, user_id)
+
+
+    if (!purchasedNote) {
+      return {
+        ...note,
+        note_content: note.note_content.slice(0, 100) + "...",
+        is_locked: true
+      }
+
+    }
+
+    return{
+      ...note,
+      is_locked:false
+    }
+  
+}
