@@ -12,6 +12,9 @@ import {
   getMyNotesService,
   createNotePurchaseService,
   createNoteOrderService,
+  verifyPaymentService,
+  getPurchasedNotesService,
+  getNoteByIdService,
 } from "../services/notes.service.js";
 // async handler
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js";
@@ -35,7 +38,7 @@ export const createNotes = asyncHandler(
     req: Request<{}, NoteResponseDto, createNotesDto>,
     res: Response<NoteResponseDto>,
   ) => {
-    const { note_name, note_content } = req.body;
+    const { note_name, note_content,price,is_published } = req.body;
     const user_id = req.user_id!;
 
     logger.info({
@@ -43,7 +46,7 @@ export const createNotes = asyncHandler(
       title: note_name,
     });
 
-    await createNotesService(note_name, note_content, user_id);
+    await createNotesService(note_name, note_content, user_id,price,is_published);
 
     logger.info({
       message: "Note created successfully",
@@ -240,14 +243,17 @@ export const getMyNotes = asyncHandler(async (req: Request, res: Response) => {
 
 export const createNoteOrder = asyncHandler(
   async (req: Request, res: Response) => {
-    const {note_id} = req.params;
+    const { note_id } = req.params;
     const user_id = req.user_id;
     const idempotency_key = req.headers["idempotency-key"] as
       | string
       | undefined;
 
-    if(!idempotency_key){
-      throw new AppError(MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,HTTP_STATUS.BAD_REQUEST)
+    if (!idempotency_key) {
+      throw new AppError(
+        MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,
+        HTTP_STATUS.BAD_REQUEST,
+      );
     }
     const note_order = await createNoteOrderService(
       note_id,
@@ -257,7 +263,55 @@ export const createNoteOrder = asyncHandler(
 
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
-      data: {},
+      data: note_order,
     });
   },
 );
+
+export const verifyPyament = asyncHandler(async (req, res) => {
+  const { note_id } = req.params;
+  const buyer_id = req.user_id!;
+  const idempotency_key = req.headers["idempotency-key"] as string | undefined;
+
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+
+  const purchase = await verifyPaymentService(
+    note_id,
+    buyer_id,
+    idempotency_key,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+  );
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: MESSAGES.COMMON.PAYMENT_VERIFIED,
+    data: purchase,
+  });
+});
+
+export const getPurchasedNotes = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user_id = req.user_id
+    const purchasedNotes = await getPurchasedNotesService(user_id)
+
+    return res.status(HTTP_STATUS.OK).json({
+      success:true,
+      data:purchasedNotes
+    })
+  },
+);
+
+
+export const getNoteById = asyncHandler(async(req:Request,res:Response)=>{
+    const {note_id} = req.params
+    const user_id = req.user_id
+    const note = await getNoteByIdService(note_id,user_id)
+
+    return res.status(HTTP_STATUS.OK).json({
+      success:true,
+      data:note
+    })
+})
