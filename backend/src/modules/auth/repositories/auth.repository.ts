@@ -34,7 +34,7 @@ export const findUserByEmail = async(
 export const findUserByEmailForLogin = async({email}:{email:string}):Promise<User>=>{
  const result =await pool.query<User>(
   `
-  SELECT * FROM users WHERE email = $1
+  SELECT user_id,email,password FROM users WHERE email = $1
   LIMIT 1
   
   `,
