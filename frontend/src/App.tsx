@@ -8,11 +8,11 @@ import { LogoutButton } from "./features/auth/components/LogoutButton";
 import { CreateNotePage } from "./features/notes/pages/CreateNotePage";
 import pageNotFound from "./assets/404.mp4"
 import { GetAllNotesPage } from "./features/notes/pages/GetAllNotesPage";
-import { Dashboard } from "./features/home/Dashboard";
+import { Dashboard } from "./features/home/pages/Home";
 export default function App() {
   return (
     <>
-      <div className="min-h-screen bg-black text-white">
+      
         <AuthInitializer />
         <Routes>
           {/* Public routes */}
@@ -68,7 +68,7 @@ export default function App() {
             </Routes>
 
         
-      </div>
+      
     </>
   );
 }
