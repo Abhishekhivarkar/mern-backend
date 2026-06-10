@@ -25,7 +25,7 @@ function LoginForm() {
       {
         onSuccess: (data) => {
           setUser(data.data);
-
+        
           navigate("/");
         },
       },
