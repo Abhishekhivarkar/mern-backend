@@ -47,8 +47,8 @@ export const HeroSection = () => {
           students and experts.
         </h6>
         <div className="md:flex gap-4 ">
-          <div className="bg-blue-800 rounded-md px-2 py-1 flex justify-center items-center gap-2">
-            <button>Explore Notes </button>
+          <div className="bg-blue-800 rounded-md px-2 py-1 flex justify-center items-center gap-2 text-white">
+            <button className="">Explore Notes </button>
             <FaArrowRight />
           </div>
 
