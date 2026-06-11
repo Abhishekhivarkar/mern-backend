@@ -1,5 +1,8 @@
 export interface GetAllNotesQueryDto{
  page?:string,
  limit?:string,
- search?:string
+ search?:string,
+ category:string,
+ minPrice:number,
+ maxPrice:number
 }
