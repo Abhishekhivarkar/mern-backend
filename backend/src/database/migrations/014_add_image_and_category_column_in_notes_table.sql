@@ -1,0 +1,13 @@
+CREATE TYPE note_category as ENUM(
+    'PROGRAMMING',
+    'DATA_STRUCTURE',
+    'COLLEGE_NOTES',
+    'WEB_DEVELOPMENT',
+    'DATABASE'
+);
+
+ALTER TABLE notes
+add COLUMN category note_category NOT NULL DEFAULT 'PROGRAMMING';
+
+ALTER TABLE notes
+ADD COLUMN images VARCHAR(255);
