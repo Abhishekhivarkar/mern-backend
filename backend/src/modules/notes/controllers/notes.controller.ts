@@ -38,7 +38,16 @@ export const createNotes = asyncHandler(
     req: Request<{}, NoteResponseDto, createNotesDto>,
     res: Response<NoteResponseDto>,
   ) => {
-    const { note_name, note_content,price,is_published } = req.body;
+    const { note_name, note_content, price, is_published, category } = req.body;
+    console.log("name", note_name);
+    console.log("content", note_content);
+    console.log("price", price);
+    console.log("is_published", is_published);
+    console.log("category", category);
+    console.log("image", req.file);
+    if (!req.file) {
+      throw new AppError("Image is required", HTTP_STATUS.BAD_REQUEST);
+    }
     const user_id = req.user_id!;
 
     logger.info({
@@ -46,7 +55,15 @@ export const createNotes = asyncHandler(
       title: note_name,
     });
 
-    await createNotesService(note_name, note_content, user_id,price,is_published);
+    await createNotesService(
+      note_name,
+      note_content,
+      user_id,
+      price,
+      is_published,
+      category,
+      req.file,
+    );
 
     logger.info({
       message: "Note created successfully",
@@ -69,8 +86,20 @@ export const getAllNotes = asyncHandler(
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
+    const category = req.query.category;
+    const minPrice = Number(req.query.minPrice);
 
-    const notes = await getAllNotesService(page, limit, search);
+    const maxPrice = Number(req.query.maxPrice);
+
+    const notes = await getAllNotesService(
+      page,
+      limit,
+      search,
+      category,
+      minPrice,
+      maxPrice,
+    );
+    
     logger.info({
       message: "Notes received successfully",
     });
@@ -255,11 +284,7 @@ export const createNoteOrder = asyncHandler(
     //     HTTP_STATUS.BAD_REQUEST,
     //   );
     // }
-    const note_order = await createNoteOrderService(
-      note_id,
-      user_id,
-
-    );
+    const note_order = await createNoteOrderService(note_id, user_id);
 
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
@@ -294,24 +319,23 @@ export const verifyPyament = asyncHandler(async (req, res) => {
 
 export const getPurchasedNotes = asyncHandler(
   async (req: Request, res: Response) => {
-    const user_id = req.user_id
-    const purchasedNotes = await getPurchasedNotesService(user_id)
+    const user_id = req.user_id;
+    const purchasedNotes = await getPurchasedNotesService(user_id);
 
     return res.status(HTTP_STATUS.OK).json({
-      success:true,
-      data:purchasedNotes
-    })
+      success: true,
+      data: purchasedNotes,
+    });
   },
 );
 
+export const getNoteById = asyncHandler(async (req: Request, res: Response) => {
+  const { note_id } = req.params;
+  const user_id = req.user_id;
+  const note = await getNoteByIdService(note_id, user_id);
 
-export const getNoteById = asyncHandler(async(req:Request,res:Response)=>{
-    const {note_id} = req.params
-    const user_id = req.user_id
-    const note = await getNoteByIdService(note_id,user_id)
-
-    return res.status(HTTP_STATUS.OK).json({
-      success:true,
-      data:note
-    })
-})
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: note,
+  });
+});

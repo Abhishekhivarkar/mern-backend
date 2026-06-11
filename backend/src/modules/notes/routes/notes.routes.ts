@@ -3,11 +3,13 @@ import express from "express"
 import {authMiddleware} from "../../../common/middlewares/auth.middleware.js"
 import { validate } from "../../../common/middlewares/validation.middleware.js"
 import { createNotesSchema, note_idParamSchema, patchUpdateNotesSchema } from "../validations/notes.validations.js"
+import { upload } from "../../../common/middlewares/upload.middleware.js"
 
 const router = express.Router()
 
-router.post("/create",authMiddleware,validate({body:createNotesSchema}),createNotes)
+router.post("/create",authMiddleware,upload.single("images"),validate({body:createNotesSchema}),createNotes)
 
+console.log("CreateNotes",createNotes)
 
 router.get("/all",getAllNotes)
 

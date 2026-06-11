@@ -31,7 +31,8 @@ import { pool } from "../../../configs/db.config.js";
 import { razorpay } from "../../../configs/razorpay.config.js";
 import { config } from "../../../configs/env.config.js";
 import { getPurchasedNotes } from "../controllers/notes.controller.js";
-
+import { NoteCategory } from "../validations/notes.validations.js";
+import { uploadToCloudinary } from "../../../common/services/cloudinary.service.js";
 
 const clearNotesCache = async () => {
   const notesKeys = await redisClient.keys("notes:*");
@@ -51,19 +52,36 @@ export const createNotesService = async (
   note_content: string,
 
   user_id: string,
-  price:number,
-  is_published:boolean
+  price: number,
+  is_published: boolean,
+  category: NoteCategory,
+  images: Express.Multer.File,
 ) => {
   const client = await pool.connect();
 
   try {
+    const uploadedImage = await uploadToCloudinary(images.buffer, "notes");
+    const imageUrl = uploadedImage.secure_url;
+
     await client.query("BEGIN");
 
-    const note = await createNotes(note_name, note_content, user_id, price,is_published,client);
-
-    if(price<0){
-      throw new AppError(MESSAGES.PRODUCT.INVALID_PRICE,HTTP_STATUS.BAD_REQUEST)
+    if (price < 0) {
+      throw new AppError(
+        MESSAGES.PRODUCT.INVALID_PRICE,
+        HTTP_STATUS.BAD_REQUEST,
+      );
     }
+
+     const note = await createNotes(
+      note_name,
+      note_content,
+      user_id,
+      price,
+      is_published,
+      category,
+      imageUrl,
+      client,
+    );
     await client.query("COMMIT");
     await clearNotesCache();
     await sendNoteCreatedNotificationToUser(user_id, {
@@ -433,7 +451,6 @@ export const createNotePurchaseService = async (
 export const createNoteOrderService = async (
   note_id: string,
   user_id: string,
-
 ) => {
   const client = await pool.connect();
 
@@ -518,9 +535,11 @@ export const verifyPaymentService = async (
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
     .digest("hex");
 
-
   if (generateSignature !== razorpay_signature) {
-    throw new AppError(MESSAGES.COMMON.INVALID_PAYMENT_SIGNATURE, HTTP_STATUS.FORBIDDEN)
+    throw new AppError(
+      MESSAGES.COMMON.INVALID_PAYMENT_SIGNATURE,
+      HTTP_STATUS.FORBIDDEN,
+    );
   }
 
   return await createNotePurchaseService(
@@ -529,55 +548,44 @@ export const verifyPaymentService = async (
     idempotency_key,
     razorpay_order_id,
     razorpay_payment_id,
-  )
-
+  );
 };
 
-
 export const getPurchasedNotesService = async (user_id: string | undefined) => {
-
-  const purchasedNotes = getPurchasedNotesRepository(user_id)
+  const purchasedNotes = getPurchasedNotesRepository(user_id);
 
   if (!purchasedNotes) {
-    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
   }
 
-  return purchasedNotes
-}
-
-
+  return purchasedNotes;
+};
 
 export const getNoteByIdService = async (note_id: string, user_id: string) => {
+  const note = await getNoteByIdRepository(note_id);
 
-
-
-    const note = await getNoteByIdRepository(note_id)
-
-    if (!note) {
-      throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
-    }
-    if (!note.is_paid) {
-      return{
-        ...note,
-        is_locked:false
-      }
-    }
-
-    const purchasedNote = await findPurchaseByNoteAndBuyer(note_id, user_id)
-
-
-    if (!purchasedNote) {
-      return {
-        ...note,
-        note_content: note.note_content.slice(0, 100) + "...",
-        is_locked: true
-      }
-
-    }
-
-    return{
+  if (!note) {
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+  }
+  if (!note.is_paid) {
+    return {
       ...note,
-      is_locked:false
-    }
-  
-}
+      is_locked: false,
+    };
+  }
+
+  const purchasedNote = await findPurchaseByNoteAndBuyer(note_id, user_id);
+
+  if (!purchasedNote) {
+    return {
+      ...note,
+      note_content: note.note_content.slice(0, 100) + "...",
+      is_locked: true,
+    };
+  }
+
+  return {
+    ...note,
+    is_locked: false,
+  };
+};
