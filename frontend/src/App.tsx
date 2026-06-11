@@ -4,7 +4,6 @@ import { PublicRoute } from "./routes/PublicRoutes";
 import { RegisterPage } from "./features/auth/pages/RegisterPage";
 import { AuthInitializer } from "./features/auth/components/AuthInitializer";
 import LoginPage from "./features/auth/pages/LoginPage";
-import { LogoutButton } from "./features/auth/components/LogoutButton";
 import { CreateNotePage } from "./features/notes/pages/CreateNotePage";
 import pageNotFound from "./assets/404.mp4"
 import { GetAllNotesPage } from "./features/notes/pages/GetAllNotesPage";
@@ -12,7 +11,7 @@ import { Dashboard } from "./features/home/pages/Home";
 export default function App() {
   return (
     <>
-      
+    
         <AuthInitializer />
         <Routes>
           {/* Public routes */}
@@ -67,7 +66,7 @@ export default function App() {
 
             </Routes>
 
-        
+       
       
     </>
   );

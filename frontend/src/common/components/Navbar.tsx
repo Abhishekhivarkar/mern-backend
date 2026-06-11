@@ -6,7 +6,7 @@ export const Navbar = () => {
 
   return (
     <>
-<nav className="bg-white text-black shadow-lg">
+<nav className="bg-[#fefefe] text-black shadow-lg">
   <div className="flex justify-between items-center w-full p-4">
     {/* logo div */}
     <div className="flex justify-between items-center w-full md:w-auto">
