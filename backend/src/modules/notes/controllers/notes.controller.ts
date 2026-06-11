@@ -86,10 +86,10 @@ export const getAllNotes = asyncHandler(
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
-    const category = req.query.category;
-    const minPrice = Number(req.query.minPrice);
+    const category = req.query.category || "";
+    const minPrice = req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined
 
-    const maxPrice = Number(req.query.maxPrice);
+    const maxPrice = req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
 
     const notes = await getAllNotesService(
       page,
