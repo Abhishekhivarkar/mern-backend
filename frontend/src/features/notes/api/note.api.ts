@@ -10,6 +10,6 @@ export const createNoteApi = async (data:CreateNotePayload) =>{
 export const getNoteApi = async () =>{
     const response = await axios.get("/notes/all")
 
-
+    
     return response.data
 }

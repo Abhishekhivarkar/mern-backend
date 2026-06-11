@@ -10,7 +10,7 @@ export const GetAllNotesPage = () => {
 
   return (
     <div className="grid grid-col-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data.data.notes.map((note: any) => {
+      {data.data.notes.map((note) => {
         return <GetAllNotesCard key={note.note_id} note={note} />;
       })}
     </div>
