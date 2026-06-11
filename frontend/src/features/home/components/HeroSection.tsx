@@ -6,26 +6,32 @@ import { IoMdHappy } from "react-icons/io";
 
 import { FaRegUser } from "react-icons/fa";
 import bookImage from "../../../assets/books.png"
+
 const content = [
   {
+    id:1,
     logo: <GrNotes />,
     value: "10K+",
     name: "Notes",
   },
-  {
+  { id:2,
     logo: <IoMdHappy />,
     value: "5K+",
     name: "Happy Users",
   },
-  {
+  { id:3,
     logo: <FaRegUser />,
     value: "100+",
     name: "Top Sellers",
   },
 ];
+
+
 export const HeroSection = () => {
+
+
   return (
-    <div className="flex justify-between pt-7 bg-gray-100 p-8">
+    <div className="flex justify-between pt-7 bg-[#f6f4fd] p-8">
       <div className="flex flex-col w-1/2 pl-2 mt-3">
         <h6 className="rounded-full border font-extralight h-6 text-[12px] px-2 bg-violet-100 flex items-center gap-2 mb-3 w-40">
           <div className=" text-violet-500">
@@ -59,10 +65,10 @@ export const HeroSection = () => {
           </div>
         </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" >
         {content.map((i) => {
           return (
-            <div className="flex items-center gap-2 mt-7">
+            <div className="flex items-center gap-2 mt-7" key={i.id}>
               <div className="rounded-full bg-violet-100 text-violet-900 p-1">
                 {i.logo}
               </div>
