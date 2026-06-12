@@ -1,48 +1,28 @@
 import FeaturedNotesCard from "./FeaturedNotesCard";
-import exampleImage from "../../../assets/javascript.jpg"
-const cardData =[
 
+import { useGetAllFeaturedNotes } from "../../notes/hooks/useCreateNote";
+import { Loader } from "../../../common/components/IsLoading";
 
-    {
-        id:1,
-    img:exampleImage,
-    premium:"Premium",
-    content:"Detailed notes on react components with examples",
-    title:"React Complete Notes",
-    price:100
-},
-    { id:2,
-    img:exampleImage,
-    premium:"Premium",
-    content:"Detailed notes on react components with examples",
-    title:"React Complete Notes",
-    price:100
-},
-{    id:3,
-    img:exampleImage,
-    premium:"Premium",
-    content:"Detailed notes on react components with examples",
-    title:"React Complete Notes",
-    price:100
-},
-{id:4,
-    img:exampleImage,
-    premium:"Premium",
-    content:"Detailed notes on react components with examples",
-    title:"React Complete Notes",
-    price:100
-},
-{ id:5,
-    img:exampleImage,
-    premium:"Premium",
-    content:"Detailed notes on react components with examples",
-    title:"React Complete Notes",
-    price:100
-},
-
-] 
+type ResponseType = {
+    note_id: number;
+  images: string;
+  is_paid: string;
+  note_name: string;
+  note_content: string;
+  price: number;
+}
 
 export default function FeaturedNotesSection() {
+
+
+    const {
+        data,isLoading
+    } = useGetAllFeaturedNotes()
+  
+    if(isLoading){
+        return <Loader/>
+    }
+
   return (
     <div className="mt-15">
         <div className="flex justify-between mb-10 px-15">
@@ -51,9 +31,10 @@ export default function FeaturedNotesSection() {
         </div>
         <div className="grid grid-cols-1  md:grid-cols-3 lg:grid-cols-5 justify-items-center">
             {
-                cardData.map((i)=>{
+                data?.data?.map((i:ResponseType)=>{
+                    console.log("fix",i)
                     return(
-                        <FeaturedNotesCard data={i} key={i.id}/>
+                        <FeaturedNotesCard data={i} key={i.note_id}/>
                     )
                 })
             }
