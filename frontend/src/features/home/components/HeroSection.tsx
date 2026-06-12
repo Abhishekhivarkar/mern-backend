@@ -5,31 +5,44 @@ import { GrNotes } from "react-icons/gr";
 import { IoMdHappy } from "react-icons/io";
 
 import { FaRegUser } from "react-icons/fa";
-import bookImage from "../../../assets/books.png"
+import bookImage from "../../../assets/books.png";
+import { useGetNotes } from "../../notes/hooks/useCreateNote";
 
-const content = [
-  {
-    id:1,
-    logo: <GrNotes />,
-    value: "10K+",
-    name: "Notes",
-  },
-  { id:2,
-    logo: <IoMdHappy />,
-    value: "5K+",
-    name: "Happy Users",
-  },
-  { id:3,
-    logo: <FaRegUser />,
-    value: "100+",
-    name: "Top Sellers",
-  },
-];
-
-
+import CountUp from "react-countup";
+import { Loader } from "../../../common/components/IsLoading";
+console.log(CountUp)
 export const HeroSection = () => {
+  const { data, isLoading } = useGetNotes();
 
+  const totalNotes = data?.data?.total;
 
+  console.log(typeof totalNotes, totalNotes)
+  if (isLoading) {
+    return <Loader />;
+  }
+  const content = [
+    {
+      id: 1,
+      logo: <GrNotes />,
+      value: totalNotes || 0,
+      suffix: "+",
+      name: "Notes",
+    },
+    {
+      id: 2,
+      logo: <IoMdHappy />,
+      value: 5000,
+      suffix: "+",
+      name: "Happy Users",
+    },
+    {
+      id: 3,
+      logo: <FaRegUser />,
+      value: 100,
+      suffix: "+",
+      name: "Top Sellers",
+    },
+  ];
   return (
     <div className="flex justify-between pt-7 bg-[#f6f4fd] p-8">
       <div className="flex flex-col w-1/2 pl-2 mt-3">
@@ -65,24 +78,25 @@ export const HeroSection = () => {
           </div>
         </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" >
-        {content.map((i) => {
-          return (
-            <div className="flex items-center gap-2 mt-7" key={i.id}>
-              <div className="rounded-full bg-violet-100 text-violet-900 p-1">
-                {i.logo}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {content.map((i) => {
+            return (
+              <div className="flex items-center gap-2 mt-7" key={i.id}>
+                <div className="rounded-full bg-violet-100 text-violet-900 p-1">
+                  {i.logo}
+                </div>
+                <div className="text-black leading-none">
+                  <CountUp end={Number(i.value) || 0} duration={2} suffix={i.suffix}/>
+                  {i.name}
+
+                </div>
               </div>
-              <div className="text-black leading-none">
-                <p className="font-bold">{i.value}</p>
-                {i.name}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
       <div className="w-1/2  flex justify-center ">
-      <img src={bookImage} alt="Book Image" className="size-[px]" />
+        <img src={bookImage} alt="Book Image" className="size-[px]" />
       </div>
     </div>
   );
