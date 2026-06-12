@@ -12,6 +12,7 @@ export const createNotes = async (
   category: NoteCategory,
   images: string,
   client: PoolClient,
+  is_featured?:boolean
 ): Promise<Notes> => {
   const is_paid = price > 0;
   const result = await client.query(
@@ -24,8 +25,9 @@ export const createNotes = async (
   is_paid,
   is_published,
   category,
-  images
-  )VALUES($1,$2,$3,$4,$5,$6,$7,$8)
+  images,
+  is_featured
+  )VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
   RETURNING *
   `,
     [
@@ -37,6 +39,7 @@ export const createNotes = async (
       is_published,
       category,
       images,
+      is_featured
     ],
   );
 
@@ -352,3 +355,27 @@ export const getNoteByIdRepository = async (note_id: string) => {
   );
   return result.rows[0];
 };
+
+
+export const getNotesCategoriesCountRepository = async() =>{
+    const result = await pool.query(
+    `
+    SELECT category,COUNT(*) as count FROM 
+    notes GROUP BY category
+    
+    `
+    )
+    return result.rows
+}
+
+
+export const getAllFeaturedNotesRepository =async() => {
+ const result = await pool.query(
+`
+SELECT * from notes WHERE is_featured = TRUE ORDER BY created_at DESC LIMIT 5
+`
+
+ )
+
+ return result.rows
+}

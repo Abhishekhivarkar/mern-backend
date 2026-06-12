@@ -15,6 +15,8 @@ import {
   verifyPaymentService,
   getPurchasedNotesService,
   getNoteByIdService,
+  getNotesCategoriesCountService,
+  getAllFeaturedNotesService,
 } from "../services/notes.service.js";
 // async handler
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js";
@@ -38,13 +40,8 @@ export const createNotes = asyncHandler(
     req: Request<{}, NoteResponseDto, createNotesDto>,
     res: Response<NoteResponseDto>,
   ) => {
-    const { note_name, note_content, price, is_published, category } = req.body;
-    console.log("name", note_name);
-    console.log("content", note_content);
-    console.log("price", price);
-    console.log("is_published", is_published);
-    console.log("category", category);
-    console.log("image", req.file);
+    const { note_name, note_content, price, is_published, category, is_featured} = req.body;
+   
     if (!req.file) {
       throw new AppError("Image is required", HTTP_STATUS.BAD_REQUEST);
     }
@@ -63,6 +60,7 @@ export const createNotes = asyncHandler(
       is_published,
       category,
       req.file,
+      is_featured
     );
 
     logger.info({
@@ -339,3 +337,24 @@ export const getNoteById = asyncHandler(async (req: Request, res: Response) => {
     data: note,
   });
 });
+
+
+export const getNotesCategoriesCount = asyncHandler(async(req:Request,res:Response)=>{
+   const notesCategorysCount = await getNotesCategoriesCountService()
+
+   return res.status(HTTP_STATUS.OK).json({
+    message:true,
+    data:notesCategorysCount
+   })
+
+})
+
+
+export const getAllFeaturedNotes = asyncHandler(async(req:Request,res:Response)=>{
+  const featuredNotes = await getAllFeaturedNotesService()
+
+  return res.status(HTTP_STATUS.OK).json({
+    message:true,
+    data:featuredNotes
+  })
+})

@@ -14,6 +14,8 @@ import {
   findPurchaseByNoteAndBuyer,
   getPurchasedNotesRepository,
   getNoteByIdRepository,
+  getNotesCategoriesCountRepository,
+  getAllFeaturedNotesRepository,
 } from "../repositories/notes.repository.js";
 import crypto from "crypto";
 import { redisClient } from "../../../configs/redis.config.js";
@@ -56,6 +58,7 @@ export const createNotesService = async (
   is_published: boolean,
   category: NoteCategory,
   images: Express.Multer.File,
+  is_featured?:boolean
 ) => {
   const client = await pool.connect();
 
@@ -81,6 +84,7 @@ export const createNotesService = async (
       category,
       imageUrl,
       client,
+      is_featured
     );
     await client.query("COMMIT");
     await clearNotesCache();
@@ -592,3 +596,24 @@ export const getNoteByIdService = async (note_id: string, user_id: string) => {
     is_locked: false,
   };
 };
+
+export const getNotesCategoriesCountService = async() =>{
+  const notesCategoriesCount = await getNotesCategoriesCountRepository()
+
+  if(!notesCategoriesCount || notesCategoriesCount.length === 0) {
+    throw new AppError("0 notes found",HTTP_STATUS.BAD_REQUEST)
+  }
+
+  return notesCategoriesCount
+}
+
+
+export const getAllFeaturedNotesService = async() =>{
+  const featuredNotes = await getAllFeaturedNotesRepository()
+
+  if(!featuredNotes || featuredNotes.length === 0){
+    throw new AppError(MESSAGES.PRODUCT.ZERO_NOTES,HTTP_STATUS.NOT_FOUND)
+  }
+
+  return featuredNotes
+}

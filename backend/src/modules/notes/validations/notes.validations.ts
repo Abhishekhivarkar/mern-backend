@@ -30,9 +30,14 @@ export const createNotesSchema = z
     note_content: z.string().trim().min(1, "Content is required"),
 
     price: z.coerce.number().min(0,"Price cannot be negative"),
-    is_published: z.coerce.boolean(),
-    category: NoteCategoryEnum
-  })
+    is_published: z.coerce.boolean().optional().default(false),
+    category: NoteCategoryEnum,
+
+    is_featured: z
+        .coerce.boolean().optional().default(false)
+  }
+
+)
   .strict();
 
 export type createNotesDto = z.infer<typeof createNotesSchema>;
