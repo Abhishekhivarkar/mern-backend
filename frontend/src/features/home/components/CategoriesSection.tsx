@@ -1,59 +1,55 @@
 import { Loader } from "../../../common/components/IsLoading";
-import { useGetNotes } from "../../notes/hooks/useCreateNote";
+import { useGetNotesCategoriesCount } from "../../notes/hooks/useCreateNote";
+import { FaCode } from "react-icons/fa";
+import { FaDatabase } from "react-icons/fa6";
+import { PiTreeStructureFill } from "react-icons/pi";
+import { FaReact } from "react-icons/fa";
+import { CgMenuGridO } from "react-icons/cg";
+import { FaGraduationCap } from "react-icons/fa";
 
-const ProgrammingLogo = () => {
-  return <div>{"</>"}</div>;
+type ResponseType = {
+  id:number,
+  category:string,
+  count:string
+}
+const getCategoryLogo = (category: string) => {
+  switch (category) {
+    case "PROGRAMMING":
+      return <FaCode />;
+
+    case "DATA_STRUCTURE":
+      return <PiTreeStructureFill />;
+
+    case "COLLEGE_NOTES":
+      return <FaGraduationCap />;
+
+    case "WEB_DEVELOPMENT":
+      return <FaReact />;
+
+    case "DATABASE":
+      return <FaDatabase />
+;
+
+    default:
+      return "bg-violet-500";
+  }
 };
 
-// interface Notes{
-//     logo:Element,
-//     name:string,
-//     values:string
-// }
-const notes = [
-  {
-    id: 1,
-    logo: <ProgrammingLogo />,
-    name: "Programming",
-    values: "1000+ Notes",
-  },
-  {
-    id: 2,
-    logo: <ProgrammingLogo />,
-    name: "Data Structure",
-    values: "1000+ Notes",
-  },
-  {
-    id: 3,
-    logo: <ProgrammingLogo />,
-    name: "College Notes",
-    values: "1000+ Notes",
-  },
-  {
-    id: 4,
-    logo: <ProgrammingLogo />,
-    name: "Web Develpoment",
-    values: "1000+ Notes",
-  },
-  { id: 5, logo: <ProgrammingLogo />, name: "Database", values: "1000+ Notes" },
-  { id: 6, logo: <ProgrammingLogo />, name: "View All", values: "1000+ Notes" },
-];
-
-const getColorClass = (name: string) => {
-  switch (name) {
-    case "Programming":
+const getColorClass = (category: string) => {
+  switch (category) {
+    case "PROGRAMMING":
       return "bg-blue-700";
 
-    case "Data Structure":
+    case "DATA_STRUCTURE":
       return "bg-green-700";
 
-    case "College Notes":
+    case "COLLEGE_NOTES":
       return "bg-yellow-500";
 
-    case "Web Develpoment":
+    case "WEB_DEVELOPMENT":
       return "bg-red-400";
 
-    case "Database":
+    case "DATABASE":
       return "bg-blue-500";
 
     default:
@@ -61,50 +57,46 @@ const getColorClass = (name: string) => {
   }
 };
 export const CategoriesSection = () => {
-  const { data, isLoading } = useGetNotes();
-
-  // const countProgramingNotes = data.data
-
-  
-  const notes = data?.data?.notes ?? [];
-
-  const categoryCount = notes.reduce<Record<string, number>>((acc, note) => {
-    acc[note.category] = (acc[note.category] || 0) + 1;
-    return acc;
-  }, {});
-
-  // let categoryCount = category.reduce((acc,note)=>{
-  //     acc[note.category]
-  // },{} as Record<string,number>)
+  const { data, isLoading } = useGetNotesCategoriesCount();
 
   if (isLoading) {
     return <Loader />;
   }
 
   return (
-    <div className="bg-white mt-4">
+    <div className="bg-white mt-4 px-15">
       <div className="flex flex-col items-center mb-3">
-        <h1 className="text-black  ">Popular Categories</h1>
+        <h1 className="text-black  font-bold">Popular Categories</h1>
         <div className="text-violet-500  rounded font-bold ">{"_______"}</div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6  gap-5 ">
-        {notes.map((i) => {
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6  gap-5">
+        {data?.data?.map((i:ResponseType) => {
+         
           return (
-            <div
-              className="flex flex-col justify-center items-center bg-gray-50 py-4 shadow"
-              key={i.id}
-            >
+            <>
               <div
-                className={` rounded py-2 px-1  text-white ${getColorClass(i.name)} `}
+                className="flex flex-col justify-center items-center bg-gray-50 py-4 shadow gap-2"
+                key={i.id}
               >
-                {i.logo}
+                <div
+                  className={` rounded py-2 px-2  text-white  ${getColorClass(i.category)} `}
+                >
+                  {getCategoryLogo(i.category)}
+                </div>
+                <p className="font-bold text-sm ">{i.category}</p>
+                <p>{i.count}</p>
               </div>
-              <p className="font-bold text-sm ">{i.name}</p>
-              <p>{i.values}</p>
-            </div>
+            </>
           );
         })}
+         <div className="flex flex-col justify-center items-center bg-gray-50 py-4 shadow cursor-pointer">
+    <div className="rounded py-2 px-2 text-white bg-violet-500">
+      <CgMenuGridO />
+    </div>
+    <p className="font-bold text-sm">View All</p>
+    <p>All Notes</p>
+  </div>
       </div>
     </div>
   );
