@@ -13,3 +13,15 @@ export const getNoteApi = async () =>{
     
     return response.data
 }
+
+export const getNotesCategoriesCountApi = async() =>{
+    const response = await axios.get("/notes/count")
+
+    return response.data
+}
+
+export const getAllFeaturedNotesApi = async() =>{
+    const response = await axios.get("/notes/featured")
+
+    return response.data
+}

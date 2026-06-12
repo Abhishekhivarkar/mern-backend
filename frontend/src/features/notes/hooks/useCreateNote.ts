@@ -1,26 +1,49 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import {
+  createNoteApi,
+  getAllFeaturedNotesApi,
+  getNoteApi,
+  getNotesCategoriesCountApi,
+} from "../api/note.api";
 
-import {useMutation,useQuery,useQueryClient} from "@tanstack/react-query"
+export const useCreateNote = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createNoteApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notes-all"],
+      });
 
+      queryClient.invalidateQueries({
+        queryKey:["notes-category-count"]
+      })
 
-import { createNoteApi, getNoteApi } from "../api/note.api"
+      queryClient.invalidateQueries({
+        queryKey:["notes-featured-all"]
+      })
+    },
+  });
+};
 
-export const useCreateNote = () =>{
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn:createNoteApi,
-        onSuccess:()=>{
-                queryClient.invalidateQueries({
-                    queryKey:["notes"]
-                })
-        }
-    })
-}
+export const useGetNotes = () => {
+  return useQuery({
+    queryKey: ["notes-all"],
+    queryFn: getNoteApi,
+  });
+};
 
-export const useGetNotes = () =>{
-    return useQuery({
-        queryKey:["notes"],
-        queryFn:getNoteApi
-    })
-}
+export const useGetNotesCategoriesCount = () => {
+  return useQuery({
+    queryKey: ["notes-category-count"],
+    queryFn: getNotesCategoriesCountApi,
+  });
+};
 
+export const useGetAllFeaturedNotes = () => {
+  return useQuery({
+    queryKey: ["notes-featured-all"],
+    queryFn: getAllFeaturedNotesApi,
+  });
+};
