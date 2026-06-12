@@ -13,10 +13,10 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [show, setShow] = useState(false);
   const [password, setPassword] = useState("");
-  console.log(useLogin);
-  console.log("inside handle submit");
+
+
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("handle clicked");
+  
     e.preventDefault();
 
     loginMutation.mutate(
