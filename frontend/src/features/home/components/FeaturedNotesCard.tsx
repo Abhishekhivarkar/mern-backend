@@ -16,7 +16,7 @@ export default function FeaturedNotesCard({ data }: FeaturedNotesCardProp) {
 
 
   return (
-    <div className="h-60 w-50  rounded-lg  mb-10 overflow-hidden shadow-md">
+    <div data-aos="fade-right" className="h-60 w-50  rounded-lg  mb-10 overflow-hidden shadow-md">
       <div className="flex  h-1/2  w-full  relative  mb-1">
         <img src={data.images} alt="" className="w-full object-fill " />
         <p className={`absolute top-4 right-3 font-semibold rounded-full text-[10px] ${ data.is_paid ? "bg-amber-300" : "bg-green-300"} px-1 shadow`}>
