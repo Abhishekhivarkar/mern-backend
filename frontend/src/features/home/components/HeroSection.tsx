@@ -8,7 +8,7 @@ import { FaRegUser } from "react-icons/fa";
 import bookImage from "../../../assets/books.png";
 import { useGetNotes } from "../../notes/hooks/useCreateNote";
 
-import CountUp from "react-countup";
+import {CountUp} from "@sdawit/react-countup-lite"
 import { Loader } from "../../../common/components/IsLoading";
 console.log(CountUp)
 export const HeroSection = () => {
@@ -45,7 +45,7 @@ export const HeroSection = () => {
   ];
   return (
     <div className="flex justify-between pt-7 bg-[#f6f4fd] p-8">
-      <div className="flex flex-col w-1/2 pl-2 mt-3">
+      <div className="flex flex-col w-1/2 pl-2 ">
         <h6 className="rounded-full border font-extralight h-6 text-[12px] px-2 bg-violet-100 flex items-center gap-2 mb-3 w-40">
           <div className=" text-violet-500">
             <CgNotes />
