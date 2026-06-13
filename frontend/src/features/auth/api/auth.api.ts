@@ -20,7 +20,9 @@ export const getMeApi = async(
 }
 
 export const loginApi = async (data:LoginPayload) =>{
-    const response = await axios.post("/auth/login",data)
+    const response = await axios.post("/auth/login",data,{
+        withCredentials:true
+    })
 
 console.log("Api response",response.data)
     return response.data

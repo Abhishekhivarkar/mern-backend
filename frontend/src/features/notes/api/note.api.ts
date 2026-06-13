@@ -7,8 +7,20 @@ export const createNoteApi = async (data:CreateNotePayload) =>{
     return response.data
 }
 
-export const getNoteApi = async () =>{
-    const response = await axios.get("/notes/all")
+export interface GetAllNotesParams{
+    page?:number,
+    limit?:number,
+    search?:string,
+    category?:string,
+    minPrice?:number,
+    maxPrice?:number
+}
+export const getNoteApi = async (
+    params?:GetAllNotesParams
+) =>{
+    const response = await axios.get("/notes/all",{
+        params
+    })
 
     
     return response.data

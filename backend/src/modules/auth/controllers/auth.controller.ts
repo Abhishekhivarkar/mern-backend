@@ -16,7 +16,7 @@ import { redisClient } from "../../../configs/redis.config.js"
 
 import {HTTP_STATUS} from "../../../common/constants/httpStatus.constant.js"
 import {MESSAGES} from "../../../common/constants/messages.constant.js"
-import {removeRefreshTokenCookie, setAccessTokenCookie, setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
+import {removeAccessTokneCookie, removeRefreshTokenCookie, setAccessTokenCookie, setRefreshTokenCookie} from "../../../common/helpers/cookie.helper.js"
 import {generateRefreshToken,generateAccessToken} from "../../../common/helpers/token.helper.js"
 import { AuthDto } from "../types/dtos/auth.dto.js"
 import { RegisterResponseDto } from "../types/dtos/register.response.dto.js"
@@ -75,6 +75,7 @@ await auditLog(
 
 //login
 export const login = asyncHandler(async(req:Request<{},LoginResponseDto,LoginDto>,res:Response<LoginResponseDto>)=>{
+
 
   logger.info({
     message:"Login request received",
@@ -160,7 +161,7 @@ export const logout = asyncHandler(async(req:LogoutDto,res:Response<LogoutRespon
   await logoutService(refreshToken as string,accessToken as string)
 
    removeRefreshTokenCookie(res)
-
+  removeAccessTokneCookie(res)
    return res.status(200).json({
     success:true,
     message:"User logout successfully"
@@ -197,6 +198,7 @@ export const refreshToken = asyncHandler(async(req,res) =>{
   )
 
   setRefreshTokenCookie(newRefreshToken,res)
+  setAccessTokenCookie(accessToken,res)
 const newValue = {
   ...token.session,
   refresh_token_hash: newRefreshTokenHash
