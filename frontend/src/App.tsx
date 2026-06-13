@@ -8,7 +8,17 @@ import { CreateNotePage } from "./features/notes/pages/CreateNotePage";
 import pageNotFound from "./assets/404.mp4"
 import { GetAllNotesPage } from "./features/notes/pages/GetAllNotesPage";
 import { Dashboard } from "./features/home/pages/Home";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useEffect } from "react";
 export default function App() {
+
+  useEffect(()=>{
+    AOS.init({
+      duration:800,
+      once:true
+    })
+  },[])
   return (
     <>
     
