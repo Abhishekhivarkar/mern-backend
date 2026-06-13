@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { LogoutButton } from "../../features/auth/components/LogoutButton";
+import BrandLogo from "./BrandLogo";
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -10,11 +11,8 @@ export const Navbar = () => {
   <div className="flex justify-between items-center w-full p-4">
     {/* logo div */}
     <div className="flex justify-between items-center w-full md:w-auto">
-      <div className="font-bold">
-        <p>
-          Note<span className="text-violet-500">Hub</span>
-        </p>
-      </div>
+      <BrandLogo/>
+
 
       <button
         className="md:hidden"
