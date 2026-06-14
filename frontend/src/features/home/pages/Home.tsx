@@ -15,7 +15,10 @@ export const Dashboard = ()  => {
    <div className=' min-h-screen flex flex-col gap-7 '>
       <Navbar/>
       <main className='flex-1'>
-           <HeroSection/>
+        <div className="pt-20">
+          <HeroSection/>
+        </div>
+           
    <CategoriesSection/>
    <FeaturedNotesSection/>
    <WhyChooseUsSection/>
