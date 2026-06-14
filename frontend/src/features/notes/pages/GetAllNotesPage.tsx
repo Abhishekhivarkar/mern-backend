@@ -8,7 +8,10 @@ export default function GetAllNotesPage() {
       <div className="min-h-screen flex flex-col gap-7">
         <Navbar/>
           <main className="flex-1">
+            <div className="mt-20">
               <NotesFilterSection/>
+            </div>
+              
           </main>
         <Footer/>
         </div>
