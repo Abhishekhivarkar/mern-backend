@@ -20,7 +20,7 @@ export function LogoutButton() {
         })
     }
   return ( 
-    <div className='rounded-full w-17 text-center bg-red-800 h-7 text-white'>
+    <div className='rounded-full w-17 text-center bg-red-800 h-7 text-white px-1 py-1 flex items-center justify-center'>
         <button type='submit' onClick={handleLogout}>
             Logout
         </button>

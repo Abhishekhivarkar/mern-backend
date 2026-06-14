@@ -1,18 +1,17 @@
-import { Loader } from "../../../common/components/IsLoading";
-import { GetAllNotesCard } from "../components/GetAllNotesCard";
-import { useGetNotes } from "../hooks/useCreateNote";
+import Footer from "../../../common/components/Footer";
+import { Navbar } from "../../../common/components/Navbar";
+import NotesFilterSection from "../components/NotesFilterSection";
 
-export const GetAllNotesPage = () => {
-  const { data, isLoading } = useGetNotes();
-  if (isLoading) {
-    return <Loader />;
-  }
-
+export default function GetAllNotesPage() {
   return (
-    <div className="grid grid-col-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data.data.notes.map((note) => {
-        return <GetAllNotesCard key={note.note_id} note={note} />;
-      })}
+    <div>
+      <div className="min-h-screen flex flex-col gap-7">
+        <Navbar/>
+          <main className="flex-1">
+              <NotesFilterSection/>
+          </main>
+        <Footer/>
+        </div>
     </div>
-  );
-};
+  )
+}

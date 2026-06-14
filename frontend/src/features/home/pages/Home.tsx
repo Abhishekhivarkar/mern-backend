@@ -12,13 +12,16 @@ export const Dashboard = ()  => {
   return (
   
    <>
-   <div className='flex flex-col gap-7 '>
+   <div className=' min-h-screen flex flex-col gap-7 '>
       <Navbar/>
-   <HeroSection/>
+      <main className='flex-1'>
+           <HeroSection/>
    <CategoriesSection/>
    <FeaturedNotesSection/>
    <WhyChooseUsSection/>
   <SellerSection/>
+      </main>
+
   <Footer />
    </div>
  

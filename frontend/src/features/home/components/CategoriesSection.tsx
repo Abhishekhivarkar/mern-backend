@@ -1,82 +1,18 @@
 import { Loader } from "../../../common/components/IsLoading";
-import { useGetNotesCategoriesCount } from "../../notes/hooks/useCreateNote";
-import { FaCode } from "react-icons/fa";
-import { FaDatabase } from "react-icons/fa6";
-import { PiTreeStructureFill } from "react-icons/pi";
-import { FaReact } from "react-icons/fa";
+
 import { CgMenuGridO } from "react-icons/cg";
-import { FaGraduationCap } from "react-icons/fa";
+
+import { useGetNotesCategoriesCount } from "../../notes/hooks/useGetNotesCategoryCount";
+import { categoryName, getCategoryLogo, getColorClass } from "./CategoryHelper";
 
 type ResponseType = {
   id:number,
   category:string,
   count:string
 }
-const getCategoryLogo = (category: string) => {
-  switch (category) {
-    case "PROGRAMMING":
-      return <FaCode />;
 
-    case "DATA_STRUCTURE":
-      return <PiTreeStructureFill />;
 
-    case "COLLEGE_NOTES":
-      return <FaGraduationCap />;
 
-    case "WEB_DEVELOPMENT":
-      return <FaReact />;
-
-    case "DATABASE":
-      return <FaDatabase />
-;
-
-    default:
-      return "bg-violet-500";
-  }
-};
-
-const categoryName = (category: string) => {
-  switch (category) {
-    case "PROGRAMMING":
-      return "Programming";
-
-    case "DATA_STRUCTURE":
-      return "Data Structure";
-
-    case "COLLEGE_NOTES":
-      return "College Notes";
-
-    case "WEB_DEVELOPMENT":
-      return "Web Development";
-
-    case "DATABASE":
-      return "Database";
-
-    default:
-      return "View All";
-  }
-};
-const getColorClass = (category: string) => {
-  switch (category) {
-    case "PROGRAMMING":
-      return "bg-blue-700";
-
-    case "DATA_STRUCTURE":
-      return "bg-green-700";
-
-    case "COLLEGE_NOTES":
-      return "bg-yellow-500";
-
-    case "WEB_DEVELOPMENT":
-      return "bg-red-400";
-
-    case "DATABASE":
-      return "bg-blue-500";
-
-    default:
-      return "bg-violet-500";
-  }
-};
 export const CategoriesSection = () => {
   const { data, isLoading } = useGetNotesCategoriesCount();
 

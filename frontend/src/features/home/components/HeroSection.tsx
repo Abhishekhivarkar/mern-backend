@@ -6,10 +6,11 @@ import { IoMdHappy } from "react-icons/io";
 
 import { FaRegUser } from "react-icons/fa";
 import bookImage from "../../../assets/books.png";
-import { useGetNotes } from "../../notes/hooks/useCreateNote";
+
 
 import {CountUp} from "@sdawit/react-countup-lite"
 import { Loader } from "../../../common/components/IsLoading";
+import { useGetNotes } from "../../notes/hooks/useGetNotes";
 console.log(CountUp)
 export const HeroSection = () => {
   const { data, isLoading } = useGetNotes();
@@ -66,7 +67,7 @@ export const HeroSection = () => {
           students and experts.
         </h6>
         <div className="md:flex gap-4 ">
-          <div className="bg-blue-800 rounded-md px-2 py-1 flex justify-center items-center gap-2 text-white">
+          <div className="bg-blue-800 rounded-md px-2 py-1 flex justify-center items-center gap-2 text-white mb-3 md:mb-0 lg:mb-0">
             <button className="">Explore Notes </button>
             <FaArrowRight />
           </div>

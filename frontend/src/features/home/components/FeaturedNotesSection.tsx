@@ -1,7 +1,8 @@
 import FeaturedNotesCard from "./FeaturedNotesCard";
 
-import { useGetAllFeaturedNotes } from "../../notes/hooks/useCreateNote";
+
 import { Loader } from "../../../common/components/IsLoading";
+import { useGetAllFeaturedNotes } from "../../notes/hooks/useGetAllFeaturedNotes";
 
 type ResponseType = {
     note_id: number;
@@ -32,7 +33,7 @@ export default function FeaturedNotesSection() {
         <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-5 justify-items-center">
             {
                 data?.data?.map((i:ResponseType)=>{
-                    console.log("fix",i)
+                    
                     return(
                         <FeaturedNotesCard data={i} key={i.note_id}/>
                     )

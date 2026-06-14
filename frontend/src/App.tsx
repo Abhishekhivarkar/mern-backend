@@ -6,7 +6,7 @@ import { AuthInitializer } from "./features/auth/components/AuthInitializer";
 import LoginPage from "./features/auth/pages/LoginPage";
 import { CreateNotePage } from "./features/notes/pages/CreateNotePage";
 import pageNotFound from "./assets/404.mp4"
-import { GetAllNotesPage } from "./features/notes/pages/GetAllNotesPage";
+import  GetAllNotesPage  from "./features/notes/pages/GetAllNotesPage";
 import { Dashboard } from "./features/home/pages/Home";
 import AOS from "aos";
 import "aos/dist/aos.css";

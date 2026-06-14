@@ -1,10 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
-  createNoteApi,
-  getAllFeaturedNotesApi,
-  getNoteApi,
-  getNotesCategoriesCountApi,
+  createNoteApi
 } from "../api/note.api";
 
 export const useCreateNote = () => {
@@ -27,23 +24,4 @@ export const useCreateNote = () => {
   });
 };
 
-export const useGetNotes = () => {
-  return useQuery({
-    queryKey: ["notes-all"],
-    queryFn: getNoteApi,
-  });
-};
 
-export const useGetNotesCategoriesCount = () => {
-  return useQuery({
-    queryKey: ["notes-category-count"],
-    queryFn: getNotesCategoriesCountApi,
-  });
-};
-
-export const useGetAllFeaturedNotes = () => {
-  return useQuery({
-    queryKey: ["notes-featured-all"],
-    queryFn: getAllFeaturedNotesApi,
-  });
-};

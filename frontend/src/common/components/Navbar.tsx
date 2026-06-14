@@ -33,9 +33,7 @@ export const Navbar = () => {
     </div>
 
     {/* desktop search div */}
-    <div className="hidden md:block border rounded-full ">
-      <input type="text" className="border-none outline-none pl-3 " placeholder="Search notes..." />
-    </div>
+    
     <div className="hidden md:block">
       <LogoutButton/>
     </div>
@@ -44,20 +42,18 @@ export const Navbar = () => {
 </div>
   {isOpen && (
     <div className="md:hidden pl-4 pt-3 pr-4 pb-4">
-      <div className="border rounded-full h-10 mb-4 flex items-center pl-3">
-        <input type="text" className ="w-full border-none outline-none"placeholder="Search notes..."/>
-      </div>
+    
 
       <div className="font-medium">
-        <ul className="">
+        <ul className="text-center">
           <li>Notes</li>
           <li>Category</li>
           <li>Become seller</li>
           <li>Pricing</li>
         </ul>
       </div>
-      <div className="pt-2">
-        <LogoutButton/>
+      <div className="pt-2 flex justify-center font-bold">
+        <LogoutButton />
       </div>
     </div>
   )}
