@@ -40,3 +40,17 @@ body {
     transform: translate(0, 0);
   }
 }
+
+
+.radio-box{
+  @apply rounded-sm appearance-none w-4 h-4  border-2 text-gray-400 checked:bg-blue-500 checked:border-blue-900 cursor-pointer
+}
+
+
+.price-filter-bg{
+  @apply rounded-lg border border-gray-200 px-2 text-[12px]
+}
+
+.notes-counter-bg{
+  @apply bg-gray-200 px-2 rounded-xl
+}

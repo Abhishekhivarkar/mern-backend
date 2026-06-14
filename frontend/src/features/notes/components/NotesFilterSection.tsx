@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useGetNotesCategoriesCount } from "../hooks/useGetNotesCategoryCount";
+import { IoIosArrowDropdown } from "react-icons/io";
 import { Loader } from "../../../common/components/IsLoading";
 import {
   categoryName,
@@ -10,7 +11,9 @@ import {
 export default function NotesFilterSection() {
   const { data, isLoading } = useGetNotesCategoriesCount();
 
-  const [categorySection, setCategorySection] = useState(false);
+  const [categorySectionToggle, setCategorySectionToggle] = useState(true);
+
+  const [priceRangeSectionToggle, setPriceRangeSectionToggle] = useState(true);
   if (isLoading) {
     return <Loader />;
   }
@@ -30,22 +33,22 @@ export default function NotesFilterSection() {
         px-10  py-2 pl-4 outline-none"
         />
       </div>
-
+    {/* category section */}
       <div className="flex flex-col gap-3">
         <div className="flex justify-between ">
           <p>Category</p>
           <button
-            onClick={() => setCategorySection(!categorySection)}
-            className={`${categorySection ? "rotate-180" : "rotate-0"}
+            onClick={() => setCategorySectionToggle(!categorySectionToggle)}
+            className={`${categorySectionToggle ? "rotate-0" : "rotate-180"}
             
              transition-transform duration-500 ease-in-out`}
           >
-            ^
+            <IoIosArrowDropdown />
           </button>
         </div>
         <div
           className={`overflow-hidden flex flex-col gap-2 ${
-            categorySection
+            categorySectionToggle
               ? "max-h-screen opacity-100 translate-y-0"
               : "max-h-0 opacity-0 -translate-y-4"
           }
@@ -67,42 +70,84 @@ export default function NotesFilterSection() {
                   <div>{categoryName(i.category)}</div>
                 </div>
 
-                <div className="bg-gray-200 px-2 rounded-xl">{i.count}</div>
+                <div className="notes-counter-bg">{i.count}</div>
               </div>
             );
           })}
         </div>
 
-        <hr className="shadow" />
-          {/* price range */}
-        <div>
+        <hr className="opacity-20" />
+
+        {/* price range section */}
+        <div className="flex flex-col gap-2">
           <div className="flex justify-between">
             <p> Price Range</p>
-            <p>^</p>
+            <button
+              onClick={() =>
+                setPriceRangeSectionToggle(!priceRangeSectionToggle)
+              }
+              className={`${priceRangeSectionToggle ? "rotate-0" : "rotate-180"} transform-all duration-500 ease-in-out`}
+            >
+              <IoIosArrowDropdown />
+            </button>
           </div>
 
-          <div className="flex justify-between items-center">
-            <input
-              type="number"
-              placeholder="₹ 0"
-              className="border py-2 w-21 rounded-lg pl-2"
-            />
-            <p className="">to</p>
-            <input
-              type="number"
-              placeholder="₹ 0"
-              className="border py-2 w-21 rounded-lg pl-2"
-            />
-          </div>
-          <input type="range" className="w-full h-1 " />
-          <div className="flex gap-1 justify-center ">
-            <button className="rounded-lg border border-gray-200 px-2 text-[12px]">
-              ₹0 - ₹100
-            </button>
-            <button className="rounded-lg border border-gray-200 px-2   text-[12px]">₹100 - ₹500</button>
-            <button className="rounded-lg border border-gray-200 px-2  text-[12px]">₹500+</button>
+          <div
+            className={`${priceRangeSectionToggle ? "opacity-100 translate-y-0 max-h-screen" : "opacity-0 -translate-y-4 max-h-0"} transform-all duration-500 ease-in-out flex flex-col gap-4`}
+          >
+            <div className={`flex justify-between items-center `}>
+              <input
+                type="number"
+                placeholder="₹ 0"
+                className="border py-2 w-21 rounded-lg pl-2"
+              />
+              <p className="">to</p>
+              <input
+                type="number"
+                placeholder="₹ 0"
+                className="border py-2 w-21 rounded-lg pl-2"
+              />
+            </div>
+            <input type="range" className="w-full h-1 " />
+            <div className="flex gap-1 justify-center ">
+              <button className="price-filter-bg">
+                ₹0 - ₹100
+              </button>
+              <button className="price-filter-bg">
+                ₹100 - ₹500
+              </button>
+              <button className="price-filter-bg">
+                ₹500+
+              </button>
+            </div>
           </div>
         </div>
+
+<hr className="opacity-20"/>
+{/* availability section */}
+              <div className="flex justify-between">
+                <div>Availability</div>
+                <button><IoIosArrowDropdown/></button>
+              </div>
+
+              <div>
+                <div className="flex justify-between ">
+                  <div className="flex items-center gap-2 justify-center">
+                    <input type="radio" name="size"className="radio-box"/>
+                    <label htmlFor="size"> Free Notes</label>
+                    </div>
+                    <p className="notes-counter-bg">32</p>
+                </div>
+              <div className="flex justify-between py-2">
+                <div className="flex gap-2 items-center">
+                <input type="radio" name="size" className="radio-box"/>
+                <label htmlFor="">Paid Notes</label>
+                </div>
+
+                <p className="notes-counter-bg">156</p>
+              </div>
+                
+              </div>
       </div>
     </div>
   );
