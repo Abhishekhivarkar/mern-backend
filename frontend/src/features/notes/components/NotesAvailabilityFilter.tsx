@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { IoIosArrowDropdown } from 'react-icons/io';
-import { useGetNotes } from '../hooks/useGetNotes';
+
 import { Loader } from '../../../common/components/IsLoading';
 import { useGetNotesStats } from '../hooks/useGetNotesStats';
 
