@@ -17,6 +17,7 @@ import {
   getNoteByIdService,
   getNotesCategoriesCountService,
   getAllFeaturedNotesService,
+  getNotesStatsService,
 } from "../services/notes.service.js";
 // async handler
 import { asyncHandler } from "../../../common/utils/asyncHandler.util.js";
@@ -89,11 +90,13 @@ export const getAllNotes = asyncHandler(
 
     const maxPrice = req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
 
+    const is_paid = req.query.is_paid 
     const notes = await getAllNotesService(
       page,
       limit,
       search,
       category,
+      is_paid,
       minPrice,
       maxPrice,
     );
@@ -356,5 +359,17 @@ export const getAllFeaturedNotes = asyncHandler(async(req:Request,res:Response)=
   return res.status(HTTP_STATUS.OK).json({
     message:true,
     data:featuredNotes
+  })
+})
+
+
+export const getNotesStats = asyncHandler(async(req:Request,res:Response) =>{
+  const notesStats = await getNotesStatsService()
+
+  return res.status(HTTP_STATUS.OK).json({
+    data:{
+      categories:notesStats.notesCategoryStats,
+      stats:notesStats.notesStats
+    }
   })
 })
