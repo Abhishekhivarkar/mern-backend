@@ -12,7 +12,7 @@ export const createNotes = async (
   category: NoteCategory,
   images: string,
   client: PoolClient,
-  is_featured?:boolean
+  is_featured?: boolean,
 ): Promise<Notes> => {
   const is_paid = price > 0;
   const result = await client.query(
@@ -39,7 +39,7 @@ export const createNotes = async (
       is_published,
       category,
       images,
-      is_featured
+      is_featured,
     ],
   );
 
@@ -51,12 +51,13 @@ export const getAllNotesRepository = async (
   limit: number,
   search?: string,
   category?: NoteCategory,
+  is_paid?: boolean,
   minPrice?: number,
   maxPrice?: number,
 ) => {
   const skip = (page - 1) * limit;
 
-  const values: (string | number)[] = [];
+  const values: (string | number | boolean)[] = [];
 
   let whereClause = `
     WHERE is_deleted = FALSE
@@ -76,11 +77,13 @@ export const getAllNotesRepository = async (
       AND category = $${values.length}
     `;
   }
-
-  if (
-    minPrice !== undefined &&
-    maxPrice !== undefined
-  ) {
+  if (is_paid) {
+    values.push(is_paid);
+    whereClause += `
+    AND is_paid = $${values.length}
+    `;
+  }
+  if (minPrice !== undefined && maxPrice !== undefined) {
     values.push(minPrice);
     values.push(maxPrice);
 
@@ -109,10 +112,7 @@ export const getAllNotesRepository = async (
 
   const notesValues = [...values, limit, skip];
 
-  const notesResult = await pool.query(
-    notesQuery,
-    notesValues,
-  );
+  const notesResult = await pool.query(notesQuery, notesValues);
 
   const countQuery = `
     SELECT COUNT(*) AS total
@@ -120,10 +120,7 @@ export const getAllNotesRepository = async (
     ${whereClause}
   `;
 
-  const countResult = await pool.query(
-    countQuery,
-    values,
-  );
+  const countResult = await pool.query(countQuery, values);
 
   return {
     notes: notesResult.rows,
@@ -132,7 +129,6 @@ export const getAllNotesRepository = async (
     limit,
   };
 };
-
 
 export const deleteNotesRepository = async (
   note_id: string,
@@ -356,26 +352,54 @@ export const getNoteByIdRepository = async (note_id: string) => {
   return result.rows[0];
 };
 
-
-export const getNotesCategoriesCountRepository = async() =>{
-    const result = await pool.query(
+export const getNotesCategoriesCountRepository = async () => {
+  const result = await pool.query(
     `
     SELECT category,COUNT(*) as count FROM 
     notes GROUP BY category
     
+    `,
+  );
+  return result.rows;
+};
+
+export const getAllFeaturedNotesRepository = async () => {
+  const result = await pool.query(
     `
-    )
-    return result.rows
-}
-
-
-export const getAllFeaturedNotesRepository =async() => {
- const result = await pool.query(
-`
 SELECT * from notes WHERE is_featured = TRUE ORDER BY created_at DESC LIMIT 5
-`
+`,
+  );
 
- )
+  return result.rows;
+};
 
- return result.rows
-}
+export const getNotesCategoryStatsRepository = async () => {
+  const result = await pool.query(`
+    SELECT
+      category,
+      COUNT(note_id) AS count
+    FROM notes
+    WHERE is_deleted = FALSE
+      AND is_published = TRUE
+    GROUP BY category
+  `);
+
+  return result.rows;
+};
+
+export const getNotesStatsRepository = async () => {
+  const result = await pool.query(
+    `
+      SELECT
+      SUM(CASE WHEN is_paid = TRUE THEN 1 ELSE 0 END) AS paid_notes,
+      SUM(CASE WHEN is_paid = FALSE THEN 1 ELSE 0 END) AS free_notes,
+      SUM(CASE WHEN is_featured = TRUE THEN 1 ELSE 0 END) AS featured_notes,
+      SUM(CASE WHEN is_pinned = TRUE THEN 1 ELSE 0 END) AS pinned_notes
+    FROM notes
+    WHERE is_deleted = FALSE
+      AND is_published = TRUE
+      
+        `,
+  );
+  return result.rows[0];
+};
