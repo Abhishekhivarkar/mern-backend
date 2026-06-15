@@ -13,6 +13,7 @@ import {
   getNoteById,
   getNotesCategoriesCount,
   getAllFeaturedNotes,
+  getNotesStats,
 } from "../controllers/notes.controller.js";
 import express from "express";
 import { authMiddleware } from "../../../common/middlewares/auth.middleware.js";
@@ -46,6 +47,8 @@ router.get("/count", getNotesCategoriesCount);
 router.get("/purchased-notes", authMiddleware, getPurchasedNotes);
 
 router.get("/featured", getAllFeaturedNotes);
+
+router.get("/stats",authMiddleware,getNotesStats)
 router.patch("/pin/:note_id", authMiddleware, pinNotes);
 router.patch("/un-pin/:note_id", authMiddleware, unPinNotes);
 
@@ -65,5 +68,6 @@ router.patch(
 router.delete("/:note_id", authMiddleware, deleteNotes);
 
 router.get("/:note_id", authMiddleware, getNoteById);
+
 
 export default router;
