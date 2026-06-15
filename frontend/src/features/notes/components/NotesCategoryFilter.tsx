@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useGetNotesCategoriesCount } from '../hooks/useGetNotesCategoryCount';
+
 import { Loader } from '../../../common/components/IsLoading';
 import { IoIosArrowDropdown } from 'react-icons/io';
 import { categoryName, getCategoryLogo, getColorClass } from '../../home/components/CategoryHelper';
