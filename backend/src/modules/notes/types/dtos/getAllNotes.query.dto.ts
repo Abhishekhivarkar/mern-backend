@@ -3,6 +3,7 @@ export interface GetAllNotesQueryDto{
  limit?:string,
  search?:string,
  category:string,
+ is_paid:boolean
  minPrice:number,
  maxPrice:number
 }
