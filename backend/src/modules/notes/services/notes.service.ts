@@ -16,6 +16,8 @@ import {
   getNoteByIdRepository,
   getNotesCategoriesCountRepository,
   getAllFeaturedNotesRepository,
+  getNotesStatsRepository,
+  getNotesCategoryStatsRepository,
 } from "../repositories/notes.repository.js";
 import crypto from "crypto";
 import { redisClient } from "../../../configs/redis.config.js";
@@ -110,6 +112,7 @@ export const getAllNotesService = async (
 
   search: string,
   category:NoteCategory,
+  is_paid:boolean,
   minPrice:number,
   maxPrice:number
 ) => {
@@ -121,7 +124,7 @@ export const getAllNotesService = async (
     return JSON.parse(cached);
   }
 
-  const notes = await getAllNotesRepository(page, limit, search,category,minPrice,maxPrice);
+  const notes = await getAllNotesRepository(page, limit, search,category,is_paid,minPrice,maxPrice);
 
   await redisClient.set(
     cacheKey,
@@ -616,4 +619,23 @@ export const getAllFeaturedNotesService = async() =>{
   }
 
   return featuredNotes
+}
+
+
+
+export const getNotesStatsService = async() =>{
+  const notesCategoryStats = await getNotesCategoryStatsRepository() 
+
+  const notesStats = await getNotesStatsRepository()
+
+
+  if(!notesCategoryStats || notesCategoryStats.length === 0 || !notesStats){
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+  }
+
+
+  return{
+    notesCategoryStats,
+    notesStats
+  }
 }
