@@ -12,6 +12,7 @@ export interface GetAllNotesParams{
     limit?:number,
     search?:string,
     category?:string,
+    is_paid?:boolean,
     minPrice?:number,
     maxPrice?:number
 }
@@ -34,6 +35,13 @@ export const getNotesCategoriesCountApi = async() =>{
 
 export const getAllFeaturedNotesApi = async() =>{
     const response = await axios.get("/notes/featured")
+
+    return response.data
+}
+
+
+export const getNotesStatsApi = async() =>{
+    const response = await axios.get("/notes/stats")
 
     return response.data
 }
