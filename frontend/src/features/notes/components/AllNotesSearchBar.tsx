@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 export default function AllNotesSearchBar() {
@@ -47,13 +47,19 @@ export default function AllNotesSearchBar() {
         </div>
       </div>
 
-      <div className="border rounded-md py-2 mt-5">
+      <div className="border-2 rounded-md py-2 mt-5 border-gray-400">
         <input
           type="text"
           placeholder="Search by note name, content, or keyword..."
-          className="w-full"
+          className="w-full pl-6 outline-none"
         />
       </div>
+
+
+      <div className="shadow border  border-gray-300 rounded-md w-full py-3 mt-4">
+              Active Filters 
+      </div>   
+
     </div>
   );
 }
