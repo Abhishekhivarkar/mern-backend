@@ -11,13 +11,34 @@ export interface CreateNotePayload{
     database:"DATABASE"
 }
 
-export type GetNoteData = {
+export interface NoteType{
+    note_id: string,
+    user_id:string,
     note_name:string,
     note_content:string,
+    price:number,
     category:CategoryEnum,
-    minPrice:number,
-    maxPrice:number,
     images:string,
-    price:number
+    created_at:string
 }
 
+export interface GetAllNotesResponse{
+    success:boolean,
+    data:{
+        notes:NoteType[],
+        total:number,
+        page:number,
+        limit:number
+    }
+
+}
+
+export interface GetAllNotesParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: CategoryEnum;
+  is_paid?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+}

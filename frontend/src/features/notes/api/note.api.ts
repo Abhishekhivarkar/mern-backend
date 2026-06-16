@@ -1,47 +1,45 @@
 import axios from "../../../common/api/axios";
-import type { CreateNotePayload} from "../types/note.type";
+import type {
+  CreateNotePayload,
 
-export const createNoteApi = async (data:CreateNotePayload) =>{
-    const response = await axios.post("/notes/create",data)
+  GetAllNotesParams,
 
-    return response.data
-}
+  GetAllNotesResponse,
+} from "../types/note.type";
 
-export interface GetAllNotesParams{
-    page?:number,
-    limit?:number,
-    search?:string,
-    category?:string,
-    is_paid?:boolean,
-    minPrice?:number,
-    maxPrice?:number
-}
+export const createNoteApi = async (data: CreateNotePayload) => {
+  const response = await axios.post("/notes/create", data);
+
+  return response.data;
+};
+
 export const getNoteApi = async (
-    params?:GetAllNotesParams
-) =>{
-    const response = await axios.get("/notes/all",{
-        params
-    })
+  params?: GetAllNotesParams
+): Promise<GetAllNotesResponse> => {
+  const response = await axios.get<GetAllNotesResponse>(
+    "/notes/all",
+    {
+      params,
+    }
+  );
 
-    
-    return response.data
-}
+  return response.data;
+};
 
-export const getNotesCategoriesCountApi = async() =>{
-    const response = await axios.get("/notes/count")
+export const getNotesCategoriesCountApi = async () => {
+  const response = await axios.get("/notes/count");
 
-    return response.data
-}
+  return response.data;
+};
 
-export const getAllFeaturedNotesApi = async() =>{
-    const response = await axios.get("/notes/featured")
+export const getAllFeaturedNotesApi = async () => {
+  const response = await axios.get("/notes/featured");
 
-    return response.data
-}
+  return response.data;
+};
 
+export const getNotesStatsApi = async () => {
+  const response = await axios.get("/notes/stats");
 
-export const getNotesStatsApi = async() =>{
-    const response = await axios.get("/notes/stats")
-
-    return response.data
-}
+  return response.data;
+};
