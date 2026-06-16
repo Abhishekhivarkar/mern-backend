@@ -1,16 +1,13 @@
 import { useState } from 'react'
 import { IoIosArrowDropdown } from 'react-icons/io';
 import { useGetNotesStats } from '../hooks/useGetNotesStats';
-import { Loader } from '../../../common/components/IsLoading';
 
 export default function NotesOtherFilter() {
      const [otherFeatureToggle, setOtherFeatureToggle] = useState(true);
 
-     const {data,isLoading} = useGetNotesStats()
+     const {data} = useGetNotesStats()
 
-     if(isLoading){
-        return <Loader/>
-     }
+    
    return (
      <div className="flex flex-col gap-2">
               <div className="flex justify-between">
@@ -34,14 +31,14 @@ export default function NotesOtherFilter() {
                     <input type="radio" name="size" className="radio-box " />
                     <label htmlFor="featured">Featured Notes</label>
                   </div>
-                  <p className="notes-counter-bg">{data.data.stats.featured_notes}</p>
+                  <p className="notes-counter-bg">{data?.data?.stats?.featured_notes}</p>
                 </div>
                 <div className="flex justify-between ">
                   <div className="flex gap-2 items-center">
                     <input type="radio" name="size" className="radio-box " />
                     <label htmlFor="pinned">Pinned Notes</label>
                   </div>
-                  <p className="notes-counter-bg">{data.data.stats.pinned_notes}</p>
+                  <p className="notes-counter-bg">{data?.data?.stats?.pinned_notes}</p>
                 </div>
               </div>
             </div>

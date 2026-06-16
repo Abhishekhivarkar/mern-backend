@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Loader } from '../../../common/components/IsLoading';
+
 import { IoIosArrowDropdown } from 'react-icons/io';
 import { categoryName, getCategoryLogo, getColorClass } from '../../home/components/CategoryHelper';
 import { useGetNotesStats } from '../hooks/useGetNotesStats';
@@ -13,13 +13,11 @@ type ResponseType = {
 
 export default function NotesCategoryFilter() {
 
-     const { data, isLoading } = useGetNotesStats();
+     const { data } = useGetNotesStats();
 
       const [categorySectionToggle, setCategorySectionToggle] = useState(true);
     
-      if(isLoading){
-        return <Loader/>
-      }
+     
   return (
    <>
          <div className="flex justify-between ">

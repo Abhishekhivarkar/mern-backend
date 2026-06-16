@@ -1,7 +1,4 @@
 
-import { useGetNotesCategoriesCount } from "../hooks/useGetNotesCategoryCount";
-
-import { Loader } from "../../../common/components/IsLoading";
 
 import NotesSerachBar from "./NotesSerachBar";
 import NotesCategoryFilter from "./NotesCategoryFilter";
@@ -11,13 +8,11 @@ import NotesAvailabilityFilter from "./NotesAvailabilityFilter";
 import NotesOtherFilter from "./NotesOtherFilter";
 
 export default function NotesFilterSection() {
-  const { isLoading } = useGetNotesCategoriesCount();
+
 
   
  
-  if (isLoading) {
-    return <Loader />;
-  }
+
   return (
     <div className="shadow w-fit p-3 flex flex-col gap-3">
       <div className="flex justify-between">

@@ -2,18 +2,16 @@
 import { useState } from 'react';
 import { IoIosArrowDropdown } from 'react-icons/io';
 
-import { Loader } from '../../../common/components/IsLoading';
+
 import { useGetNotesStats } from '../hooks/useGetNotesStats';
 
 export default function NotesAvailabilityFilter() {
 
       const [availabilityToggle, setAvailabilityToggle] = useState(true);
 
-      const {data,isLoading} = useGetNotesStats() 
+      const {data} = useGetNotesStats() 
 
-      if(isLoading){
-        return <Loader/>
-      }
+   
   return (
     <>
       <div className="flex justify-between">
@@ -34,7 +32,7 @@ export default function NotesAvailabilityFilter() {
                   <input type="radio" name="size" className="radio-box" />
                   <label htmlFor="size"> Free Notes</label>
                 </div>
-                <p className="notes-counter-bg">{data.data.stats.free_notes}</p>
+                <p className="notes-counter-bg">{data?.data?.stats?.free_notes}</p>
               </div>
               <div className="flex justify-between py-2">
                 <div className="flex gap-2 items-center">
@@ -42,7 +40,7 @@ export default function NotesAvailabilityFilter() {
                   <label htmlFor="">Paid Notes</label>
                 </div>
     
-                <p className="notes-counter-bg">{data.data.stats.paid_notes}</p>
+                <p className="notes-counter-bg">{data?.data?.stats?.paid_notes}</p>
               </div>
             </div>
     
