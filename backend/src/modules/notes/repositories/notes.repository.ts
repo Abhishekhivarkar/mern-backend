@@ -121,9 +121,12 @@ export const getAllNotesRepository = async (
   `;
 
   const countResult = await pool.query(countQuery, values);
-
+ const notes = notesResult.rows.map((note)=>({
+  ...note,
+  price: Number(note.price)
+ }))
   return {
-    notes: notesResult.rows,
+    notes,
     total: Number(countResult.rows[0].total),
     page,
     limit,
