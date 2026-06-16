@@ -9,18 +9,16 @@ import bookImage from "../../../assets/books.png";
 
 
 import {CountUp} from "@sdawit/react-countup-lite"
-import { Loader } from "../../../common/components/IsLoading";
+
 import { useGetNotes } from "../../notes/hooks/useGetNotes";
 console.log(CountUp)
 export const HeroSection = () => {
-  const { data, isLoading } = useGetNotes();
+  const { data } = useGetNotes();
 
   const totalNotes = data?.data?.total;
 
   console.log(typeof totalNotes, totalNotes)
-  if (isLoading) {
-    return <Loader />;
-  }
+  
   const content = [
     {
       id: 1,

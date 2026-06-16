@@ -1,4 +1,3 @@
-import { Loader } from "../../../common/components/IsLoading";
 
 import { CgMenuGridO } from "react-icons/cg";
 
@@ -14,11 +13,8 @@ type ResponseType = {
 
 
 export const CategoriesSection = () => {
-  const { data, isLoading } = useGetNotesCategoriesCount();
+  const { data } = useGetNotesCategoriesCount();
 
-  if (isLoading) {
-    return <Loader />;
-  }
 
   return (
     <div className="bg-white px-15">

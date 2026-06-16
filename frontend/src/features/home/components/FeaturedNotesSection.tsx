@@ -1,7 +1,7 @@
 import FeaturedNotesCard from "./FeaturedNotesCard";
 
 
-import { Loader } from "../../../common/components/IsLoading";
+
 import { useGetAllFeaturedNotes } from "../../notes/hooks/useGetAllFeaturedNotes";
 
 type ResponseType = {
@@ -17,12 +17,10 @@ export default function FeaturedNotesSection() {
 
 
     const {
-        data,isLoading
+        data
     } = useGetAllFeaturedNotes()
   
-    if(isLoading){
-        return <Loader/>
-    }
+   
 
   return (
     <div className="">
