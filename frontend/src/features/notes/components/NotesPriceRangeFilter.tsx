@@ -35,7 +35,7 @@ const [priceRangeSectionToggle, setPriceRangeSectionToggle] = useState(true);
                     className="border py-2 w-21 rounded-lg pl-2"
                   />
                 </div>
-                <input type="range" className="w-full h-1 " />
+                <input type="range" className="w-70 h-1 " />
                 <div className="flex gap-1 justify-center ">
                   <button className="price-filter-bg">₹0 - ₹100</button>
                   <button className="price-filter-bg">₹100 - ₹500</button>
