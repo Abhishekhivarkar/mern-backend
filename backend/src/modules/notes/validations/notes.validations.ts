@@ -34,7 +34,8 @@ export const createNotesSchema = z
     category: NoteCategoryEnum,
 
     is_featured: z
-        .coerce.boolean().optional().default(false)
+        .coerce.boolean().optional().default(false),
+  
   }
 
 )
