@@ -23,10 +23,11 @@ const categoryColor = (category: string) => {
 
 export default function NotesCard({ data }: NoteCardProps) {
   return (
-    <div key={data.note_id}>
-      <div className="w-60 h-30 relative rounded-xl border overflow-hidden">
-        <div className="w-full h-1/2 ">
-          <img src={data.images} alt="" className="w-full h-full object-fill" />
+    <div key={data.note_id} className="mt-6">
+      <div className="w-61 relative rounded-xl  overflow-hidden   shadow-[0_0_10px_rgba(0,0,0,0.15)]">
+        <div className="w-full">
+        
+          <img src={data.images} alt="" className="w-full h-34 object-fill" />
           <div className="">
             <span
               className={`absolute  top-3 left-3 rounded px-1  text-[10px] ${
@@ -68,6 +69,24 @@ export default function NotesCard({ data }: NoteCardProps) {
             </div>
           </div>
         </div>
+        <hr className="opacity-20 mt-1"/>
+
+
+        <div className="p-2">
+          <div className="flex items-center  gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              <img src={data.images} alt="" className="w-5 h-5 rounded-full"/>
+            <span className="font-semibold text-gray-600">Aniket Verma</span>
+            </div>
+                <div>
+                  {data.created_at.split("T")[0]}
+                </div>
+          </div>
+
+        </div>
+
+
+
       </div>
     </div>
   );
