@@ -22,7 +22,7 @@ export default function NotesFilterSection() {
         </h4>
       </div>
       <hr className="opacity-20" />
-      <NotesSerachBar />
+      
       {/* category section */}
       <div className="flex flex-col gap-3">
         <NotesCategoryFilter />
