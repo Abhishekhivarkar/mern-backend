@@ -10,7 +10,7 @@ export default function NotesCatalog() {
   const end = Math.min(page * limit, total);
 
   return (
-    <div>
+    <div className="mt-3">
       <p>
         Showing {start} to {end} of {total} notes
       </p>
