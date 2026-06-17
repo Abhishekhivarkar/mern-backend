@@ -39,7 +39,7 @@ instance.interceptors.response.use(
       isRefreshing = true
 
       try {
-        await instance.post("/auth/refresh")
+        await instance.post("/auth/refresh-token")
         processQueue(null)
         return instance(originalRequest)
       } catch (refreshError) {
