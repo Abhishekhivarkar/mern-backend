@@ -17,9 +17,12 @@ export interface NoteType{
     note_name:string,
     note_content:string,
     price:number,
-    category:CategoryEnum,
+    category:string,
     images:string,
-    created_at:string
+    created_at:string,
+    is_pinned:boolean,
+    is_paid:boolean,
+    is_featured:boolean
 }
 
 export interface GetAllNotesResponse{
