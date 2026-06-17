@@ -13,7 +13,7 @@ return jwt.sign(
   payload,
   config.JWT_SECRET,
   {
-   expiresIn:"600m"
+   expiresIn:"15m"
   }
   )
 }

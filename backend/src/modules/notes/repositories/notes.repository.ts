@@ -104,7 +104,8 @@ export const getAllNotesRepository = async (
       images,
       created_at,
       is_paid,
-      is_featured
+      is_featured,
+      is_pinned
     FROM notes
     ${whereClause}
     ORDER BY created_at DESC
