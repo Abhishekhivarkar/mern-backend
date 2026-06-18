@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { IoIosArrowDropdown } from 'react-icons/io';
 import { categoryName, getCategoryLogo, getColorClass } from '../../home/components/CategoryHelper';
 import { useGetNotesStats } from '../hooks/useGetNotesStats';
+import { CgMenuGridO } from 'react-icons/cg';
+import { useGetNotes } from '../hooks/useGetNotes';
+import { getNoteApi } from '../api/note.api';
 
 type ResponseType = {
   id:number,
@@ -11,13 +14,22 @@ type ResponseType = {
   count:string
 }
 
-export default function NotesCategoryFilter() {
+interface Props {
+  selectedCategory:string,
+  onCategoryChange:(category:string) => void
+}
+export default function NotesCategoryFilter({
+  selectedCategory,
+  onCategoryChange
+}:Props) {
 
      const { data } = useGetNotesStats();
 
       const [categorySectionToggle, setCategorySectionToggle] = useState(true);
     
-     
+     const {data:noteData} = useGetNotes()
+
+     console.log(noteData)
   return (
    <>
          <div className="flex justify-between ">
@@ -42,7 +54,7 @@ export default function NotesCategoryFilter() {
            >
              {data?.data?.categories?.map((i:ResponseType) => {
                return (
-                 <div className="flex justify-between" key={i.id}>
+                 <div className={`flex justify-between  rounded-md cursor-pointer p-1 transition-all ${selectedCategory === i.category ? "bg-gray-300" : ""}`} key={i.id} onClick={()=>onCategoryChange(i.category)}>
                    <div className="flex gap-2">
                      <div
                        className={`${getColorClass(i.category)} text-white rounded-lg`}
@@ -56,10 +68,22 @@ export default function NotesCategoryFilter() {
                    </div>
    
                    <div className="notes-counter-bg">{i.count}</div>
+                  
                  </div>
+                 
                );
              })}
            </div>
+          <div className='flex justify-between px-1 ' onClick={getNoteApi}>
+  <div className='flex items-center gap-3'>
+    <CgMenuGridO className='bg-violet-400 text-[22px] rounded-md text-white' />
+    <span>View All</span>
+  </div>
+
+  <div className="notes-counter-bg">
+    {noteData?.data?.total}
+  </div>
+</div>
    
    </>
   )
