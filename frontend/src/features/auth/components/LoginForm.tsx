@@ -38,7 +38,7 @@ function LoginForm() {
             onSubmit={handleSubmit}
             className="h-screen flex items-center justify-center  "
           >
-            <div className="border rounded-xl  p-5 bg-white/20 backdrop-blur-xl border border-white/30 shadow-xl">
+            <div className="border rounded-xl  p-5 bg-white/20 backdrop-blur-xl border-white/30  shadow-[0_0_20px_rgba(0,0,0,0.20)]">
               <div className="flex flex-col items-center mb-4">
           
     
