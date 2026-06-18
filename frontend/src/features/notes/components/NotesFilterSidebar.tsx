@@ -1,22 +1,26 @@
-
-
-
 import NotesCategoryFilter from "./NotesCategoryFilter";
 
 import NotesPriceRangeFilter from "./NotesPriceRangeFilter";
 import NotesAvailabilityFilter from "./NotesAvailabilityFilter";
 import NotesOtherFilter from "./NotesOtherFilter";
 
-interface Props{
-  selectedCategory: string;
-  onCategoryChange: (category:string) => void
+interface Props {
+  selectedCategory: string | null;
+  onCategoryChange: (category: string | null) => void;
+  selectedMinPrice: number | null;
+  selectedMaxPrice: number | null;
+  onMinPriceChange: (minPrice: number | null) => void;
+
+  onMaxPriceChange: (maxPrice: number | null) => void;
 }
-export default function NotesFilterSection({selectedCategory,onCategoryChange}:Props) {
-
-
-  
- 
-
+export default function NotesFilterSection({
+  selectedCategory,
+  onCategoryChange,
+  selectedMinPrice,
+  selectedMaxPrice,
+  onMinPriceChange,
+  onMaxPriceChange,
+}: Props) {
   return (
     <div className="shadow w-fit p-3 flex flex-col gap-3">
       <div className="flex justify-between">
@@ -26,24 +30,28 @@ export default function NotesFilterSection({selectedCategory,onCategoryChange}:P
         </h4>
       </div>
       <hr className="opacity-20" />
-      
+
       {/* category section */}
       <div className="flex flex-col gap-3">
-        <NotesCategoryFilter 
-        selectedCategory={selectedCategory}
-        onCategoryChange={onCategoryChange}
+        <NotesCategoryFilter
+          selectedCategory={selectedCategory}
+          onCategoryChange={onCategoryChange}
         />
         <hr className="opacity-20" />
 
         {/* price range section */}
-        <NotesPriceRangeFilter/>
+        <NotesPriceRangeFilter
+          selectedMinPrice={selectedMinPrice}
+          selectedMaxPrice={selectedMaxPrice}
+          onMinPriceChange={onMinPriceChange}
+          onMaxPriceChange={onMaxPriceChange}
+        />
         <hr className="opacity-20" />
         {/* availability section */}
-          <NotesAvailabilityFilter/>
+        <NotesAvailabilityFilter />
         <hr className="opacity-20" />
         {/* other filters */}
-        <NotesOtherFilter/>
-       
+        <NotesOtherFilter />
       </div>
     </div>
   );
