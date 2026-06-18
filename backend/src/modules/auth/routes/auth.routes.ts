@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.post("/register",validate({body:registerSchema}),register)
 
-router.post("/login",authLimitMiddleware,validate({body:loginSchema}),login)
+router.post("/login",validate({body:loginSchema}),authLimitMiddleware,login)
 
 router.post("/logout",logout)
 
