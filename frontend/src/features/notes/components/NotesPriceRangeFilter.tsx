@@ -1,48 +1,66 @@
-import { useState } from 'react'
-import { IoIosArrowDropdown } from 'react-icons/io';
+import { useState } from "react";
+import { IoIosArrowDropdown } from "react-icons/io";
 
-export default function NotesPriceRangeFilter() {
-const [priceRangeSectionToggle, setPriceRangeSectionToggle] = useState(true);
-
-
+type Props = {
+  selectedMinPrice: number | null;
+  selectedMaxPrice: number | null;
+  onMinPriceChange: (minPrice: number | null) => void;
+  onMaxPriceChange: (maxPrice: number | null) => void;
+};
+export default function NotesPriceRangeFilter({
+  selectedMinPrice,
+  selectedMaxPrice,
+  onMinPriceChange,
+  onMaxPriceChange,
+}: Props) {
+  const [priceRangeSectionToggle, setPriceRangeSectionToggle] = useState(true);
+ 
   return (
-     <div className="flex flex-col gap-2">
-              <div className="flex justify-between">
-                <p> Price Range</p>
-                <button
-                  onClick={() =>
-                    setPriceRangeSectionToggle(!priceRangeSectionToggle)
-                  }
-                  className={`${priceRangeSectionToggle ? "rotate-0" : "rotate-180"} transform-all duration-500 ease-in-out`}
-                >
-                  <IoIosArrowDropdown />
-                </button>
-              </div>
-    
-              <div
-                className={`${priceRangeSectionToggle ? "opacity-100 translate-y-0 max-h-screen" : "opacity-0 -translate-y-4 max-h-0"} transform-all duration-500 ease-in-out flex flex-col gap-4`}
-              >
-                <div className={`flex justify-between items-center `}>
-                  <input
-                    type="number"
-                    placeholder="₹ 0"
-                    className="border py-2 w-21 rounded-lg pl-2"
-                  />
-                  <p className="">to</p>
-                  <input
-                    type="number"
-                    placeholder="₹ 0"
-                    className="border py-2 w-21 rounded-lg pl-2"
-                  />
-                </div>
-                <input type="range" className="w-70 h-1 " />
-                <div className="flex gap-1 justify-center ">
-                  <button className="price-filter-bg">₹0 - ₹100</button>
-                  <button className="price-filter-bg">₹100 - ₹500</button>
-                  <button className="price-filter-bg">₹500+</button>
-                </div>
-              </div>
-            </div>
-    
-  )
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-between">
+        <p> Price Range</p>
+        <button
+          onClick={() => setPriceRangeSectionToggle(!priceRangeSectionToggle)}
+          className={`${priceRangeSectionToggle ? "rotate-0" : "rotate-180"} transform-all duration-500 ease-in-out`}
+        >
+          <IoIosArrowDropdown />
+        </button>
+      </div>
+
+      <div
+        className={`${priceRangeSectionToggle ? "opacity-100 translate-y-0 max-h-screen" : "opacity-0 -translate-y-4 max-h-0"} transform-all duration-500 ease-in-out flex flex-col gap-4`}
+      >
+        <div className={`flex justify-between items-center `}>
+          <input
+            type="number"
+            placeholder="₹ 0"
+            className="border py-2 w-21 rounded-lg pl-2"
+            value={selectedMinPrice ?? ""}
+            onChange={(e) =>
+              onMinPriceChange(
+                e.target.value === "" ? null : Number(e.target.value),
+              )
+            }
+          />
+          <p className="">to</p>
+          <input
+            placeholder="₹ 0"
+            className="border py-2 w-21 rounded-lg pl-2"
+            value={selectedMaxPrice ?? ""}
+            onChange={(e) =>
+              onMaxPriceChange(
+                e.target.value === "" ? null : Number(e.target.value),
+              )
+            }
+          />
+        </div>
+        <input type="range" className="w-70 h-1 " />
+        <div className="flex gap-1 justify-center ">
+          <button className="price-filter-bg">₹0 - ₹100</button>
+          <button className="price-filter-bg">₹100 - ₹500</button>
+          <button className="price-filter-bg">₹500+</button>
+        </div>
+      </div>
+    </div>
+  );
 }
