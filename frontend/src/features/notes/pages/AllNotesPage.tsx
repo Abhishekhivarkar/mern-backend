@@ -6,6 +6,12 @@ import NotesFilterSection from "../components/NotesFilterSidebar";
 
 export default function GetAllNotesPage() {
   const [category, setCategory] = useState("");
+  const [minPrice, setMinPrice] = useState<number | null>(null);
+
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
+
+  console.log(minPrice)
+ 
   return (
     <div>
       <div className="min-h-screen flex flex-col gap-7">
@@ -15,8 +21,17 @@ export default function GetAllNotesPage() {
             <NotesFilterSection
               selectedCategory={category}
               onCategoryChange={setCategory}
+
+              selectedMinPrice={minPrice}
+              selectedMaxPrice={maxPrice}
+              onMinPriceChange={setMinPrice}
+              onMaxPriceChange={setMaxPrice}
             />
-            <AllNotesSection category={category} />
+            <AllNotesSection
+              category={category}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+            />
           </div>
         </main>
         <Footer />
