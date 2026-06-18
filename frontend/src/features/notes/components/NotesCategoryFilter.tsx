@@ -15,8 +15,8 @@ type ResponseType = {
 }
 
 interface Props {
-  selectedCategory:string,
-  onCategoryChange:(category:string) => void
+  selectedCategory:string | null,
+  onCategoryChange:(category:string | null) => void
 }
 export default function NotesCategoryFilter({
   selectedCategory,
@@ -29,7 +29,6 @@ export default function NotesCategoryFilter({
     
      const {data:noteData} = useGetNotes()
 
-     console.log(noteData)
   return (
    <>
          <div className="flex justify-between ">
