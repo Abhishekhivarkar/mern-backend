@@ -1,8 +1,18 @@
 import { useGetNotes } from "../hooks/useGetNotes";
 import NotesCard from "./NotesCard";
 
-export default function NotesCatalog() {
-  const { data } = useGetNotes();
+interface Props{
+    category:string
+} 
+
+export default function NotesCatalog({category}:Props) { 
+  
+  
+  const { data } = useGetNotes({
+    page:1,
+    limit:0,
+    category:category || undefined
+  });
 
   const { page , limit, total } = data?.data || {};
 
