@@ -44,5 +44,5 @@ export interface GetAllNotesParams {
   category?: CategoryEnum;
   is_paid?: boolean;
   minPrice?: number;
-  maxPrice?: number;
+  maxPrice?: number ;
 }
