@@ -1,13 +1,17 @@
 
 
-import NotesSerachBar from "./NotesSerachBar";
+
 import NotesCategoryFilter from "./NotesCategoryFilter";
 
 import NotesPriceRangeFilter from "./NotesPriceRangeFilter";
 import NotesAvailabilityFilter from "./NotesAvailabilityFilter";
 import NotesOtherFilter from "./NotesOtherFilter";
 
-export default function NotesFilterSection() {
+interface Props{
+  selectedCategory: string;
+  onCategoryChange: (category:string) => void
+}
+export default function NotesFilterSection({selectedCategory,onCategoryChange}:Props) {
 
 
   
@@ -25,7 +29,10 @@ export default function NotesFilterSection() {
       
       {/* category section */}
       <div className="flex flex-col gap-3">
-        <NotesCategoryFilter />
+        <NotesCategoryFilter 
+        selectedCategory={selectedCategory}
+        onCategoryChange={onCategoryChange}
+        />
         <hr className="opacity-20" />
 
         {/* price range section */}
