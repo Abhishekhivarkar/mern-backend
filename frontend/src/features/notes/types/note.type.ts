@@ -22,7 +22,8 @@ export interface NoteType{
     created_at:string,
     is_pinned:boolean,
     is_paid:boolean,
-    is_featured:boolean
+    is_featured:boolean,
+    total:number
 }
 
 export interface GetAllNotesResponse{
