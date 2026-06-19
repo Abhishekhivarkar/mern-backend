@@ -29,7 +29,7 @@ export default function NotesFilterSection({
           Reset All
         </h4>
       </div>
-      <hr className="opacity-20" />
+      <hr className="opacity-20 w-65" />
 
       {/* category section */}
       <div className="flex flex-col gap-3">
