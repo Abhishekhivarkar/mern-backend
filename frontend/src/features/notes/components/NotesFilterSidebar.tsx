@@ -12,6 +12,9 @@ interface Props {
   onMinPriceChange: (minPrice: number | null) => void;
 
   onMaxPriceChange: (maxPrice: number | null) => void;
+  selectedIsPaid:boolean | null,
+  onChangeIsPaid:(isPaid:boolean | null) => void
+
 }
 export default function NotesFilterSection({
   selectedCategory,
@@ -20,6 +23,8 @@ export default function NotesFilterSection({
   selectedMaxPrice,
   onMinPriceChange,
   onMaxPriceChange,
+  selectedIsPaid,
+  onChangeIsPaid
 }: Props) {
   return (
     <div className="shadow w-fit p-3 flex flex-col gap-3">
@@ -48,7 +53,10 @@ export default function NotesFilterSection({
         />
         <hr className="opacity-20" />
         {/* availability section */}
-        <NotesAvailabilityFilter />
+        <NotesAvailabilityFilter 
+        selectedIsPaid={selectedIsPaid}
+        onChangeIsPaid={onChangeIsPaid}
+        />
         <hr className="opacity-20" />
         {/* other filters */}
         <NotesOtherFilter />
