@@ -32,7 +32,7 @@ export default function NotesCard({ data }: NoteCardProps) {
             <span
               className={`absolute  top-3 left-3 rounded px-1  text-[10px] ${
                 data.is_pinned
-                  ? "bg-purple"
+                  ? "bg-purple-400"
                   : data.is_featured
                     ? "bg-amber-500"
                     : ""
