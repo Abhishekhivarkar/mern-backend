@@ -54,7 +54,7 @@ export default function NotesPriceRangeFilter({
             }
           />
         </div>
-        <input type="range" className="w-70 h-1 " />
+       
         <div className="flex gap-1 justify-center ">
           <button className="price-filter-bg">₹0 - ₹100</button>
           <button className="price-filter-bg">₹100 - ₹500</button>
