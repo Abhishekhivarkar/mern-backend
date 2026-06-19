@@ -56,9 +56,16 @@ export default function NotesPriceRangeFilter({
         </div>
        
         <div className="flex gap-1 justify-center ">
-          <button className="price-filter-bg">₹0 - ₹100</button>
-          <button className="price-filter-bg">₹100 - ₹500</button>
-          <button className="price-filter-bg">₹500+</button>
+          
+          <button className="price-filter-bg" onClick={()=>{onMinPriceChange(1)
+            onMaxPriceChange(100)
+          }}>₹1 - ₹100</button>
+           <button className="price-filter-bg" onClick={()=>{onMinPriceChange(100)
+            onMaxPriceChange(500)
+          }}>₹100 - ₹500</button>
+         <button className="price-filter-bg" onClick={()=>{onMinPriceChange(500)
+            onMaxPriceChange(null)
+          }}>₹500+</button>
         </div>
       </div>
     </div>
