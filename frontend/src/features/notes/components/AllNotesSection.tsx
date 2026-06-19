@@ -6,14 +6,15 @@ import NotesCatalog from './NotesCatalog'
 interface Props{
   category:string,
   minPrice:number,
-  maxPrice:number
+  maxPrice:number,
+  isPaid:boolean | null
 }
-export default function AllNotesSection({category,minPrice,maxPrice}:Props) {
+export default function AllNotesSection({category,minPrice,maxPrice,isPaid}:Props) {
   return (
     <div className=' border border-gray-200  w-full'>
         <HomeNavigationIcon/>
         <AllNotesSearchBar/>
-        <NotesCatalog category={category} minPrice={minPrice} maxPrice={maxPrice}/>
+        <NotesCatalog category={category} minPrice={minPrice} maxPrice={maxPrice} isPaid={isPaid}/>
     </div>
   )
 }
