@@ -3,6 +3,7 @@ import Footer from "../../../common/components/Footer";
 import { Navbar } from "../../../common/components/Navbar";
 import AllNotesSection from "../components/AllNotesSection";
 import NotesFilterSection from "../components/NotesFilterSidebar";
+import { useDebounce } from "../../../common/hooks/useDebounce";
 
 export default function GetAllNotesPage() {
   const [category, setCategory] = useState("");
@@ -10,8 +11,12 @@ export default function GetAllNotesPage() {
 
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
-  console.log(minPrice)
- 
+
+  const deboucedMinPrice = useDebounce(minPrice,900)
+
+  const deboucedMaxPrice= useDebounce(maxPrice,900)
+  console.log(minPrice);
+
   return (
     <div>
       <div className="min-h-screen flex flex-col gap-7">
@@ -21,7 +26,6 @@ export default function GetAllNotesPage() {
             <NotesFilterSection
               selectedCategory={category}
               onCategoryChange={setCategory}
-
               selectedMinPrice={minPrice}
               selectedMaxPrice={maxPrice}
               onMinPriceChange={setMinPrice}
@@ -29,8 +33,8 @@ export default function GetAllNotesPage() {
             />
             <AllNotesSection
               category={category}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
+              minPrice={deboucedMinPrice}
+              maxPrice={deboucedMaxPrice}
             />
           </div>
         </main>
