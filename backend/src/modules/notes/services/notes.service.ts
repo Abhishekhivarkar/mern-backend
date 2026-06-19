@@ -116,7 +116,7 @@ export const getAllNotesService = async (
   minPrice:number,
   maxPrice:number
 ) => {
-  const cacheKey = `notes:${page}:${limit}:${search}:${category}:${minPrice}:${maxPrice}`;
+  const cacheKey = `notes:${page}:${limit}:${search}:${category}:${is_paid}:${minPrice}:${maxPrice}`;
 
   const cached = await redisClient.get(cacheKey);
 
