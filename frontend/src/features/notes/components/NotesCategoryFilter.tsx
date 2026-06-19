@@ -73,7 +73,7 @@ export default function NotesCategoryFilter({
                );
              })}
            </div>
-          <div className='flex justify-between px-1 ' onClick={getNoteApi}>
+          <div className={`flex justify-between px-1 active:bg-gray-200 ${!selectedCategory ? "bg-gray-300" : ""} rounded-md py-1 px-1`} onClick={()=>onCategoryChange(null)}>
   <div className='flex items-center gap-3'>
     <CgMenuGridO className='bg-violet-400 text-[22px] rounded-md text-white' />
     <span>View All</span>
