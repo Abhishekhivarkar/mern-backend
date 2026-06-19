@@ -90,7 +90,7 @@ export const getAllNotes = asyncHandler(
 
     const maxPrice = req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
 
-    const is_paid = req.query.is_paid 
+    const is_paid = req.query.isPaid 
     const notes = await getAllNotesService(
       page,
       limit,
