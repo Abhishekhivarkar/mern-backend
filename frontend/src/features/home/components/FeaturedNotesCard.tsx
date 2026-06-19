@@ -3,7 +3,7 @@ import exampleImage from "../../../assets/javascript.jpg";
 type cardData = {
   note_id: number;
   images: string;
-  is_paid: string;
+  is_paid: boolean;
   note_name: string;
   note_content: string;
   price: number;
