@@ -55,6 +55,8 @@ export const getAllNotesRepository = async (
   minPrice?: number,
   maxPrice?: number,
 ) => {
+  console.log("is_paid =", is_paid);
+console.log("typeof is_paid =", typeof is_paid);
   const skip = (page - 1) * limit;
 
   const values: (string | number | boolean)[] = [];
@@ -77,7 +79,7 @@ export const getAllNotesRepository = async (
       AND category = $${values.length}
     `;
   }
-  if (is_paid) {
+  if (is_paid !== undefined && is_paid !== null) {
     values.push(is_paid);
     whereClause += `
     AND is_paid = $${values.length}
