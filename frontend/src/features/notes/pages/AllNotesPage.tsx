@@ -17,6 +17,9 @@ export default function GetAllNotesPage() {
   const deboucedMaxPrice= useDebounce(maxPrice,900)
   console.log(minPrice);
 
+  const [isPaid,setIsPaid] = useState<boolean | null>(null)
+  
+console.log("AllNotesPage isPaid:", isPaid);
   return (
     <div>
       <div className="min-h-screen flex flex-col gap-7">
@@ -30,11 +33,14 @@ export default function GetAllNotesPage() {
               selectedMaxPrice={maxPrice}
               onMinPriceChange={setMinPrice}
               onMaxPriceChange={setMaxPrice}
+              selectedIsPaid = {isPaid}
+              onChangeIsPaid = {setIsPaid}
             />
             <AllNotesSection
               category={category}
               minPrice={deboucedMinPrice}
               maxPrice={deboucedMaxPrice}
+              isPaid = {isPaid}
             />
           </div>
         </main>
