@@ -5,10 +5,11 @@ import NotesCard from "./NotesCard";
 interface Props {
   category: string;
   minPrice:number,
-  maxPrice:number
+  maxPrice:number,
+  isPaid:boolean | null
 }
 
-export default function NotesCatalog({ category,minPrice,maxPrice }: Props) {
+export default function NotesCatalog({ category,minPrice,maxPrice,isPaid }: Props) {
   const [page, setPage] = useState(1);
   const limit = 8;
 
@@ -16,8 +17,9 @@ export default function NotesCatalog({ category,minPrice,maxPrice }: Props) {
     page,
     limit,
     category: category || undefined,
-    minPrice: minPrice || undefined,
-    maxPrice: maxPrice || undefined
+    minPrice: minPrice ?? undefined,
+    maxPrice: maxPrice ?? undefined,
+    isPaid: isPaid ?? null
   });
 
   const { total = 0 } = data?.data || {};
