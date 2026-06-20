@@ -114,7 +114,9 @@ export const getAllNotesService = async (
   category:NoteCategory,
   is_paid:boolean,
   minPrice:number,
-  maxPrice:number
+  maxPrice:number,
+  isFeatured:boolean,
+  isPinned:boolean
 ) => {
   const cacheKey = `notes:${page}:${limit}:${search}:${category}:${is_paid}:${minPrice}:${maxPrice}`;
 
@@ -124,7 +126,7 @@ export const getAllNotesService = async (
     return JSON.parse(cached);
   }
 
-  const notes = await getAllNotesRepository(page, limit, search,category,is_paid,minPrice,maxPrice);
+  const notes = await getAllNotesRepository(page, limit, search,category,is_paid,minPrice,maxPrice,isFeatured,isPinned);
 
   await redisClient.set(
     cacheKey,

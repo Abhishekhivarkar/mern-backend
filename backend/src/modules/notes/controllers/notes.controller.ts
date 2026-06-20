@@ -41,8 +41,15 @@ export const createNotes = asyncHandler(
     req: Request<{}, NoteResponseDto, createNotesDto>,
     res: Response<NoteResponseDto>,
   ) => {
-    const { note_name, note_content, price, is_published, category, is_featured} = req.body;
-   
+    const {
+      note_name,
+      note_content,
+      price,
+      is_published,
+      category,
+      is_featured,
+    } = req.body;
+
     if (!req.file) {
       throw new AppError("Image is required", HTTP_STATUS.BAD_REQUEST);
     }
@@ -61,7 +68,7 @@ export const createNotes = asyncHandler(
       is_published,
       category,
       req.file,
-      is_featured
+      is_featured,
     );
 
     logger.info({
@@ -86,11 +93,20 @@ export const getAllNotes = asyncHandler(
     const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
     const category = req.query.category || "";
-    const minPrice = req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined
+    const minPrice =
+      req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined;
 
-    const maxPrice = req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
+    const maxPrice =
+      req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined;
 
-    const is_paid = req.query.isPaid 
+    const is_paid = req.query.isPaid !==
+      undefined ? req.query.isPaid === "true" : undefined
+
+    const isFeatured =
+       req.query.isFeatured !== undefined ? req.query.isFeatured === "true" : undefined
+
+    const isPinned = req.query.isPinned !== undefined ? req.query.isPinned === "true" : undefined
+
     const notes = await getAllNotesService(
       page,
       limit,
@@ -99,8 +115,10 @@ export const getAllNotes = asyncHandler(
       is_paid,
       minPrice,
       maxPrice,
+      isFeatured,
+      isPinned,
     );
-    
+
     logger.info({
       message: "Notes received successfully",
     });
@@ -341,35 +359,37 @@ export const getNoteById = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+export const getNotesCategoriesCount = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notesCategorysCount = await getNotesCategoriesCountService();
 
-export const getNotesCategoriesCount = asyncHandler(async(req:Request,res:Response)=>{
-   const notesCategorysCount = await getNotesCategoriesCountService()
+    return res.status(HTTP_STATUS.OK).json({
+      message: true,
+      data: notesCategorysCount,
+    });
+  },
+);
 
-   return res.status(HTTP_STATUS.OK).json({
-    message:true,
-    data:notesCategorysCount
-   })
+export const getAllFeaturedNotes = asyncHandler(
+  async (req: Request, res: Response) => {
+    const featuredNotes = await getAllFeaturedNotesService();
 
-})
+    return res.status(HTTP_STATUS.OK).json({
+      message: true,
+      data: featuredNotes,
+    });
+  },
+);
 
+export const getNotesStats = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notesStats = await getNotesStatsService();
 
-export const getAllFeaturedNotes = asyncHandler(async(req:Request,res:Response)=>{
-  const featuredNotes = await getAllFeaturedNotesService()
-
-  return res.status(HTTP_STATUS.OK).json({
-    message:true,
-    data:featuredNotes
-  })
-})
-
-
-export const getNotesStats = asyncHandler(async(req:Request,res:Response) =>{
-  const notesStats = await getNotesStatsService()
-
-  return res.status(HTTP_STATUS.OK).json({
-    data:{
-      categories:notesStats.notesCategoryStats,
-      stats:notesStats.notesStats
-    }
-  })
-})
+    return res.status(HTTP_STATUS.OK).json({
+      data: {
+        categories: notesStats.notesCategoryStats,
+        stats: notesStats.notesStats,
+      },
+    });
+  },
+);

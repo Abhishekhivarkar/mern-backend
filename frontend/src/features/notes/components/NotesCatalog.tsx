@@ -3,13 +3,14 @@ import { useGetNotes } from "../hooks/useGetNotes";
 import NotesCard from "./NotesCard";
 
 interface Props {
-  category: string;
-  minPrice:number,
-  maxPrice:number,
-  isPaid:boolean | null
+  category: string | null;
+  minPrice:number | null,
+  maxPrice:number | null,
+  isPaid:boolean | null,
+  otherFilter: "featured"|"pinned" | null
 }
 
-export default function NotesCatalog({ category,minPrice,maxPrice,isPaid }: Props) {
+export default function NotesCatalog({ category,minPrice,maxPrice,isPaid,otherFilter}: Props) {
   const [page, setPage] = useState(1);
   const limit = 8;
 
@@ -19,7 +20,9 @@ export default function NotesCatalog({ category,minPrice,maxPrice,isPaid }: Prop
     category: category || undefined,
     minPrice: minPrice ?? undefined,
     maxPrice: maxPrice ?? undefined,
-    isPaid: isPaid ?? null
+    isPaid: isPaid ?? null,
+    isFeatured: otherFilter === "featured" ? true : false,
+    isPinned: otherFilter === "pinned" ? true : false
   });
 
   const { total = 0 } = data?.data || {};

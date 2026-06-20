@@ -54,6 +54,9 @@ export const getAllNotesRepository = async (
   is_paid?: boolean,
   minPrice?: number,
   maxPrice?: number,
+  isFeatured?: boolean,
+  isPinned?: boolean
+
 ) => {
   console.log("is_paid =", is_paid);
 console.log("typeof is_paid =", typeof is_paid);
@@ -95,6 +98,22 @@ console.log("typeof is_paid =", typeof is_paid);
     `;
   }
 
+  if(isFeatured !== undefined && isFeatured !== null){
+    values.push(isFeatured)
+    whereClause += `
+    AND is_featured = $${values.length}
+    `
+  }
+
+  if(isPinned !== undefined && isPinned !== null){
+    values.push(isPinned)
+    whereClause += `
+    AND is_pinned = $${values.length}
+    
+    `
+  
+  }
+    console.log(values)
   const notesQuery = `
     SELECT
       note_id,

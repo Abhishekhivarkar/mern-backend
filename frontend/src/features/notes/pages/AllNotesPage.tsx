@@ -6,7 +6,7 @@ import NotesFilterSection from "../components/NotesFilterSidebar";
 import { useDebounce } from "../../../common/hooks/useDebounce";
 
 export default function GetAllNotesPage() {
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState<string | null>("");
   const [minPrice, setMinPrice] = useState<number | null>(null);
 
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
@@ -15,11 +15,13 @@ export default function GetAllNotesPage() {
   const deboucedMinPrice = useDebounce(minPrice,900)
 
   const deboucedMaxPrice= useDebounce(maxPrice,900)
-  console.log(minPrice);
+ 
 
   const [isPaid,setIsPaid] = useState<boolean | null>(null)
   
-console.log("AllNotesPage isPaid:", isPaid);
+  const [otherFilter,setOtherFilter] = useState<"featured" | "pinned" | null>(null)
+
+console.log("AllNotesPage otherFilter:", otherFilter);
   return (
     <div>
       <div className="min-h-screen flex flex-col gap-7">
@@ -35,12 +37,18 @@ console.log("AllNotesPage isPaid:", isPaid);
               onMaxPriceChange={setMaxPrice}
               selectedIsPaid = {isPaid}
               onChangeIsPaid = {setIsPaid}
+              selectedOtherFilter = {otherFilter}
+              onOtherFilterChange={setOtherFilter}
+           
             />
+
             <AllNotesSection
               category={category}
               minPrice={deboucedMinPrice}
               maxPrice={deboucedMaxPrice}
               isPaid = {isPaid}
+              otherFilter={otherFilter}
+             
             />
           </div>
         </main>

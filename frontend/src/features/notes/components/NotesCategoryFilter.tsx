@@ -53,7 +53,7 @@ export default function NotesCategoryFilter({
            >
              {data?.data?.categories?.map((i:ResponseType) => {
                return (
-                 <div className={`flex justify-between  rounded-md cursor-pointer p-1 transition-all ${selectedCategory === i.category ? "bg-gray-300" : ""}`} key={i.id} onClick={()=>onCategoryChange(i.category)}>
+                 <div className={`flex justify-between  rounded-md cursor-pointer p-1 transition-all ${selectedCategory === i.category ? "bg-gray-300" : ""}`} key={i.id} onClick={()=>onCategoryChange(i.category)} >
                    <div className="flex gap-2">
                      <div
                        className={`${getColorClass(i.category)} text-white rounded-lg`}
