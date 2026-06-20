@@ -18,6 +18,7 @@ app.use(cors({
 }))
 app.disable("x-powered-by")
 app.use(helmet())
+app.set("trust proxy", 1);
 app.use(express.json())
 app.use(cookieParser())
 app.use(loggerMiddleware)
