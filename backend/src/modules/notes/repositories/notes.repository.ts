@@ -293,8 +293,8 @@ export const getMyNotesRepository = async (user_id: string) => {
 };
 
 export const findPurchaseByNoteAndBuyer = async (
-  note_id: string | string[],
-  buyer_id: string,
+  note_id: string,
+  buyer_id: string | undefined,
   client?: PoolClient,
 ) => {
   const db = client ?? pool;

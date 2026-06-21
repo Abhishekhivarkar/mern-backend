@@ -60,7 +60,7 @@ export const createNotesService = async (
   is_published: boolean,
   category: NoteCategory,
   images: Express.Multer.File,
-  is_featured?:boolean
+  is_featured?: boolean,
 ) => {
   const client = await pool.connect();
 
@@ -77,7 +77,7 @@ export const createNotesService = async (
       );
     }
 
-     const note = await createNotes(
+    const note = await createNotes(
       note_name,
       note_content,
       user_id,
@@ -86,7 +86,7 @@ export const createNotesService = async (
       category,
       imageUrl,
       client,
-      is_featured
+      is_featured,
     );
     await client.query("COMMIT");
     await clearNotesCache();
@@ -110,13 +110,13 @@ export const getAllNotesService = async (
 
   limit: number,
 
-  search: string,
-  category:NoteCategory,
-  is_paid:boolean,
-  minPrice:number,
-  maxPrice:number,
-  isFeatured:boolean,
-  isPinned:boolean
+  search?: string,
+  category?: NoteCategory,
+  is_paid?: boolean,
+  minPrice?: number,
+  maxPrice?: number,
+  isFeatured?: boolean,
+  isPinned?: boolean,
 ) => {
   const cacheKey = `notes:${page}:${limit}:${search}:${category}:${is_paid}:${minPrice}:${maxPrice}`;
 
@@ -126,7 +126,17 @@ export const getAllNotesService = async (
     return JSON.parse(cached);
   }
 
-  const notes = await getAllNotesRepository(page, limit, search,category,is_paid,minPrice,maxPrice,isFeatured,isPinned);
+  const notes = await getAllNotesRepository(
+    page,
+    limit,
+    search,
+    category,
+    is_paid,
+    minPrice,
+    maxPrice,
+    isFeatured,
+    isPinned,
+  );
 
   await redisClient.set(
     cacheKey,
@@ -179,8 +189,8 @@ export const patchUpdateNotesService = async (
 
     await clearNotesCache();
     await sendNoteUpdatedNotificationToUser(user_id, {
-      title: new_note_name,
       note_id: note_id,
+      title: new_note_name,
       message: "Note updated successfully!",
     });
     return note;
@@ -462,7 +472,7 @@ export const createNotePurchaseService = async (
 
 export const createNoteOrderService = async (
   note_id: string,
-  user_id: string,
+  user_id: string | undefined,
 ) => {
   const client = await pool.connect();
 
@@ -573,7 +583,7 @@ export const getPurchasedNotesService = async (user_id: string | undefined) => {
   return purchasedNotes;
 };
 
-export const getNoteByIdService = async (note_id: string, user_id: string) => {
+export const getNoteByIdService = async (note_id: string, user_id: string | undefined) => {
   const note = await getNoteByIdRepository(note_id);
 
   if (!note) {
@@ -602,42 +612,37 @@ export const getNoteByIdService = async (note_id: string, user_id: string) => {
   };
 };
 
-export const getNotesCategoriesCountService = async() =>{
-  const notesCategoriesCount = await getNotesCategoriesCountRepository()
+export const getNotesCategoriesCountService = async () => {
+  const notesCategoriesCount = await getNotesCategoriesCountRepository();
 
-  if(!notesCategoriesCount || notesCategoriesCount.length === 0) {
-    throw new AppError("0 notes found",HTTP_STATUS.BAD_REQUEST)
+  if (!notesCategoriesCount || notesCategoriesCount.length === 0) {
+    throw new AppError("0 notes found", HTTP_STATUS.BAD_REQUEST);
   }
 
-  return notesCategoriesCount
-}
+  return notesCategoriesCount;
+};
 
+export const getAllFeaturedNotesService = async () => {
+  const featuredNotes = await getAllFeaturedNotesRepository();
 
-export const getAllFeaturedNotesService = async() =>{
-  const featuredNotes = await getAllFeaturedNotesRepository()
-
-  if(!featuredNotes || featuredNotes.length === 0){
-    throw new AppError(MESSAGES.PRODUCT.ZERO_NOTES,HTTP_STATUS.NOT_FOUND)
+  if (!featuredNotes || featuredNotes.length === 0) {
+    throw new AppError(MESSAGES.PRODUCT.ZERO_NOTES, HTTP_STATUS.NOT_FOUND);
   }
 
-  return featuredNotes
-}
+  return featuredNotes;
+};
 
+export const getNotesStatsService = async () => {
+  const notesCategoryStats = await getNotesCategoryStatsRepository();
 
+  const notesStats = await getNotesStatsRepository();
 
-export const getNotesStatsService = async() =>{
-  const notesCategoryStats = await getNotesCategoryStatsRepository() 
-
-  const notesStats = await getNotesStatsRepository()
-
-
-  if(!notesCategoryStats || notesCategoryStats.length === 0 || !notesStats){
-    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND,HTTP_STATUS.NOT_FOUND)
+  if (!notesCategoryStats || notesCategoryStats.length === 0 || !notesStats) {
+    throw new AppError(MESSAGES.PRODUCT.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
   }
 
-
-  return{
+  return {
     notesCategoryStats,
-    notesStats
-  }
-}
+    notesStats,
+  };
+};

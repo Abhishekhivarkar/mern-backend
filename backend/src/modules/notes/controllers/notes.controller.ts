@@ -92,7 +92,7 @@ export const getAllNotes = asyncHandler(
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const search = req.query.search || "";
-    const category = req.query.category || "";
+    const category = req.query.category 
     const minPrice =
       req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined;
 
@@ -258,51 +258,12 @@ export const getMyNotes = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-// export const createNotePurchase = asyncHandler(
-//   async (req: Request, res: Response) => {
-//     const { note_id } = req.params;
-
-//     const buyer_id = req.user_id!;
-
-//     const idempotency_key = req.headers["idempotency-key"] as
-//       | string
-//       | undefined;
-
-//     if (!idempotency_key) {
-//       throw new AppError(
-//         MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,
-//         HTTP_STATUS.BAD_REQUEST,
-//       );
-//     }
-
-//     const purchase = await createNotePurchaseService(
-//       note_id,
-//       buyer_id,
-//       idempotency_key,
-//     );
-
-//     return res.status(HTTP_STATUS.CREATED).json({
-//       success: true,
-//       message: MESSAGES.PRODUCT.PURCHASE_SUCCESS,
-//       data: purchase,
-//     });
-//   },
-// );
 
 export const createNoteOrder = asyncHandler(
   async (req: Request, res: Response) => {
-    const { note_id } = req.params;
+    const note_id = req.params.note_id as string;
     const user_id = req.user_id;
-    // const idempotency_key = req.headers["idempotency-key"] as
-    //   | string
-    //   | undefined;
 
-    // if (!idempotency_key) {
-    //   throw new AppError(
-    //     MESSAGES.COMMON.IDEMPOTENCY_KEY_REQUIRED,
-    //     HTTP_STATUS.BAD_REQUEST,
-    //   );
-    // }
     const note_order = await createNoteOrderService(note_id, user_id);
 
     return res.status(HTTP_STATUS.CREATED).json({
@@ -313,9 +274,9 @@ export const createNoteOrder = asyncHandler(
 );
 
 export const verifyPyament = asyncHandler(async (req, res) => {
-  const { note_id } = req.params;
+  const note_id  = req.params.note_id as string;
   const buyer_id = req.user_id!;
-  const idempotency_key = req.headers["idempotency-key"] as string | undefined;
+  const idempotency_key = req.headers["idempotency-key"] as string ;
 
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body;
@@ -348,8 +309,8 @@ export const getPurchasedNotes = asyncHandler(
   },
 );
 
-export const getNoteById = asyncHandler(async (req: Request, res: Response) => {
-  const { note_id } = req.params;
+export const getNoteById = asyncHandler(async (req, res) => {
+  const  note_id  = req.params.note_id as string;
   const user_id = req.user_id;
   const note = await getNoteByIdService(note_id, user_id);
 
