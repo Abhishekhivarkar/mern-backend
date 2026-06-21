@@ -1,5 +1,6 @@
-name: Backend CI 
-on: 
+name: Backend CI
+
+on:
   push:
     branches:
       - master
@@ -11,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: backend
@@ -18,13 +20,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Install Dependencies
-        runs: npm install
+        run: npm install
+
       - name: Build Project
-        runs: npm run build
-
-
+        run: npm run build
