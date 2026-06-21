@@ -23,7 +23,7 @@ export const emailWorker = new Worker<EmailJobData>("emailQueue",
         console.log("Email sent successfully!")
     },
     {
-        connection: redisClient,
+        connection: redisClient as any,
         concurrency:5
     }
 )
